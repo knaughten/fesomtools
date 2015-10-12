@@ -36,6 +36,18 @@ if var_name == 'wnet' or '.ice.' in file_path:
 else:
     mask_cavities = False
 
+# Get depth information
+depth_input = raw_input("Surface nodes (s), bottom nodes (b), or specify depth (enter depth in m): ")
+if depth_input == 's':
+    depth_key = 0
+    depth = NaN
+elif depth_input == 'b':
+    depth_key = 1
+    depth = NaN
+else:
+    depth_key = 2
+    depth = float(depth_input)
+
 # Get index of time axis in FESOM output file
 tstep = int(raw_input("Timestep number: "))
 
@@ -44,9 +56,9 @@ elements, patches = make_patches(circumpolar, mask_cavities)
 
 # Call circumpolar_plot or global_plot depending on domain
 if circumpolar:
-    circumpolar_plot(file_path, var_name, tstep, elements, patches, mask_cavities, save, fig_name)
+    circumpolar_plot(file_path, var_name, depth_key, depth, tstep, elements, patches, mask_cavities, save, fig_name)
 else:
-    global_plot(file_path, var_name, tstep, elements, patches, mask_cavities, save, fig_name)
+    global_plot(file_path, var_name, depth_key, depth, tstep, elements, patches, mask_cavities, save, fig_name)
 
 # Repeat until the user wants to exit
 while True:
@@ -56,7 +68,7 @@ while True:
         while True:
             # Ask for changes to the input parameters; repeat until the user
             # is finished
-            changes = raw_input("Enter a parameter to change: (1) save/display, (2) global/circumpolar, (3) file path, (4) variable name, (5) timestep number; or enter to continue: ")
+            changes = raw_input("Enter a parameter to change: (1) save/display, (2) global/circumpolar, (3) file path, (4) variable name, (5) depth, (6) timestep number; or enter to continue: ")
             if len(changes) == 0:
                 # No more changes to parameters
                 break
@@ -76,6 +88,18 @@ while True:
                     # New variable name
                     var_name = raw_input("Variable name: ")
                 elif int(changes) == 5:
+                    # New depth information
+                    depth_input = raw_input("Surface nodes (s), bottom nodes (b), or specify depth (enter depth in m): ")
+                    if depth_input == 's':
+                        depth_key = 0
+                        depth = NaN
+                    elif depth_input == 'b':
+                        depth_key = 1
+                        depth = NaN
+                    else:
+                        depth_key = 2
+                        depth = float(depth_input)
+                elif int(changes) == 6:
                     # New time index
                     tstep = int(raw_input("Timestep number: "))
                 else:
@@ -101,9 +125,9 @@ while True:
 
         # Call circumpolar_plot or global_plot depending on domain
         if circumpolar:
-            circumpolar_plot(file_path, var_name, tstep, elements, patches, mask_cavities, save, fig_name)
+            circumpolar_plot(file_path, var_name, depth_key, depth, tstep, elements, patches, mask_cavities, save, fig_name)
         else:
-            global_plot(file_path, var_name, tstep, elements, patches, mask_cavities, save, fig_name)
+            global_plot(file_path, var_name, depth_key, depth, tstep, elements, patches, mask_cavities, save, fig_name)
     else:
         break
             

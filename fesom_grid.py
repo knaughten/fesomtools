@@ -22,6 +22,21 @@ class Node:
   def set_below (self, node_below):
 
     self.below = node_below
+  
+
+  # Travel straight down the water column to find the node at the seafloor.
+  # Return its id.
+  def find_bottom (self):
+
+    node = self
+    id = node.id
+
+    while node.below is not None:
+      # Go down another level
+      node = node.below
+      id = node.id   
+
+    return id
 
 
   # Given a depth z, travel straight down the water column to find nodes
@@ -58,24 +73,9 @@ class Node:
         # We're still too shallow
         # Go one level down for the next iteration of the loop
         node_above = node_below
-        node_below = node_above.below
-
-      return id1, id2, coeff1, coeff2
-
-
-    # Travel straight down the water column to find the node at the seafloor.
-    # Return its id.
-    def find_bottom (self):
-
-      node = self
-      id = node.id
-
-      while node.below is not None:
-        # Go down another level
-        node = node.below
-        id = node.id
-
-      return id
+        node_below = node_above.below  
+    
+    return id1, id2, coeff1, coeff2    
            
 
 
