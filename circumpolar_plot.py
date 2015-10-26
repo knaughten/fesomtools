@@ -141,7 +141,19 @@ def circumpolar_plot (file_path, var_name, depth_key, depth, tstep, elements, pa
     cbar = colorbar(img)
     cbar.ax.tick_params(labelsize=font_sizes[2])
 
+    # Plot specified points
+    #problem_ids = [4415, 4431, 4432, 6130]
+    #problem_x = []
+    #problem_y = []
+    #for elm in elements:
+        #for i in range(3):
+            #if elm.nodes[i].id in problem_ids:
+                #problem_x.append(elm.x[i])
+                #problem_y.append(elm.y[i])
+                #problem_ids.remove(elm.nodes[i].id)
+    #ax.plot(problem_x, problem_y, 'or')    
+
     if save:
-        savefig(name)
+        savefig(fig_name)
     else:
         show()
