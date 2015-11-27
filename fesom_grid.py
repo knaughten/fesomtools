@@ -129,12 +129,12 @@ class Element:
 
 
 # Function to read FESOM grid files and build Element mesh
-# Input: circumpolar = optional boolean flag indicating if the user's plot
-#                      will be circumpolar Antarctic (otherwise global)
-def fesom_grid (circumpolar=False):
+# Input: 
+# mesh_path = path to directory containing grid files
+# circumpolar = optional boolean flag indicating if the user's plot
+#               will be circumpolar Antarctic (otherwise global)
+def fesom_grid (mesh_path, circumpolar=False):
 
-  # Directory with grid files
-  mesh_path = '/short/y99/kaa561/FESOM/mesh/fesom_grid_4.4.4/'
   # Grid rotation parameters (grep inside mesh_path if unsure)
   alpha = 50
   beta = 15

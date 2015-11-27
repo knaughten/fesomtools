@@ -6,6 +6,7 @@ from fesom_grid import *
 # Create the FESOM grid Elements and convert them to triangular patches for
 # the user's plot.
 # Input:
+# mesh_path = path to directory containing grid files
 # circumpolar = optional boolean flag indicating if the user's plot will be
 #               circumpolar Antarctic (otherwise global)
 # mask_cavities = optional boolean flag indicating if Elements in ice shelf
@@ -13,10 +14,10 @@ from fesom_grid import *
 # Output:
 # elements = array of Element objects which make up the FESOM 2D mesh
 # patches = array of triangular Polygon objects to be used on the plot
-def make_patches (circumpolar=False, mask_cavities=False):
+def make_patches (mesh_path, circumpolar=False, mask_cavities=False):
 
     # Read the grid and build the Element array
-    elements = fesom_grid(circumpolar)
+    elements = fesom_grid(mesh_path, circumpolar)
 
     patches = []
     for elm in elements:

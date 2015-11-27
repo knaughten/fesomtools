@@ -21,7 +21,7 @@ from patches import *
 #                 cavities in grey
 # save = optional boolean flag indicating whether to save plot to file
 #        (otherwise will display on screen)
-# fig_name = optional string containing name of figure file, if save = True
+# fig_name = optional string containing name of figure file, if save=True
 def global_plot (file_path, var_name, depth_key, depth, tstep, elements, patches, mask_cavities=False, save=False, fig_name=None):
 
     # Set bounds for domain
