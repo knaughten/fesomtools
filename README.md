@@ -1,9 +1,5 @@
-From ipython, type:
+From ipython or python, type:
 
 run fesom_vis
 
-and follow the prompts! Make sure X-windows are enabled if ssh-ing.
-
-If you don't have ipython (which is great and you should install it), you can also use this package in regular python by typing:
-
-from fesom_vis import *
+and follow the prompts! Depending on your grid, these routines can be slow and use a lot of memory, so be prepared.
