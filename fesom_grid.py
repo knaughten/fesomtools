@@ -1,5 +1,6 @@
 from numpy import *
 from numpy.linalg import inv 
+from triangle_area import *
 
 # Classes and routines to build an object-oriented FESOM grid data structure
 
@@ -25,7 +26,6 @@ class Node:
   
 
   # Travel straight down the water column to find the node at the seafloor.
-  # Return its id.
   def find_bottom (self):
 
     node = self
@@ -34,9 +34,8 @@ class Node:
     while node.below is not None:
       # Go down another level
       node = node.below
-      id = node.id   
 
-    return id
+    return node
 
 
   # Given a depth z, travel straight down the water column to find nodes
@@ -98,6 +97,8 @@ class Element:
     self.nodes = array([node1, node2, node3])
     lon = array([node1.lon, node2.lon, node3.lon])
     lat = array([node1.lat, node2.lat, node3.lat])
+    self.lon = lon
+    self.lat = lat
     self.repeat_next = False
     self.cavity = cavity != 0
 
@@ -109,7 +110,7 @@ class Element:
         # Already processed this element in the eastern hemisphere
         # Process it in the western hemisphere now
         index = nonzero(lon > 0)
-        lon[index] = lon[index] - 360
+        self.lon[index] = lon[index] - 360
       else:
         # Haven't seen this element before
         # Process it in the eastern hemisphere
@@ -125,6 +126,11 @@ class Element:
     else:
       self.x = lon
       self.y = lat
+
+  # Return the area of the triangle making up this Element
+  def area (self):
+
+    return triangle_area(self.lon, self.lat)
 
 
 

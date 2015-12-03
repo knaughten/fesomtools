@@ -1,6 +1,5 @@
 from patches import *
-from global_plot import *
-from circumpolar_plot import *
+from lonlat_plot import *
 from zonal_slice_plot import *
 
 # Command-line interface for FESOM plots
@@ -21,15 +20,18 @@ def fesom_vis_lonlat ():
         mask_cavities = False
 
     # Get depth information
-    depth_input = raw_input("Surface nodes (s), bottom nodes (b), or specify depth (enter positive depth in m): ")
+    depth_input = raw_input("Surface nodes (s), bottom nodes (b), vertical average (a), or specify depth (enter positive depth in m): ")
     if depth_input == 's':
         depth_key = 0
         depth = NaN
     elif depth_input == 'b':
         depth_key = 1
         depth = NaN
-    else:
+    elif depth_input == 'a':
         depth_key = 2
+        depth = NaN            
+    else:
+        depth_key = 3
         depth = float(depth_input)
 
     # Get index of time axis in FESOM output file
@@ -60,11 +62,8 @@ def fesom_vis_lonlat ():
     # Build FESOM grid
     elements, patches = make_patches(mesh_path, circumpolar, mask_cavities)
 
-    # Call circumpolar_plot or global_plot depending on domain
-    if circumpolar:
-        circumpolar_plot(file_path, var_name, depth_key, depth, tstep, elements, patches, mask_cavities, save, fig_name)
-    else:
-        global_plot(file_path, var_name, depth_key, depth, tstep, elements, patches, mask_cavities, save, fig_name)
+    # Call lonlat_plot
+    lonlat_plot(file_path, var_name, depth_key, depth, tstep, circumpolar, elements, patches, mask_cavities, save, fig_name)
 
     # Repeat until the user wants to exit
     while True:
@@ -92,16 +91,19 @@ def fesom_vis_lonlat ():
                         var_name = raw_input("Variable name: ")
                     elif int(changes) == 4:
                         # New depth information
-                        depth_input= raw_input("Surface nodes (s), bottom nodes (b), or specify depth (enter positive depth in m): ")
+                        depth_input = raw_input("Surface nodes (s), bottom nodes (b), vertical average (a), or specify depth (enter positive depth in m): ")
                         if depth_input == 's':
                             depth_key = 0
                             depth = NaN
                         elif depth_input == 'b':
                             depth_key = 1
                             depth = NaN
-                        else:
+                        elif depth_input == 'a':
                             depth_key = 2
-                            depth = float(depth_input)                        
+                            depth = NaN
+                        else:
+                            depth_key = 3
+                            depth = float(depth_input)
                     elif int(changes) == 5:
                         # New time index
                         tstep = int(raw_input("Timestep number: "))
@@ -134,11 +136,9 @@ def fesom_vis_lonlat ():
                 # Get file name for figure
                 fig_name = raw_input("File name for figure: ")        
 
-            # Call circumpolar_plot or global_plot depending on domain
-            if circumpolar:
-                circumpolar_plot(file_path, var_name, depth_key, depth, tstep, elements, patches, mask_cavities, save, fig_name)
-            else:
-                global_plot(file_path, var_name, depth_key, depth, tstep, elements, patches, mask_cavities, save, fig_name)
+            # Call lonlat_plot
+            lonlat_plot(file_path, var_name, depth_key, depth, tstep, circumpolar, elements, patches, mask_cavities, save, fig_name)
+
         else:
             break
 
