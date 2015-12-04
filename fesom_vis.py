@@ -20,19 +20,33 @@ def fesom_vis_lonlat ():
         mask_cavities = False
 
     # Get depth information
-    depth_input = raw_input("Surface nodes (s), bottom nodes (b), vertical average (a), or specify depth (enter positive depth in m): ")
-    if depth_input == 's':
-        depth_key = 0
-        depth = NaN
-    elif depth_input == 'b':
-        depth_key = 1
-        depth = NaN
-    elif depth_input == 'a':
-        depth_key = 2
-        depth = NaN            
-    else:
-        depth_key = 3
-        depth = float(depth_input)
+    depth_type = raw_input("Single depth (s) or vertical average (v)? ")
+    if depth_type == 's':
+        depth_input = raw_input("Surface nodes (s), bottom nodes (b), or specific depth (d)? ")
+        if depth_input == 's':
+            depth_key = 0
+            depth = NaN
+            depth_bounds = None
+        elif depth_input == 'b':
+            depth_key = 1
+            depth = NaN
+            depth_bounds = None
+        elif depth_input == 'd':
+            depth_key = 3
+            depth = float(raw_input("Enter depth (positive, in metres): "))
+            depth_bounds = None
+    elif depth_type == 'v':
+        depth_input = raw_input("Vertical average throughout the entire water column (w) or between two specific depths (d)? ")
+        if depth_input == 'w':
+            depth_key = 2
+            depth = NaN
+            depth_bounds = None
+        elif depth_input == 'd':
+            depth_key = 4
+            depth = NaN
+            shallow_bound = float(raw_input("Enter shallow depth bound (positive, in metres): "))
+            deep_bound = float(raw_input("Enter deep depth bound (positive, in metres): "))
+            depth_bounds = [shallow_bound, deep_bound]
 
     # Get index of time axis in FESOM output file
     tstep = int(raw_input("Timestep number: "))
@@ -63,7 +77,7 @@ def fesom_vis_lonlat ():
     elements, patches = make_patches(mesh_path, circumpolar, mask_cavities)
 
     # Call lonlat_plot
-    lonlat_plot(file_path, var_name, depth_key, depth, tstep, circumpolar, elements, patches, mask_cavities, save, fig_name)
+    lonlat_plot(file_path, var_name, depth_key, depth, depth_bounds, tstep, circumpolar, elements, patches, mask_cavities, save, fig_name)
 
     # Repeat until the user wants to exit
     while True:
@@ -91,19 +105,33 @@ def fesom_vis_lonlat ():
                         var_name = raw_input("Variable name: ")
                     elif int(changes) == 4:
                         # New depth information
-                        depth_input = raw_input("Surface nodes (s), bottom nodes (b), vertical average (a), or specify depth (enter positive depth in m): ")
-                        if depth_input == 's':
-                            depth_key = 0
-                            depth = NaN
-                        elif depth_input == 'b':
-                            depth_key = 1
-                            depth = NaN
-                        elif depth_input == 'a':
-                            depth_key = 2
-                            depth = NaN
-                        else:
-                            depth_key = 3
-                            depth = float(depth_input)
+                        depth_type = raw_input("Single depth (s) or vertical average (v)? ")
+                        if depth_type == 's':
+                            depth_input = raw_input("Surface nodes (s), bottom nodes (b), or specific depth (d)? ")
+                            if depth_input == 's':
+                                depth_key = 0
+                                depth = NaN
+                                depth_bounds = None
+                            elif depth_input == 'b':
+                                depth_key = 1
+                                depth = NaN
+                                depth_bounds = None
+                            elif depth_input == 'd':
+                                depth_key = 3
+                                depth = float(raw_input("Enter depth (positive, in metres): "))
+                                depth_bounds = None
+                        elif depth_type == 'v':
+                            depth_input = raw_input("Vertical average throughout the entire water column (w) or between two specific depths (d)? ")
+                            if depth_input == 'w':
+                                depth_key = 2
+                                depth = NaN
+                                depth_bounds = None
+                            elif depth_input == 'd':
+                                depth_key = 4
+                                depth = NaN
+                                shallow_bound = float(raw_input("Enter shallow depth bound (positive, in metres): "))
+                                deep_bound = float(raw_input("Enter deep depth bound (positive, in metres): "))
+                                depth_bounds = [shallow_bound, deep_bound]
                     elif int(changes) == 5:
                         # New time index
                         tstep = int(raw_input("Timestep number: "))
@@ -137,7 +165,7 @@ def fesom_vis_lonlat ():
                 fig_name = raw_input("File name for figure: ")        
 
             # Call lonlat_plot
-            lonlat_plot(file_path, var_name, depth_key, depth, tstep, circumpolar, elements, patches, mask_cavities, save, fig_name)
+            lonlat_plot(file_path, var_name, depth_key, depth, depth_bounds, tstep, circumpolar, elements, patches, mask_cavities, save, fig_name)
 
         else:
             break

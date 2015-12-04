@@ -12,8 +12,12 @@ from patches import *
 # file_path = string containing path to FESOM output file
 # var_name = string containing name of variable in file_path
 # depth_key = int specifying whether to plot surface nodes (0), bottom nodes
-#             (1), vertical average (2), or some specified depth (3)
+#             (1), vertical average throughout the entire water column (2), 
+#             a single specified depth (3), or vertical average between two
+#             specified depths (4)
 # depth = if depth_key==3, specified depth in m
+# depth_bounds = if depth_key==4, array containing shallow and deep bounds for
+#                vertical average
 # tstep = int specifying index of time axis in file_path
 # circumpolar = boolean flag indicating whether to use the circumpolar domain
 #               or the global domain
@@ -28,7 +32,7 @@ from patches import *
 # set_limits = optional boolean flag indicating whether or not to set manual
 #              limits on colourbar (otherwise limits determined automatically)
 # limits = optional array containing min and max limits
-def lonlat_plot (file_path, var_name, depth_key, depth, tstep, circumpolar, elements, patches, mask_cavities=False, save=False, fig_name=None, set_limits=False, limits=None):
+def lonlat_plot (file_path, var_name, depth_key, depth, depth_bounds, tstep, circumpolar, elements, patches, mask_cavities=False, save=False, fig_name=None, set_limits=False, limits=None):
 
     # Set bounds for domain
     if circumpolar:
@@ -74,6 +78,8 @@ def lonlat_plot (file_path, var_name, depth_key, depth, tstep, circumpolar, elem
         depth_string = 'vertically averaged'
     elif depth_key == 3:
         depth_string = 'at ' + str(depth) + ' m'
+    elif depth_key == 4:
+        depth_string = 'vertically averaged between '+str(depth_bounds[0])+' and '+str(depth_bounds[1])+' m'
 
     # Build an array of data values corresponding to each Element
     values = []
@@ -100,7 +106,7 @@ def lonlat_plot (file_path, var_name, depth_key, depth, tstep, circumpolar, elem
                 values.append(mean(values_tmp))
 
             elif depth_key == 2:                
-                # Vertical average
+                # Vertical average throughout entire water column
                 # First calculate volume: area of triangular face * water
                 # column thickness (mean of three corners)
                 wct = []
@@ -129,8 +135,9 @@ def lonlat_plot (file_path, var_name, depth_key, depth, tstep, circumpolar, elem
                     # Integrand is mean of data at corners * area of upper face
                     # * mean of depths at edges
                     integral += mean(array(values_tmp))*area*mean(array(dz_tmp))
+                # All done; divide integral by volume to get the average
                 values.append(integral/volume)    
-                
+
             elif depth_key == 3:
                 # Specified depth
                 values_tmp = []
@@ -153,7 +160,115 @@ def lonlat_plot (file_path, var_name, depth_key, depth, tstep, circumpolar, elem
                     # Make new patches for elements which exist at this depth
                     plot_patches.append(Polygon(coord, True, linewidth=0.))
 
-    if depth_key != 3:
+            elif depth_key == 4:
+                # Vertical average between two specified depths
+                shallow_bound = depth_bounds[0]
+                deep_bound = depth_bounds[1]
+                area = elm.area()
+                # Volume is area of triangular face * difference between
+                # depth bounds
+                volume = abs(deep_bound - shallow_bound)*area
+                nodes = [elm.nodes[0], elm.nodes[1], elm.nodes[2]]
+                # Check if we're already too deep
+                if nodes[0].depth > deep_bound or nodes[1].depth > deep_bound or nodes[2].depth > deep_bound:
+                    pass
+                # Check if the seafloor is shallower than shallow_bound
+                elif nodes[0].find_bottom().depth <= shallow_bound or nodes[1].find_bottom().depth <= shallow_bound or nodes[2].find_bottom().depth <= shallow_bound:
+                    pass
+
+                else:
+                    # Here we go
+
+                    # Find the first 3D element which is entirely below
+                    # shallow_bound
+                    while True:
+                        if nodes[0].depth > shallow_bound and nodes[1].depth > shallow_bound and nodes[2].depth > shallow_bound:
+                            # Save these nodes
+                            first_nodes = []
+                            for i in range(3):
+                                first_nodes.append(nodes[i])
+                            break
+                        else:
+                            for i in range(3):
+                                nodes[i] = nodes[i].below
+
+                    # Integrate downward until one of the next nodes hits the
+                    # seafloor, or is deeper than deep_bound
+                    integral = 0
+                    while True:
+                        if nodes[0].below is None or nodes[1].below is None or nodes[2].below is None:
+                            # We've reached the seafloor
+                            last_nodes = None
+                            break
+                        if nodes[0].below.depth > deep_bound or nodes[1].below.depth > deep_bound or nodes[2].below.depth > deep_bound:
+                            # At least one of the next nodes will pass
+                            # deep_bound; save the current nodes
+                            last_nodes = []
+                            for i in range(3):
+                                last_nodes.append(nodes[i])
+                            break
+                        else:
+                            # Calculate mean of data at six corners of this
+                            # triangular prism, and mean depths at three edges
+                            values_tmp = []
+                            dz_tmp = []
+                            for i in range(3):
+                                values_tmp.append(data[nodes[i].id])
+                                values_tmp.append(data[nodes[i].below.id])
+                                dz_tmp.append(abs(nodes[i].depth - nodes[i].below.depth))
+                                # Get ready for next iteration of while loop
+                                nodes[i] = nodes[i].below
+                            # Integrand is mean of data at corners *
+                            # area of upper face * mean of depths at edges
+                            integral += mean(array(values_tmp))*area*mean(array(dz_tmp))
+
+                    # Now integrate from shallow_bound to first_nodes by
+                    # linearly interpolating each node to shallow_bound
+                    values_tmp = []
+                    dz_tmp = []
+                    for i in range(3):
+                        values_tmp.append(data[first_nodes[i].id])
+                        id1, id2, coeff1, coeff2 = elm.nodes[i].find_depth(shallow_bound)
+                        if any(isnan(array([id1, id2, coeff1, coeff2]))):
+                            # first_nodes[i] was the shallowest node, we can't
+                            # interpolate above it
+                            values_tmp.append(NaN)
+                        else:
+                            values_tmp.append(coeff1*data[id1] + coeff2*data[id2])
+                        dz_tmp.append(abs(first_nodes[i].depth - shallow_bound))
+                    if any(isnan(array(values_tmp))):
+                        pass
+                    else:
+                        integral += mean(array(values_tmp))*area*mean(array(dz_tmp))  
+
+                    # Now integrate from last_nodes to deep_bound by linearly
+                    # interpolating each node to shallow_bound, unless we hit
+                    # the seafloor earlier
+                    if last_nodes is not None:
+                        values_tmp = []
+                        dz_tmp = []
+                        for i in range(3):
+                            values_tmp.append(data[last_nodes[i].id])
+                            id1, id2, coeff1, coeff2 = elm.nodes[i].find_depth(deep_bound)
+                            if any(isnan(array([id1, id2, coeff1, coeff2]))):
+                                # last_nodes[i] was the deepest node, we can't
+                                # interpolate below it
+                                values_tmp.append(NaN)
+                            else:
+                                values_tmp.append(coeff1*data[id1] + coeff2*data[id2])
+                            dz_tmp.append(abs(deep_bound - last_nodes[i].depth))
+                        if any(isnan(array(values_tmp))):
+                            pass
+                        else:
+                            integral += mean(array(values_tmp))*area*mean(array(dz_tmp))
+
+                    # All done; divide integral by volume to get the average
+                    values.append(integral/volume)                    
+                    # Make new patches for elements which exist at this depth
+                    coord = transpose(vstack((elm.x, elm.y)))
+                    plot_patches.append(Polygon(coord, True, linewidth=0.))
+
+    if depth_key < 3:
         # Use all patches
         plot_patches = patches[:]
 

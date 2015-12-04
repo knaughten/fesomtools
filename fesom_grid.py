@@ -15,7 +15,7 @@ class Node:
     self.id = id
     self.lon = lon
     self.lat = lat
-    self.depth = -depth
+    self.depth = depth
     self.below = None
 
 
@@ -211,7 +211,7 @@ def fesom_grid (mesh_path, circumpolar=False):
   # Create Nodes from location data
   nodes = []
   for i in range(size(lon3d)):
-    nodes.append(Node(i, lon3d[i], lat3d[i], depth3d[i]))
+    nodes.append(Node(i, lon3d[i], lat3d[i], -depth3d[i]))
 
   # Read lists of which nodes are directly below which
   file = open(mesh_path + 'aux3d.out', 'r')
