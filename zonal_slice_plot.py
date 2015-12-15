@@ -43,7 +43,7 @@ def zonal_slice_plot (mesh_path, file_path, var_name, tstep, lon0, depth_min, sa
     # Also find the minimum latitude of any SideElement
     patches = []
     values = []
-    lat_min = -50
+    lat_min = lat_max
     for selm in selements:
         # Make patch
         coord = transpose(vstack((selm.y,selm.z)))
@@ -52,7 +52,7 @@ def zonal_slice_plot (mesh_path, file_path, var_name, tstep, lon0, depth_min, sa
         values.append(selm.var)
         # Update minimum latitude if needed
         lat_min = min(lat_min, amin(selm.y))
-    # Set southern boundary to be just on-shelf of the minimum latitude
+    # Set southern boundary to be just south of the minimum latitude
     lat_min = lat_min-1
 
     # Set up plot

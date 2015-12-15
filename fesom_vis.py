@@ -1,6 +1,7 @@
 from patches import *
 from lonlat_plot import *
 from zonal_slice_plot import *
+from zonal_avg_plot import *
 
 # Command-line interface for FESOM plots
 
@@ -183,8 +184,20 @@ def fesom_vis_latdepth ():
     # Get index of time axis in FESOM output file
     tstep = int(raw_input("Timestep number: "))
 
-    # Get longitude for the zonal slice
-    lon0 = float(raw_input("Longitude in degrees (positive east, negative west): "))
+    action = raw_input("Zonal slice (s) or zonal average (a)? ")
+    if action == 's':
+        avg = False
+        # Get longitude for the zonal slice
+        lon0 = float(raw_input("Longitude in degrees (positive east, negative west): "))
+    elif action == 'a':
+        avg = True
+        # Get longitude bounds for the zonal average
+        lon_min = float(raw_input("Minimum longitude (postiive east, negative west): "))
+        lon_max = float(raw_input("Maximum longitude (positive east, negative west): "))
+    else:
+        print 'Problem with zonal slice/average choice'
+        exit()
+    
 
     # Get cutoff depth and convert to negative
     depth_min = -1*float(raw_input("Deepest depth to plot (positive, metres): "))
@@ -202,7 +215,10 @@ def fesom_vis_latdepth ():
         exit()
 
     # Make the figure
-    zonal_slice_plot(mesh_path, file_path, var_name, tstep, lon0, depth_min, save, fig_name)
+    if avg:
+        zonal_avg_plot(mesh_path, file_path, var_name, tstep, lon_min, lon_max, depth_min, save, fig_name)
+    else:
+        zonal_slice_plot(mesh_path, file_path, var_name, tstep, lon0, depth_min, save, fig_name)
 
     # Repeat until the user wants to exit
     while True:
@@ -229,8 +245,19 @@ def fesom_vis_latdepth ():
                         # New time index 
                         tstep = int(raw_input("Timestep number: "))
                     elif int(changes) == 5:
-                        # New longitude for zonal slice
-                        lon0 = float(raw_input("Longitude in degrees (positive east, negative west): "))
+                        action = raw_input("Zonal slice (s) or zonal average (a)? ")
+                        if action == 's':
+                            avg = False
+                            # Get longitude for the zonal slice
+                            lon0 = float(raw_input("Longitude in degrees (positive east, negative west): "))
+                        elif action == 'a':
+                            avg = True
+                            # Get longitude bounds for the zonal average
+                            lon_min = float(raw_input("Minimum longitude (postiive east, negative west): "))
+                            lon_max = float(raw_input("Maximum longitude (positive east, negative west): "))
+                        else:
+                            print 'Problem with zonal slice/average choice'
+                            exit()
                     elif int(changes) == 6:
                         # New cutoff depth
                         depth_min = -1*float(raw_input("Deepest depth to plot (positive, metres): "))
@@ -242,8 +269,12 @@ def fesom_vis_latdepth ():
             if save:
                 # Get file name for figure
                 fig_name = raw_input("File name for figure: ")
-            # Make the plot
-            zonal_slice_plot(mesh_path, file_path, var_name, tstep, lon0, depth_min, save, fig_name)
+
+            # Make the figure
+            if avg:
+                zonal_avg_plot(mesh_path, file_path, var_name, tstep, lon_min, lon_max, depth_min, save, fig_name)
+            else:
+                zonal_slice_plot(mesh_path, file_path, var_name, tstep, lon0, depth_min, save, fig_name)
         else:
             break
 

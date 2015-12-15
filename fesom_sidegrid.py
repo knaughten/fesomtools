@@ -15,7 +15,6 @@ class SideNode:
     # Initialise with location and variable data
     def __init__ (self, lon, lat, depth, var):
 
-        self.id = id
         self.lon = lon
         self.lat = lat
         self.depth = depth
@@ -84,8 +83,7 @@ def fesom_sidegrid (mesh_path, file_path, var_name, tstep, lon0, lat_max):
 
     # Read data
     id = Dataset(file_path, 'r')
-    varid = id.variables[var_name]
-    data = varid[tstep-1,:]
+    data = id.variables[var_name][tstep-1,:]
     id.close()    
 
     snode_pairs = []
@@ -108,7 +106,7 @@ def fesom_sidegrid (mesh_path, file_path, var_name, tstep, lon0, lat_max):
                         node1 = nodes[0]
                         node2 = nodes[1]
                         # Convert to SideNodes and add them to snode_pairs
-                        process_coincide(node1, node2, lon0, data, snode_pairs)
+                        coincide_snode(node1, node2, data, snode_pairs)
                     # Impossible for all three corners to be at lon0
                 else:
                     # Regular case
@@ -159,7 +157,7 @@ def fesom_sidegrid (mesh_path, file_path, var_name, tstep, lon0, lat_max):
 # lon0 = longitude for zonal slice
 # data = FESOM output on original grid
 # snode_pairs = list of SideNodePair objects to add to
-def process_coincide (node1, node2, lon0, data, snode_pairs):
+def coincide_snode (node1, node2, data, snode_pairs):
 
     # Convert the Nodes into SideNodes
     snode1 = SideNode(node1.lon, node1.lat, node1.depth, data[node1.id])
