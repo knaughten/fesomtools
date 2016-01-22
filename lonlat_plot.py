@@ -316,7 +316,7 @@ def lonlat_plot (file_path, var_name, depth_key, depth, depth_bounds, tstep, cir
         xlabel('Longitude', fontsize=font_sizes[1])
         ylabel('Latitude', fontsize=font_sizes[1])
         setp(ax.get_xticklabels(), fontsize=font_sizes[2])
-        setp(ax.get_xticklabels(), fontsize=font_sizes[2])
+        setp(ax.get_yticklabels(), fontsize=font_sizes[2])
     title(name + ' (' + units + ') ' + depth_string, fontsize=font_sizes[0])    
     cbar = colorbar(img)
     cbar.ax.tick_params(labelsize=font_sizes[2])
