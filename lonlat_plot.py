@@ -36,8 +36,8 @@ def lonlat_plot (file_path, var_name, depth_key, depth, depth_bounds, tstep, cir
 
     # Set bounds for domain
     if circumpolar:
-        # Northern boundary 60S
-        lat_max = -60+90
+        # Northern boundary 30S
+        lat_max = -30+90
     else:
         lon_min = -180
         lon_max = 180
@@ -308,6 +308,7 @@ def lonlat_plot (file_path, var_name, depth_key, depth, depth_bounds, tstep, cir
         ylim([-lat_max, lat_max])
         ax.get_xaxis().set_ticks([])
         ax.get_yaxis().set_ticks([])
+        axis('off')
     else:
         xlim([lon_min, lon_max])
         ylim([lat_min, lat_max])

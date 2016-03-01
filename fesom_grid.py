@@ -141,14 +141,15 @@ class Element:
 #               will be circumpolar Antarctic (otherwise global)
 def fesom_grid (mesh_path, circumpolar=False):
 
-  # Grid rotation parameters (grep inside mesh_path if unsure)
-  alpha = 50
-  beta = 15
-  gamma = -90
+  # Grid rotation parameters (grep inside mesh_path if unsure; if they're not mentioned, it's probably
+  # not a rotated grid, so set alpha=beta=gamma=0)
+  alpha = 0 #50
+  beta = 0 #15
+  gamma = 0 #-90
   deg2rad = pi/180
   rad2deg = 180/pi
   # Northern boundary of circumpolar Antarctic domain
-  nbdry = -60
+  nbdry = -30
 
   # Read 3d node information
   file = open(mesh_path + 'nod3d.out', 'r')
@@ -239,18 +240,18 @@ def fesom_grid (mesh_path, circumpolar=False):
       curr_node = nodes[tmp-1]
 
   # Read 2D cavity flag
-  file = open(mesh_path + 'cavity_flag_nod2d.out', 'r')
-  cavity = []
+  #file = open(mesh_path + 'cavity_flag_nod2d.out', 'r')
+  #cavity = []
 
-  for line in file:
-    tmp = int(line)
-    if tmp == 1:
-      cavity.append(True)
-    elif tmp == 0:
-      cavity.append(False)
-    else:
-      print 'Problem'
-  file.close()
+  #for line in file:
+    #tmp = int(line)
+    #if tmp == 1:
+      #cavity.append(True)
+    #elif tmp == 0:
+      #cavity.append(False)
+    #else:
+      #print 'Problem'
+  #file.close()
 
   # Read 2D elements (triangles of 3 connecting nodes)
   file = open(mesh_path + 'elem2d.out', 'r')
@@ -265,13 +266,13 @@ def fesom_grid (mesh_path, circumpolar=False):
     id3 = int(tmp[2])-1
     # is_cavity will be true if any of the three component nodes are in
     # an ice shelf cavity
-    is_cavity = cavity[id1]*cavity[id2]*cavity[id3]
+    is_cavity = False #cavity[id1]*cavity[id2]*cavity[id3]
     # Initialise the Element
     elm = Element(nodes[id1], nodes[id2], nodes[id3], is_cavity, circumpolar)
 
     if circumpolar:
       # Only save elm if it's within the circumpolar Antarctic domain
-      if any(abs(elm.x) < nbdry+90) and any(abs(elm.y) < nbdry+90):
+      if elm.nodes[0].lat < nbdry or elm.nodes[1].lat < nbdry or elm.nodes[2].lat < nbdry:
         elements.append(elm)
     else:
       elements.append(elm)
@@ -282,7 +283,7 @@ def fesom_grid (mesh_path, circumpolar=False):
       elm_rep = Element(nodes[id1], nodes[id2], nodes[id3], is_cavity, circumpolar, True)
       if circumpolar:
         # Only save elm if it's within the circumpolar Antarctic domain
-        if any(abs(elm.x) < nbdry+90) and any(abs(elm.y) < nbdry+90):
+        if elm.nodes[0].lat < nbdry or elm.nodes[1].lat < nbdry or elm.nodes[2].lat < nbdry:
           elements.append(elm_rep)
       else:
         elements.append(elm_rep)
