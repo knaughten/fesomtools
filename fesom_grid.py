@@ -240,18 +240,18 @@ def fesom_grid (mesh_path, circumpolar=False):
       curr_node = nodes[tmp-1]
 
   # Read 2D cavity flag
-  #file = open(mesh_path + 'cavity_flag_nod2d.out', 'r')
-  #cavity = []
+  file = open(mesh_path + 'cavity_flag_nod2d.out', 'r')
+  cavity = []
 
-  #for line in file:
-    #tmp = int(line)
-    #if tmp == 1:
-      #cavity.append(True)
-    #elif tmp == 0:
-      #cavity.append(False)
-    #else:
-      #print 'Problem'
-  #file.close()
+  for line in file:
+    tmp = int(line)
+    if tmp == 1:
+      cavity.append(True)
+    elif tmp == 0:
+      cavity.append(False)
+    else:
+      print 'Problem'
+  file.close()
 
   # Read 2D elements (triangles of 3 connecting nodes)
   file = open(mesh_path + 'elem2d.out', 'r')
@@ -266,7 +266,7 @@ def fesom_grid (mesh_path, circumpolar=False):
     id3 = int(tmp[2])-1
     # is_cavity will be true if any of the three component nodes are in
     # an ice shelf cavity
-    is_cavity = False #cavity[id1]*cavity[id2]*cavity[id3]
+    is_cavity = cavity[id1]*cavity[id2]*cavity[id3]
     # Initialise the Element
     elm = Element(nodes[id1], nodes[id2], nodes[id3], is_cavity, circumpolar)
 

@@ -7,14 +7,13 @@ from matplotlib.cm import *
 from matplotlib.patches import Polygon
 
 
-# Calculate and plot the horizontal grid resolution (square root of the area 
-# of each triangular 2D element) for the given FESOM grid.
+# Calculate and plot the seafloor depth for the given FESOM grid.
 # Input:
 # mesh_path = path to FESOM mesh directory
-# fig_name = path to desired output file for figure
+# fig_name = filename for figure
 # circumpolar = boolean flag indicating whether to plot a circumpolar Antarctic
 #               view or the global Cartesian view
-def grid_res (mesh_path, fig_name, circumpolar=True):
+def plot_depth (mesh_path, fig_name, circumpolar=True):
 
     # Plotting parameters
     if circumpolar:
@@ -26,10 +25,28 @@ def grid_res (mesh_path, fig_name, circumpolar=True):
     # Build triangular patches for each element
     elements, patches = make_patches(mesh_path, circumpolar)
 
-    # Calculate the grid resolution for each element
-    values = []
+    # Find the depth of each element
+    elm_depth = []
     for elm in elements:
-        values.append(sqrt(elm.area())*1e-3)
+        depth1 = (elm.nodes[0].find_bottom()).depth
+        depth2 = (elm.nodes[1].find_bottom()).depth
+        depth3 = (elm.nodes[2].find_bottom()).depth
+        elm_depth.append(mean(array([depth1, depth2, depth3])))
+
+    # Read the depth for each node
+    #file = open(mesh_path + 'depth.out', 'r')
+    #node_depth = []
+    #for line in file:
+        #node_depth.append(-float(line))
+    #file.close()
+
+    # For each element, calculate the average depth of the 3 component nodes
+    #elm_depth = []
+    #for elm in elements:
+        #depth1 = node_depth[(elm.nodes[0]).id-1]
+        #depth2 = node_depth[(elm.nodes[1]).id-1]
+        #depth3 = node_depth[(elm.nodes[2]).id-1]
+        #elm_depth.append(mean(array([depth1, depth2, depth3])))
 
     # Set up figure
     if circumpolar:
@@ -37,10 +54,10 @@ def grid_res (mesh_path, fig_name, circumpolar=True):
         ax = fig.add_subplot(1,1,1, aspect='equal')
     else:
         fig = figure(figsize=(16, 8))
-        ax = fig.add_subplot(1,1,1)
+        ax = fig.add_subplot(1,1,1)    
     # Set colours for patches and add them to plot
     img = PatchCollection(patches, cmap=jet)
-    img.set_array(array(values))
+    img.set_array(array(elm_depth))
     img.set_edgecolor('face')
     ax.add_collection(img)
 
@@ -56,10 +73,10 @@ def grid_res (mesh_path, fig_name, circumpolar=True):
         ylim([-90, 90])
         ax.get_xaxis().set_ticks(arange(-120,120+1,60))
         ax.get_yaxis().set_ticks(arange(-60,60+1,30))
-    title('Horizontal grid resolution (km)', fontsize=font_sizes[0])
+    title('Seafloor depth (m)', fontsize=font_sizes[0])
     cbar = colorbar(img)
     cbar.ax.tick_params(labelsize=font_sizes[2])
-    img.set_clim(vmin=0, vmax=max(values))
+    img.set_clim(vmin=0, vmax=max(elm_depth))
 
     savefig(fig_name)
 
@@ -68,10 +85,10 @@ def grid_res (mesh_path, fig_name, circumpolar=True):
 if __name__ == "__main__":
 
     mesh_path = raw_input("Path to mesh directory: ")
-    fig_name = raw_input("File name for figure: ")
+    fig_name = raw_input("Filename for figure: ")
     domain = raw_input("Global (g) or circumpolar (c)? ")
     if domain == 'c':
         circumpolar = True
     elif domain == 'g':
         circumpolar = False
-    grid_res(mesh_path, fig_name, circumpolar)
+    plot_depth(mesh_path, fig_name, circumpolar)
