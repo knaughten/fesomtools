@@ -1,5 +1,1 @@
-From ipython or python, type:
-
-run fesom_vis
-
-and follow the prompts! Depending on your grid, these routines can be slow and use a lot of memory, so be prepared.
+Python scripts for pre- and post-processing of FESOM simulations, and interactive plotting routines. See file_guide.txt for descriptions of what they do and how to use them.
