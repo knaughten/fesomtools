@@ -77,6 +77,6 @@ def zonal_slice_plot (mesh_path, file_path, var_name, tstep, lon0, depth_min, sa
     cbar.ax.tick_params(labelsize=font_sizes[2])
 
     if save:
-        savefig(fig_name)
+        fig.savefig(fig_name)
     else:
-        show()
+        fig.show()

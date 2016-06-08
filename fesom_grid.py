@@ -139,6 +139,8 @@ class Element:
 # mesh_path = path to directory containing grid files
 # circumpolar = optional boolean flag indicating if the user's plot
 #               will be circumpolar Antarctic (otherwise global)
+# Output:
+# elements = array of Element objects
 def fesom_grid (mesh_path, circumpolar=False):
 
   # Grid rotation parameters (grep inside mesh_path if unsure; if they're not mentioned, it's probably

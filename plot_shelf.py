@@ -33,13 +33,7 @@ def plot_shelf (mesh_path, fig_name):
         shelf1 = node_shelf[(elm.nodes[0]).id-1]
         shelf2 = node_shelf[(elm.nodes[1]).id-1]
         shelf3 = node_shelf[(elm.nodes[2]).id-1]
-        if elm.cavity:
-            if shelf1<1 and shelf2<1 and shelf3<1:
-                elm_shelf.append(-1000)
-            else:
-                elm_shelf.append(mean(array([shelf1, shelf2, shelf3])))
-        else:
-            elm_shelf.append(-1000)
+        elm_shelf.append(mean(array([shelf1, shelf2, shelf3])))
 
     # Set up figure
     fig = figure(figsize=(128, 96))

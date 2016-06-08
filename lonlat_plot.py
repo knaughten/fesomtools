@@ -337,6 +337,6 @@ def lonlat_plot (file_path, var_name, depth_key, depth, depth_bounds, tstep, cir
     #ax.plot(problem_x, problem_y, 'or')    
 
     if save:
-        savefig(fig_name)
+        fig.savefig(fig_name)
     else:
-        show()
+        fig.show()

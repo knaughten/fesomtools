@@ -20,16 +20,20 @@ def plot_num_layers (mesh_path, fig_name):
     # Build triangular patches for each element
     elements, patches = make_patches(mesh_path, circumpolar)
 
+    # Calculate the number of layers for each element
     num_layers = []
     for elm in elements:
         num_layers_elm = 0
+        # Count the number of layers for each node
         for i in range(3):
             node = elm.nodes[i]
             num_layers_node = 1
+            # Iterate until we reach the bottom
             while node.below is not None:
                 num_layers_node += 1
                 node = node.below
             num_layers_elm = max(num_layers_elm, num_layers_node)
+        # Save the maximum number of layers across the 3 nodes
         num_layers.append(num_layers_elm)
 
     # Set up figure

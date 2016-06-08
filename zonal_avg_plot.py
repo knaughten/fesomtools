@@ -75,6 +75,6 @@ def zonal_avg_plot (mesh_path, file_path, var_name, tstep, lon_min, lon_max, dep
     cbar.ax.tick_params(labelsize=font_sizes[2])
 
     if save:
-        savefig(fig_name)
+        fig.savefig(fig_name)
     else:
-        show()
+        fig.show()

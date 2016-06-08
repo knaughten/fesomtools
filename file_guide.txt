@@ -1,0 +1,212 @@
+*****INTERACTIVE/GENERAL PLOTS*****
+Important note: Before running any FESOM plotting scripts, make sure you edit
+                the rotation parameters alpha, beta, and gamma inside
+		fesom_grid.py (top of the function "fesom_grid") to suit your
+		mesh. If you're running with a non-rotated mesh, set them all
+		to zero.
+
+fesom_vis.py: Command-line interface for interactive plots.
+              To run: Open python or ipython and type "run fesom_vis.py".
+	              The script will ask you what kind of plot you want
+		      (lon-lat or lat-depth) and will then ask you for more
+		      information (file paths, variable names, whether to
+		      save the plot or display it on screen, etc) as necessary.
+		      When the plot is finished it will ask you for changes
+		      to the settings, so you don't have to type them all in
+		      again if only a few have changed, and will repeat this
+		      as many times as you want.
+
+lonlat_plot.py: Creates a lon-lat (i.e. horizontal) plot, either a global
+                Cartesian projection or a circumpolar Antarctic projection.
+		You can plot the given variable at the surface, at the bottom,
+		at a specific depth, vertically averaged throughout the entire
+		water column, or vertically averaged between two specific
+		depths.
+		To run: This script can be called by fesom_vis.py, but you can
+		        also call it directly by opening python or ipython and
+			typing "from lonlat_plot import *" followed by
+			"lonlat_plot(args)" where args are the input arguments
+			as described in detail near the top of the file. Note
+			that these arguments include "elements" and "patches";
+			to get these you will need to call the function
+			function "make_patches" in patches.py.
+
+zonal_avg_plot.py: Creates a latitude-depth plot of a zonally averaged variable
+                   (can be averaged along all longitudes or between two
+		   specific longitudes).
+		   To run: This script can be called by fesom_vis.py, but you
+		           can also call it directly by opening python or
+			   ipython and typing "from zonal_avg_plot import *"
+			   followed by "zonal_avg_plot(args)" where args are
+			   the input arguments as described in detail near the
+			   top of the file.
+
+zonal_slice_plot.py: Creates a latitude-depth plot at a specific longitude
+                     slice.
+                     To run: This script can be called by fesom_vis.py, but you
+		             can also call it directly by opening python or
+			     ipython and typing "from zonal_slice_plot import *"
+			     followed by "zonal_slice_plot(args)" where args
+			     are the input arguments as described in detail
+			     near the top of the file.
+
+
+*****SPECIFIC PLOTS*****
+
+grid_res.py: Plots the horizontal grid resolution (square root of the area of
+             each triangular element) for the given FESOM mesh.
+	     To run: Open python or ipython and type "run grid_res.py". The
+	             script will prompt you for the mesh directory, the
+		     filename for the figure, and whether the projection should
+		     be global lat-lon or circumpolar Antarctic.
+
+plot_depth.py: Plots the seafloor depth for the given FESOM mesh, using the
+               intermediate mesh generation file depth.out rather than the final
+	       depth of the bottom-most elements (although you can un-comment
+	       this option if you'd rather).
+	       To run: If you want to read a different file, say depth_1.out
+	               instead of depth.out for a different stage of mesh
+		       generation, edit this filename about halfway down the
+		       file. Then open python or ipython and type
+		       "run plot_depth.py". The script will prompt you for the
+		       mesh directory, the filename for the figure, and whether
+		       the projection should be global lat-lon or circumpolar
+		       Antarctic.
+
+plot_shelf.py: Plots the ice shelf draft for the given FESOM mesh, using the
+               intermediate mesh generation file shelf.out rather than the
+	       final draft as seen by the surface nodes in ice shelf cavities
+	       (for this option, use sfc_depth.py).
+	       To run: If you want to read a different file, say shelf_1.out
+	               instead of shelf.out for a different stage of mesh
+		       generation, edit this filename about halfway down the
+		       file. Then open python or ipython and type
+		       "run plot_shelf.py". The script will prompt you for the
+		       mesh directory, the filename for the figure, and whether
+		       the projection should be global lat-lon or circumpolar
+		       Antarctic.
+
+plot_cavityflag.py: Plots the ice shelf cavity flag for the given FESOM mesh,
+                    in a circumpolar Antarctic projection.
+                    To run: Open python or ipython and type
+		            "run plot_cavityflag.py". The script will prompt you
+			    for the mesh directory and the filename for the
+			    figure.
+
+plot_num_layers.py: Plots the number of vertical layers for each element in
+                    the given FESOM mesh, in a circumpolar Antarctic projection.
+		    To run: Open python or ipython and type
+		            "run plot_num_layers.py". The script will prompt you
+			    for the mesh directory and the filename for the
+			    figure.
+
+sfc_depth.py: Plots the surface depth for the given FESOM mesh, i.e. the
+              ice shelf draft as seen by the nodes, in a circumpolar Antarctic
+	      projection.
+	      To run: Open python or ipython and type "run sfc_depth.py". The
+	              script will prompt you for the mesh directory and the
+		      filename for the figure.
+
+
+*****BACK END TO PLOTTING*****
+
+fesom_grid.py: Classes and routines to build an object-oriented FESOM grid
+               data structure. Includes the classes Node and Element, and the
+	       main function fesom_grid.
+	       To run: You probably won't run this on its own, but if you need
+	               an array of Element objects for any reason then open
+		       python or ipython and type "from fesom_grid import *"
+		       followed by
+		       "elements = fesom_grid(mesh_path, circumpolar)" where
+		       mesh_path is the path to the directory containing your
+		       mesh files, and circumpolar is a boolean indicating
+		       whether to build the data structure with a global lat-lon
+		       projection (False) or a circumpolar Antarctic projection
+		       (True).
+
+fesom_sidegrid.py: Classes and routines to extract a zonal slice (depth vs.
+                   latitude) of the FESOM grid as built in fesom_grid.py.
+		   Includes the classes SideNode, SideNodePair, and SideElement,
+		   the main function fesom_sidegrid, and some helper functions
+		   doing nasty triangle interpolation and things like that.
+		   To run: You will probably never run this on its own, and I
+		           would recommend trying to avoid doing so because
+			   it's a bit complicated. It just exists for
+		           zonal_slice_plot.py, so if you really need to call
+			   it for some reason, follow what zonal_slice_plot
+			   does.		  
+
+fesom_intersectgrid.py: Classes and routines to zonally average the FESOM grid
+                        (as built in fesom_grid.py) between the given longitude
+			bounds, creating a regular latitude x depth grid.
+			Includes the class IntersectNode, the main function
+			fesom_intersectgrid, and some helper functions doing
+			nasty triangle interpolation and things like that.
+			To run: You would probably never run this on its own,
+			        and I would recommend trying to avoid doing so
+				because it's a bit complicated. It just exists
+				for zonal_avg_plot.py, so if you really need
+				to call it for some reason, follow what
+				zonal_avg_plot does.
+
+patches.py: Calls fesom_grid.py and converts the Elements into triangular
+            patches for plotting.
+	    To run: This is called by all the existing horizontal plotting
+	            routines in the last 2 sections, so you probably won't
+		    need to call it directly. But if you do, open python or
+		    ipython and type "from patches import *" followed by
+		    "make_patches(mesh_path, circumpolar, mask_cavities)"
+		    where mesh_path is the path to your mesh directory,
+		    circumpolar is a boolean flag indicating whether to use
+		    a global lat-lon projection (False) or a circumpolar
+		    Antarctic projection (True), and mask_cavities is a
+		    boolean flag indicating whether to mask out the elements
+		    in ice shelf cavities (can be useful for sea ice variables).
+
+triangle_area.py: Given the latitude and longitude of a triangular element,
+                  calculate the area of the triangle in m^2. This is useful
+		  for area-averages or volume-averages, as well as to calculate
+		  resolution.
+		  To run: You shouldn't need to, as the Element object of
+		          fesom_grid.py has a class function area (see
+			  grid_res.py for an example of how to use this).
+			  But if you want to call triangle_area without the
+			  whole data structure, open python or ipython and type
+			  "from triangle_area import *" followed by
+			  "triangle_area(lon, lat)" where lon and lat are both
+			  arrays of length 3 containing longitude values (in
+			  degrees east) and latitude values (in degrees north).
+			  It doesn't matter whether lon is from -180 to 180
+			  or from 0 to 360, because this script will convert
+			  everything to Cartesian coordinates anyway.
+
+
+*****MODEL PRE- AND POST-PROCESSING*****
+
+make_density_file.py: Given a FESOM output file with temperature and salinity,
+                      calculate density fields at each timestep using the 1980
+		      UNESCO seawater equation of state. Save in a new file.
+		      To run: Open python or ipython and type
+		              "run make_density_file.py". The script will
+			      prompt you for the mesh directory, the input file
+			      with temperature and salinity, and the desired
+			      output file in which to save density.
+
+unesco.py: Compute the UNESCO equation of state for seawater density. Fully
+           vectorised.
+	   To run: This function is called by make_density_file.py, but if you
+                   need to call it individually, open python or ipython and type
+		   "from unesco import *" followed by
+		   "rho = unesco(temp, salt, press)" where temp, salt, and
+		   press are arrays of the same dimensions (but any dimension is
+		   fine), containing values for temperature (deg C), salinity
+		   (psu), and pressure (bar, note that depth/10 where depth is
+		   in m is close enough).
+
+make_ini.py: Make a FESOM initial conditions text file, with all the columns
+             in the right format, using ECCO2 temperature and salinity for
+             January 1995.
+	     To run: Edit the paths to theta_file, salt_file, and out_file
+	             at the top of the script. Then open python or ipython
+		     and type "run make_ini.py". This is pretty low-tech and
+		     not encapsulated or anything.
