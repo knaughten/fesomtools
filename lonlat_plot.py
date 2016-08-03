@@ -325,7 +325,7 @@ def lonlat_plot (file_path, var_name, depth_key, depth, depth_bounds, tstep, cir
         img.set_clim(vmin=limits[0], vmax=limits[1])
 
     # Plot specified points
-    #problem_ids = [4415, 4431, 4432, 6130]
+    #problem_ids = [16, 17, 36, 64, 67, 70, 160, 262, 266, 267, 268, 273, 274, 280, 283, 287, 288, 289, 290, 291, 292, 293, 294, 296, 297, 350, 351, 352, 353, 360, 479, 480, 493, 507, 508, 509, 521, 539, 547, 548, 549, 550, 554, 555]
     #problem_x = []
     #problem_y = []
     #for elm in elements:
