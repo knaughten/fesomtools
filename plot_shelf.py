@@ -20,20 +20,17 @@ def plot_shelf (mesh_path, fig_name):
     # Build triangular patches for each element
     elements, patches = make_patches(mesh_path, circumpolar)
 
-    # Read the ice shelf draft for each node
-    file = open(mesh_path + 'shelf.out', 'r')
-    node_shelf = []
-    for line in file:
-        node_shelf.append(-float(line))
-    file.close()
-
-    # For each element, calculate the average shelf of the 3 component nodes
+    # Find the ice shelf draft at each element
+    # (i.e. depth of surface nodes in ice shelf cavities)
     elm_shelf = []
     for elm in elements:
-        shelf1 = node_shelf[(elm.nodes[0]).id-1]
-        shelf2 = node_shelf[(elm.nodes[1]).id-1]
-        shelf3 = node_shelf[(elm.nodes[2]).id-1]
-        elm_shelf.append(mean(array([shelf1, shelf2, shelf3])))
+        if elm.cavity:
+            shelf1 = (elm.nodes[0]).depth
+            shelf2 = (elm.nodes[1]).depth
+            shelf3 = (elm.nodes[2]).depth
+            elm_shelf.append(mean(array([shelf1, shelf2, shelf3])))
+        else:
+            elm_shelf.append(0.0)
 
     # Set up figure
     fig = figure(figsize=(128, 96))
@@ -52,7 +49,6 @@ def plot_shelf (mesh_path, fig_name):
     title('Ice shelf draft (m)', fontsize=font_sizes[0])
     cbar = colorbar(img)
     cbar.ax.tick_params(labelsize=font_sizes[2])
-    img.set_clim(vmin=min(elm_shelf), vmax=max(elm_shelf))
     axis('off')
 
     savefig(fig_name)

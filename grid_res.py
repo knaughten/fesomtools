@@ -59,7 +59,7 @@ def grid_res (mesh_path, fig_name, circumpolar=True):
     title('Horizontal grid resolution (km)', fontsize=font_sizes[0])
     cbar = colorbar(img)
     cbar.ax.tick_params(labelsize=font_sizes[2])
-    img.set_clim(vmin=0, vmax=max(values))
+    img.set_clim(vmin=0, vmax=50)
 
     savefig(fig_name)
 

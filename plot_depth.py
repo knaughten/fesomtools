@@ -26,26 +26,11 @@ def plot_depth (mesh_path, fig_name, circumpolar=True):
     elements, patches = make_patches(mesh_path, circumpolar)
 
     # Find the depth of each element
-    #elm_depth = []
-    #for elm in elements:
-        #depth1 = (elm.nodes[0].find_bottom()).depth
-        #depth2 = (elm.nodes[1].find_bottom()).depth
-        #depth3 = (elm.nodes[2].find_bottom()).depth
-        #elm_depth.append(mean(array([depth1, depth2, depth3])))
-
-    # Read the depth for each node
-    file = open(mesh_path + 'depth.out', 'r')
-    node_depth = []
-    for line in file:
-        node_depth.append(-float(line))
-    file.close()
-
-    # For each element, calculate the average depth of the 3 component nodes
     elm_depth = []
     for elm in elements:
-        depth1 = node_depth[(elm.nodes[0]).id-1]
-        depth2 = node_depth[(elm.nodes[1]).id-1]
-        depth3 = node_depth[(elm.nodes[2]).id-1]
+        depth1 = (elm.nodes[0].find_bottom()).depth
+        depth2 = (elm.nodes[1].find_bottom()).depth
+        depth3 = (elm.nodes[2].find_bottom()).depth
         elm_depth.append(mean(array([depth1, depth2, depth3])))
 
     # Set up figure

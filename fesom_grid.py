@@ -145,9 +145,9 @@ def fesom_grid (mesh_path, circumpolar=False):
 
   # Grid rotation parameters (grep inside mesh_path if unsure; if they're not mentioned, it's probably
   # not a rotated grid, so set alpha=beta=gamma=0)
-  alpha = 0 #50
-  beta = 0 #15
-  gamma = 0 #-90
+  alpha = 50
+  beta = 15
+  gamma = -90
   deg2rad = pi/180
   rad2deg = 180/pi
   # Northern boundary of circumpolar Antarctic domain
