@@ -1,4 +1,5 @@
 from numpy import *
+from netCDF4 import Dataset
 from matplotlib.pyplot import *
 from matplotlib.cm import *
 from fesom_intersectgrid import *
@@ -15,20 +16,23 @@ from fesom_intersectgrid import *
 # save = optional boolean flag indicating whether to save plot to file
 #        (otherwise will display on screen)
 # fig_name = optional string containing name of figure file, if save=True
-def zonal_avg_plot (mesh_path, file_path, var_name, tstep, lon_min, lon_max, depth_min, save=False, fig_name=None):
+# set_limits = optional boolean flag indicating whether or not to set manual
+#              limits on colourbar (otherwise limits determined automatically)
+# limits = optional array containing min and max limits
+def zonal_avg_plot (mesh_path, file_path, var_name, tstep, lon_min, lon_max, depth_min, save=False, fig_name=None, set_limits=False, limits=None):
 
     # Set bounds on latitude for plot
     lat_min = -90
-    lat_max = -50
+    lat_max = -30
     # Set upper (surface) boundary
     depth_max = 0
     # Set number of intervals for latitude and depth to interpolate to
     num_lat = 100
     num_depth = 50
     # Font sizes for figure
-    font_sizes = [18, 16, 12]
+    font_sizes = [30, 24, 20]
 
-    # Read variable name and units for title
+    # Read variable name
     id = Dataset(file_path, 'r')
     varid = id.variables[var_name]
     name = varid.getncattr('description')
@@ -57,11 +61,36 @@ def zonal_avg_plot (mesh_path, file_path, var_name, tstep, lon_min, lon_max, dep
     # Set southern boundary to be just south of the minimum latitude
     lat_min = lat_min-1
 
+    # Choose colour bounds
+    if set_limits:
+        # User-specified bounds
+        var_min = limits[0]
+        var_max = limits[1]
+        if var_min == -var_max:
+            # Bounds are centered on zero, so choose a blue-to-red colourmap
+            # centered on yellow
+            colour_map = 'RdYlBu_r'
+        else:
+            colour_map = 'jet'
+    else:
+        # Determine bounds automatically
+        if var_name in ['u', 'v', 'w']:
+            # Center levels on 0 for certain variables, with a blue-to-red
+            # colourmap
+            max_val = amax(abs(data_reg))
+            var_min = -max_val
+            var_max = max_val
+            colour_map = 'RdYlBu_r'
+        else:
+            var_min = amin(data_reg)
+            var_max = amax(data_reg)
+            colour_map = 'jet'
+
     # Set up plot
     fig = figure(figsize=(16,8))
     ax = fig.add_subplot(1,1,1)
     # Shade interpolated data
-    img = ax.pcolorfast(lat_vals, depth_vals, data_reg)
+    img = ax.pcolorfast(lat_vals, depth_vals, data_reg, cmap=colour_map)
 
     # Configure plot
     xlim(lat_min, lat_max)
@@ -73,6 +102,7 @@ def zonal_avg_plot (mesh_path, file_path, var_name, tstep, lon_min, lon_max, dep
     setp(ax.get_yticklabels(), fontsize=font_sizes[2])
     cbar = colorbar(img, ax=ax)
     cbar.ax.tick_params(labelsize=font_sizes[2])
+    img.set_clim(vmin=var_min, vmax=var_max)
 
     if save:
         fig.savefig(fig_name)

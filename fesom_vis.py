@@ -62,6 +62,16 @@ def fesom_vis_lonlat ():
         print "Problem with global/circumpolar choice"
         exit()
 
+    # Get colour bounds if necessary
+    set_limits = False
+    limits = None
+    get_bounds = raw_input("Set bounds on colour scale (y/n)? ")
+    if get_bounds == 'y':
+        set_limits = True
+        lower_bound = float(raw_input("Lower bound: "))
+        upper_bound = float(raw_input("Upper bound: "))
+        limits = [lower_bound, upper_bound]
+
     # Current options are to save figure as a file, or display in window
     action = raw_input("Save figure (s) or display in window (d)? ")
     if action == 's':
@@ -78,7 +88,7 @@ def fesom_vis_lonlat ():
     elements, patches = make_patches(mesh_path, circumpolar, mask_cavities)
 
     # Call lonlat_plot
-    lonlat_plot(file_path, var_name, depth_key, depth, depth_bounds, tstep, circumpolar, elements, patches, mask_cavities, save, fig_name)
+    lonlat_plot(mesh_path, file_path, var_name, depth_key, depth, depth_bounds, tstep, circumpolar, elements, patches, mask_cavities, save, fig_name, set_limits, limits)
 
     # Repeat until the user wants to exit
     while True:
@@ -88,7 +98,7 @@ def fesom_vis_lonlat ():
             while True:
                 # Ask for changes to the input parameters; repeat until the user
                 # is finished
-                changes = raw_input("Enter a parameter to change: (1) mesh path, (2) file path, (3) variable name, (4) depth, (5) timestep number, (6) global/circumpolar, (7) save/display; or enter to continue: ")
+                changes = raw_input("Enter a parameter to change: (1) mesh path, (2) file path, (3) variable name, (4) depth, (5) timestep number, (6) global/circumpolar, (7) colour bounds, (8) save/display; or enter to continue: ")
                 if len(changes) == 0:
                     # No more changes to parameters
                     break
@@ -142,6 +152,16 @@ def fesom_vis_lonlat ():
                         # We will have to make a new grid
                         new_grid = True
                     elif int(changes) == 7:
+                        # New colour bounds
+                        set_limits = False
+                        limits = None
+                        get_bounds = raw_input("Set bounds on colour scale (y/n)? ")
+                        if get_bounds == 'y':
+                            set_limits = True
+                            lower_bound = float(raw_input("Lower bound: "))
+                            upper_bound = float(raw_input("Upper bound: "))
+                            limits = [lower_bound, upper_bound]
+                    elif int(changes) == 8:
                         # Change from display to save, or vice versa
                         save = not save
                     else:
@@ -166,7 +186,7 @@ def fesom_vis_lonlat ():
                 fig_name = raw_input("File name for figure: ")        
 
             # Call lonlat_plot
-            lonlat_plot(file_path, var_name, depth_key, depth, depth_bounds, tstep, circumpolar, elements, patches, mask_cavities, save, fig_name)
+            lonlat_plot(mesh_path, file_path, var_name, depth_key, depth, depth_bounds, tstep, circumpolar, elements, patches, mask_cavities, save, fig_name, set_limits, limits)
 
         else:
             break
@@ -192,7 +212,7 @@ def fesom_vis_latdepth ():
     elif action == 'a':
         avg = True
         # Get longitude bounds for the zonal average
-        lon_min = float(raw_input("Minimum longitude (postiive east, negative west): "))
+        lon_min = float(raw_input("Minimum longitude (positive east, negative west): "))
         lon_max = float(raw_input("Maximum longitude (positive east, negative west): "))
     else:
         print 'Problem with zonal slice/average choice'
@@ -201,6 +221,16 @@ def fesom_vis_latdepth ():
 
     # Get cutoff depth and convert to negative
     depth_min = -1*float(raw_input("Deepest depth to plot (positive, metres): "))
+
+    # Get colour bounds if necessary
+    set_limits = False
+    limits = None
+    get_bounds = raw_input("Set bounds on colour scale (y/n)? ")
+    if get_bounds == 'y':
+        set_limits = True
+        lower_bound = float(raw_input("Lower bound: "))
+        upper_bound = float(raw_input("Upper bound: "))
+        limits = [lower_bound, upper_bound]
 
     # Current options are to save figure as a file, or display in window
     action = raw_input("Save figure (s) or display in window (d)? ")
@@ -216,9 +246,9 @@ def fesom_vis_latdepth ():
 
     # Make the figure
     if avg:
-        zonal_avg_plot(mesh_path, file_path, var_name, tstep, lon_min, lon_max, depth_min, save, fig_name)
+        zonal_avg_plot(mesh_path, file_path, var_name, tstep, lon_min, lon_max, depth_min, save, fig_name, set_limits, limits)
     else:
-        zonal_slice_plot(mesh_path, file_path, var_name, tstep, lon0, depth_min, save, fig_name)
+        zonal_slice_plot(mesh_path, file_path, var_name, tstep, lon0, depth_min, save, fig_name, set_limits, limits)
 
     # Repeat until the user wants to exit
     while True:
@@ -227,7 +257,7 @@ def fesom_vis_latdepth ():
             while True:
                 # Ask to changes to the input parameters; repeat until the user
                 # is finished
-                changes = raw_input("Enter a parameter to change: (1) mesh path, (2) file path, (3) variable name, (4) timestep, (5) longitude, (6) cutoff depth, (7) save/display; or enter to continue: ")
+                changes = raw_input("Enter a parameter to change: (1) mesh path, (2) file path, (3) variable name, (4) timestep, (5) longitude, (6) cutoff depth, (7) colour bounds, (8) save/display; or enter to continue: ")
                 if len(changes) == 0:
                     # No more changes to parameters
                     break
@@ -253,7 +283,7 @@ def fesom_vis_latdepth ():
                         elif action == 'a':
                             avg = True
                             # Get longitude bounds for the zonal average
-                            lon_min = float(raw_input("Minimum longitude (postiive east, negative west): "))
+                            lon_min = float(raw_input("Minimum longitude (positive east, negative west): "))
                             lon_max = float(raw_input("Maximum longitude (positive east, negative west): "))
                         else:
                             print 'Problem with zonal slice/average choice'
@@ -262,6 +292,16 @@ def fesom_vis_latdepth ():
                         # New cutoff depth
                         depth_min = -1*float(raw_input("Deepest depth to plot (positive, metres): "))
                     elif int(changes) == 7:
+                        # New colour bounds
+                        set_limits = False
+                        limits = None
+                        get_bounds = raw_input("Set bounds on colour scale (y/n)? ")
+                        if get_bounds == 'y':
+                            set_limits = True
+                            lower_bound = float(raw_input("Lower bound: "))
+                            upper_bound = float(raw_input("Upper bound: "))
+                            limits = [lower_bound, upper_bound]
+                    elif int(changes) == 8:
                         # Change from display to save, or vice versa
                         save = not save
                     else:
@@ -272,9 +312,9 @@ def fesom_vis_latdepth ():
 
             # Make the figure
             if avg:
-                zonal_avg_plot(mesh_path, file_path, var_name, tstep, lon_min, lon_max, depth_min, save, fig_name)
+                zonal_avg_plot(mesh_path, file_path, var_name, tstep, lon_min, lon_max, depth_min, save, fig_name, set_limits, limits)
             else:
-                zonal_slice_plot(mesh_path, file_path, var_name, tstep, lon0, depth_min, save, fig_name)
+                zonal_slice_plot(mesh_path, file_path, var_name, tstep, lon0, depth_min, save, fig_name, set_limits, limits)
         else:
             break
 

@@ -141,7 +141,7 @@ class Element:
 #               will be circumpolar Antarctic (otherwise global)
 # Output:
 # elements = array of Element objects
-def fesom_grid (mesh_path, circumpolar=False):
+def fesom_grid (mesh_path, circumpolar=False, cross_180=True):
 
   # Grid rotation parameters (grep inside mesh_path if unsure; if they're not mentioned, it's probably
   # not a rotated grid, so set alpha=beta=gamma=0)
@@ -279,7 +279,7 @@ def fesom_grid (mesh_path, circumpolar=False):
     else:
       elements.append(elm)
 
-    if elm.repeat_next:
+    if cross_180 and elm.repeat_next:
       # This element crosses the line of longitude 180W = 180E
       # Process it a second time so it shows up on both sides of the line
       elm_rep = Element(nodes[id1], nodes[id2], nodes[id3], is_cavity, circumpolar, True)

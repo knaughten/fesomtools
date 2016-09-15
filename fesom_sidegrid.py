@@ -1,6 +1,6 @@
 from numpy import *
 from netCDF4 import Dataset
-from fesom_grid import *
+from triangle_area_latdepth import *
 
 # Classes and routines to extract a zonal slice (depth vs latitude) of the
 # FESOM grid
@@ -43,7 +43,7 @@ class SideNodePair:
             self.north = snode1
 
 
-# SideElement object containing the four SideNodes making up the trapezoidal
+# SideElement object containing the four SideNodes making up the quadrilateral
 # element (intersection of an original grid Element, and its 3D extension down
 # through the water column, with the user-defined zonal slice).
 class SideElement:
@@ -61,35 +61,41 @@ class SideElement:
         # Set the value of the user-defined variable to be the mean of the
         # values at each corner (not quite mathematically correct but this
         # is just a visualisation, and much easier than integrating around a
-        # trapezoid!!)
-        self.var = mean(array([snode1.var, snode2.var, snode3.var, snode4.var]))
+        # quadrilateral!!)
+        self.var = (snode1.var + snode2.var + snode3.var + snode4.var)/4.0
+
+    # Return the area of the quadrilateral making up this Element
+    def area (self):
+
+        # Divide into two triangles and add the areas
+        lat1 = array([self.y[0], self.y[1], self.y[2]])
+        depth1 = array([self.z[0], self.z[1], self.z[2]])
+        area1 = triangle_area_latdepth(lat1, depth1)
+        
+        lat2 = array([self.y[0], self.y[2], self.y[3]])
+        depth2 = array([self.z[0], self.z[2], self.z[3]])
+        area2 = triangle_area_latdepth(lat2, depth2)
+
+        return area1 + area2        
 
 
-# Function to read FESOM grid files and FESOM output, and build SideElement mesh
+# Function to build SideElement mesh
 # Input:
-# mesh_path = path to directory containing grid files
-# file_path = path to FESOM output file
-# var_name = string containing name of variable in FESOM output file
-# tstep = time index in FESOM output file
+# elm2D = elements from regular FESOM grid
+# data = FESOM output on regular grid; can be a single time index or a 
+#        timeseries
 # lon0 = longitude to use for zonal slice
 # lat_max = northernmost latitude to plot (generally -50, depends on your
 #           definition of the Southern Ocean)
+# lat_min = optional southernmost latitude to plot
 # Output:
 # selement = array of SideElements making up the zonal slice
-def fesom_sidegrid (mesh_path, file_path, var_name, tstep, lon0, lat_max):
-
-    # Build the regular FESOM grid
-    elm2D = fesom_grid(mesh_path)
-
-    # Read data
-    id = Dataset(file_path, 'r')
-    data = id.variables[var_name][tstep-1,:]
-    id.close()    
+def fesom_sidegrid (elm2D, data, lon0, lat_max, lat_min=-90):
 
     snode_pairs = []
     for elm in elm2D:
-        # Don't consider elements outside the Southern Ocean
-        if any(elm.y <= lat_max):
+        # Don't consider elements outside the given latitude bounds
+        if any(elm.y >= lat_min) and any(elm.y <= lat_max):
             # Select elements which intersect lon0
             if any(elm.x <= lon0) and any(elm.x >= lon0):
                 # Special case where nodes (corners) of the element are exactly
@@ -125,7 +131,7 @@ def fesom_sidegrid (mesh_path, file_path, var_name, tstep, lon0, lat_max):
                     snode_pairs.append(SideNodePair(snodes_curr[0], snodes_curr[1]))
 
     selements = []
-    # Build the trapezoidal SideElements
+    # Build the quadrilateral SideElements
     for pair in snode_pairs:
         # Start at the surface
         snode1_top = pair.south
@@ -155,13 +161,20 @@ def fesom_sidegrid (mesh_path, file_path, var_name, tstep, lon0, lat_max):
 # Input:
 # node1, node2 = endpoint Nodes from this Element
 # lon0 = longitude for zonal slice
-# data = FESOM output on original grid
+# data = FESOM output on regular grid; can be a single time index or a 
+#        timeseries
 # snode_pairs = list of SideNodePair objects to add to
 def coincide_snode (node1, node2, data, snode_pairs):
 
     # Convert the Nodes into SideNodes
-    snode1 = SideNode(node1.lon, node1.lat, node1.depth, data[node1.id])
-    snode2 = SideNode(node2.lon, node2.lat, node2.depth, data[node2.id])
+    if len(data.shape) == 2:
+        # Timeseries
+        snode1 = SideNode(node1.lon, node1.lat, node1.depth, data[:,node1.id])
+        snode2 = SideNode(node2.lon, node2.lat, node2.depth, data[:,node2.id])
+    else:
+        # Single time index
+        snode1 = SideNode(node1.lon, node1.lat, node1.depth, data[node1.id])
+        snode2 = SideNode(node2.lon, node2.lat, node2.depth, data[node2.id])
     # Save to SideNodePair list
     snode_pairs.append(SideNodePair(snode1, snode2))
 
@@ -175,8 +188,14 @@ def coincide_snode (node1, node2, data, snode_pairs):
             # We've reached the bottom; stop
             break
         # Convert these to SideNodes
-        snode1_below = SideNode(node1.lon, node1.lat, node1.depth, data[node1.id])
-        snode2_below = SideNode(node2.lon, node2.lat, node2.depth, data[node2.id])
+        if len(data.shape) == 2:
+            # Timeseries
+            snode1_below = SideNode(node1.lon, node1.lat, node1.depth, data[:,node1.id])
+            snode2_below = SideNode(node2.lon, node2.lat, node2.depth, data[:,node2.id])
+        else:
+            # Single time index
+            snode1_below = SideNode(node1.lon, node1.lat, node1.depth, data[node1.id])
+            snode2_below = SideNode(node2.lon, node2.lat, node2.depth, data[node2.id])
         # Save to linked list
         snode1.set_below(snode1_below)
         snode2.set_below(snode2_below)
@@ -191,7 +210,8 @@ def coincide_snode (node1, node2, data, snode_pairs):
 # Input:
 # node1, node2 = Nodes at the endpoints of this line
 # lon0 = longitude to interpolate to
-# data = FESOM output on original grid
+# data = FESOM output on regular grid; can be a single time index or a 
+#        timeseries
 # Output:
 # snode_sfc = SideNode object for the intersection at the surface, with all
 #             SideNodes beneath it also interpolated and linked in
@@ -203,11 +223,18 @@ def interp_snode (node1, node2, lon0, data):
     d1 = sqrt((lon0 - node1.lon)**2 + (lat0 - node1.lat)**2)
     d2 = sqrt((lon0 - node2.lon)**2 + (lat0 - node2.lat)**2)
     # Save the values of the given variable at each Node
-    var1 = data[node1.id]
-    var2 = data[node2.id]
+    if len(data.shape) == 2:
+        # Timeseries
+        var1 = data[:,node1.id]
+        var2 = data[:,node2.id]
+    else:
+        # Single time index
+        var1 = data[node1.id]
+        var2 = data[node2.id]
     # Linearly interpolate the variable at the intersection
     var0 = var1 + (var2 - var1)/(d2 + d1)*d1
-    depth = 0.0
+    # Also interpolate depth
+    depth = node1.depth + (node2.depth - node1.depth)/(d2 + d1)*d1
     # Create a surface SideNode at this intersection
     snode_sfc = SideNode(lon0, lat0, depth, var0)
 
@@ -222,8 +249,14 @@ def interp_snode (node1, node2, lon0, data):
             # We've reached the bottom; stop
             break
         # Latitude and distances will not change; just interpolate the new var0
-        var1 = data[node1.id]
-        var2 = data[node2.id]
+        if len(data.shape) == 2:
+            # Timeseries
+            var1 = data[:,node1.id]
+            var2 = data[:,node2.id]
+        else:
+            # Single time index
+            var1 = data[node1.id]
+            var2 = data[node2.id]
         var0 = var1 + (var2 - var1)/(d2 + d1)*d1
         # Similarly interpolate depth
         depth = node1.depth + (node2.depth - node1.depth)/(d2 + d1)*d1

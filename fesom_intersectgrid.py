@@ -1,6 +1,7 @@
 from numpy import *
 from netCDF4 import Dataset
 from fesom_grid import *
+from unrotate_vector import *
 
 # Classes and routines to zonally average the FESOM grid between given longitude
 # bounds, creating a regular latitude x depth grid
@@ -47,6 +48,36 @@ def fesom_intersectgrid (mesh_path, file_path, var_name, tstep, lon_min, lon_max
     # Read data
     id = Dataset(file_path, 'r')
     data = id.variables[var_name][tstep-1,:]
+    # Check for vector variables that need to be unrotated
+    if var_name in ['u', 'v']:
+        # Read the rotated lat and lon
+        fid = open(mesh_path + 'nod3d.out', 'r')
+        fid.readline()
+        lon = []
+        lat = []
+        for line in fid:
+            tmp = line.split()
+            lon_tmp = float(tmp[1])
+            lat_tmp = float(tmp[2])
+            if lon_tmp < -180:
+                lon_tmp += 360
+            elif lon_tmp > 180:
+                lon_tmp -= 360
+            lon.append(lon_tmp)
+            lat.append(lat_tmp)
+        fid.close()
+        lon = array(lon)
+        lat = array(lat)
+        if var_name == 'u':
+            u_data = data[:]
+            v_data = id.variables['v'][tstep-1,:]
+            u_data_lonlat, v_data_lonlat = unrotate_vector(lon, lat, u_data, v_data)
+            data = u_data_lonlat[:]
+        elif var_name == 'v':
+            v_data = data[:]
+            u_data = id.variables['u'][tstep-1,:]
+            u_data_lonlat, v_data_lonlat = unrotate_vector(lon, lat, u_data, v_data)
+            data = v_data_lonlat[:]
     id.close()
 
     # Build the regular grid

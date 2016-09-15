@@ -5,10 +5,12 @@ from matplotlib.pyplot import *
 from matplotlib.cm import *
 from matplotlib.patches import Polygon
 from patches import *
+from unrotate_vector import *
 
 
 # Create a plot of a specified variable on a lon-lat domain.
 # Input:
+# mesh_path = string containing path to FESOM mesh directory
 # file_path = string containing path to FESOM output file
 # var_name = string containing name of variable in file_path
 # depth_key = int specifying whether to plot surface nodes (0), bottom nodes
@@ -32,7 +34,7 @@ from patches import *
 # set_limits = optional boolean flag indicating whether or not to set manual
 #              limits on colourbar (otherwise limits determined automatically)
 # limits = optional array containing min and max limits
-def lonlat_plot (file_path, var_name, depth_key, depth, depth_bounds, tstep, circumpolar, elements, patches, mask_cavities=False, save=False, fig_name=None, set_limits=False, limits=None):
+def lonlat_plot (mesh_path, file_path, var_name, depth_key, depth, depth_bounds, tstep, circumpolar, elements, patches, mask_cavities=False, save=False, fig_name=None, set_limits=False, limits=None):
 
     # Set bounds for domain
     if circumpolar:
@@ -47,14 +49,59 @@ def lonlat_plot (file_path, var_name, depth_key, depth, depth_bounds, tstep, cir
         lon_ticks = arange(-120, 120+1, 60)
         lat_ticks = arange(-60, 60+1, 30)
     # Set font sizes
-    font_sizes = [18, 16, 12]
+    font_sizes = [30, 24, 20]
     # Seconds per year, for conversion of ice shelf melt rate
-    sec_per_year = 365.25*24*3600
+    sec_per_year = 365*24*3600
 
     # Read data
     file = Dataset(file_path, 'r')
     varid = file.variables[var_name]
     data = varid[tstep-1,:]
+    # Check for vector variables that need to be unrotated
+    if var_name in ['uwind', 'vwind', 'stress_x', 'stress_y', 'uhice', 'vhice', 'uhsnow', 'vhsnow', 'uice', 'vice', 'u', 'v']:
+        # Read the rotated lat and lon
+        if var_name in ['u', 'v']:
+            # 3D variable
+            mesh_file = mesh_path + 'nod3d.out'
+        else:
+            # 2D variable
+            mesh_file = mesh_path + 'nod2d.out'
+        fid = open(mesh_file, 'r')
+        fid.readline()
+        lon = []
+        lat = []
+        for line in fid:
+            tmp = line.split()
+            lon_tmp = float(tmp[1])
+            lat_tmp = float(tmp[2])
+            if lon_tmp < -180:
+                lon_tmp += 360
+            elif lon_tmp > 180:
+                lon_tmp -= 360
+            lon.append(lon_tmp)
+            lat.append(lat_tmp)
+        fid.close()
+        lon = array(lon)
+        lat = array(lat)
+        if var_name in ['uwind', 'stress_x', 'uhice', 'uhsnow', 'uice', 'u']:
+            # u-variable
+            u_data = data[:]
+            if var_name == 'stress_x':
+                v_data = file.variables['stress_y'][tstep-1,:]
+            else:
+                v_data = file.variables[var_name.replace('u','v')][tstep-1,:]
+            u_data_lonlat, v_data_lonlat = unrotate_vector(lon, lat, u_data, v_data)
+            data = u_data_lonlat[:]
+        elif var_name in ['vwind', 'stress_y', 'vhice', 'vhsnow', 'vice', 'v']:
+            # v-variable
+            v_data = data[:]
+            if var_name == 'stress_y':
+                u_data = file.variables['stress_x'][tstep-1,:]
+            else:
+                u_data = file.variables[var_name.replace('v','u')][tstep-1,:]
+            u_data_lonlat, v_data_lonlat = unrotate_vector(lon, lat, u_data, v_data)
+            data = v_data_lonlat[:]
+    
     # Set descriptive variable name and units for title
     if var_name == 'area':
         name = 'ice concentration'
@@ -280,7 +327,32 @@ def lonlat_plot (file_path, var_name, depth_key, depth, depth_bounds, tstep, cir
             # ice shelf cavity nodes are not
             tmp = plot_patches
             plot_patches = mask_patches
-            mask_patches = tmp            
+            mask_patches = tmp
+
+    # Choose colour bounds
+    if set_limits:
+        # User-specified bounds
+        var_min = limits[0]
+        var_max = limits[1]
+        if var_min == -var_max:
+            # Bounds are centered on zero, so choose a blue-to-red colourmap
+            # centered on yellow
+            colour_map = 'RdYlBu_r'
+        else:
+            colour_map = 'jet'
+    else:
+        # Determine bounds automatically
+        if var_name in ['uwind', 'vwind', 'qnet', 'olat', 'osen', 'wnet', 'virtual_salt', 'relax_salt', 'stress_x', 'stress_y', 'uice', 'vice', 'u', 'v', 'w']:
+            # Center levels on 0 for certain variables, with a blue-to-red
+            # colourmap
+            max_val = amax(abs(array(values)))
+            var_min = -max_val
+            var_max = max_val
+            colour_map = 'RdYlBu_r'
+        else:
+            var_min = amin(array(values))
+            var_max = amax(array(values))
+            colour_map = 'jet'
 
     # Set up plot
     if circumpolar:
@@ -290,7 +362,7 @@ def lonlat_plot (file_path, var_name, depth_key, depth, depth_bounds, tstep, cir
         fig = figure(figsize=(16,8))
         ax = fig.add_subplot(1,1,1)
     # Set colourmap for patches, and refer it to the values array
-    img = PatchCollection(plot_patches, cmap=jet)
+    img = PatchCollection(plot_patches, cmap=colour_map)
     img.set_array(array(values))
     img.set_edgecolor('face')
     # Add patches to plot
@@ -321,8 +393,7 @@ def lonlat_plot (file_path, var_name, depth_key, depth, depth_bounds, tstep, cir
     title(name + ' (' + units + ') ' + depth_string, fontsize=font_sizes[0])    
     cbar = colorbar(img)
     cbar.ax.tick_params(labelsize=font_sizes[2])
-    if set_limits:
-        img.set_clim(vmin=limits[0], vmax=limits[1])
+    img.set_clim(vmin=var_min, vmax=var_max)
 
     # Plot specified points
     #problem_ids = [16, 17, 36, 64, 67, 70, 160, 262, 266, 267, 268, 273, 274, 280, 283, 287, 288, 289, 290, 291, 292, 293, 294, 296, 297, 350, 351, 352, 353, 360, 479, 480, 493, 507, 508, 509, 521, 539, 547, 548, 549, 550, 554, 555]

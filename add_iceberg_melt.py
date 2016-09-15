@@ -14,7 +14,7 @@ def add_iceberg_melt (file):
     # Naming conventions for iceberg files
     iceberg_head = '/short/m68/kaa561/ROMS-CICE-MCT/data/MartinAdcroft2010_iceberg_meltfluxes/icebergs.1861-1960.'
     iceberg_tail = '.melt.nc'
-    # Iceberg grid information
+    # Iceberg grid file
     iceberg_grid = '/short/m68/kaa561/ROMS-CICE-MCT/data/MartinAdcroft2010_iceberg_meltfluxes/icebergs.static.nc'
     # File containing ERA-Interim grid
     era_grid = '/short/y99/kaa561/FESOM/ERA_Interim_monthly/FC_1995_monthly_orig.nc'
