@@ -1,9 +1,9 @@
 *****INTERACTIVE/GENERAL PLOTS*****
 Important note: Before running any FESOM plotting scripts, make sure you edit
                 the rotation parameters alpha, beta, and gamma inside
-		fesom_grid.py (top of the function "fesom_grid") to suit your
-		mesh. If you're running with a non-rotated mesh, set them all
-		to zero.
+		fesom_grid.py (top of the function "fesom_grid") and also
+		unrotate_vector.py to suit your mesh. If you're running with a
+		non-rotated mesh, set them all to zero.
 
 fesom_vis.py: Command-line interface for interactive plots.
               To run: Open python or ipython and type "run fesom_vis.py".
@@ -73,18 +73,13 @@ plot_depth.py: Plots the seafloor depth for the given FESOM mesh, using the
 		       the projection should be global lat-lon or circumpolar
 		       Antarctic.
 
-plot_shelf.py: Plots the ice shelf draft for the given FESOM mesh, using the
-               intermediate mesh generation file shelf.out rather than the
-	       final draft as seen by the surface nodes in ice shelf cavities
-	       (for this option, use sfc_depth.py).
-	       To run: If you want to read a different file, say shelf_1.out
-	               instead of shelf.out for a different stage of mesh
-		       generation, edit this filename about halfway down the
-		       file. Then open python or ipython and type
-		       "run plot_shelf.py". The script will prompt you for the
-		       mesh directory, the filename for the figure, and whether
-		       the projection should be global lat-lon or circumpolar
-		       Antarctic.
+plot_shelf.py: Plots the surface depth for the given FESOM mesh, i.e. the
+               ice shelf draft as seen by the nodes, in a circumpolar Antarctic
+	       projection.
+	       To run: Open python or ipython and type "run plot_shelf.py". The
+	               script will prompt you for the mesh directory, the
+		       filename for the figure, and whether the projection
+		       should be global lat-lon or circumpolar Antarctic.
 
 plot_cavityflag.py: Plots the ice shelf cavity flag for the given FESOM mesh,
                     in a circumpolar Antarctic projection.
@@ -100,15 +95,145 @@ plot_num_layers.py: Plots the number of vertical layers for each element in
 			    for the mesh directory and the filename for the
 			    figure.
 
-sfc_depth.py: Plots the surface depth for the given FESOM mesh, i.e. the
-              ice shelf draft as seen by the nodes, in a circumpolar Antarctic
-	      projection.
-	      To run: Open python or ipython and type "run sfc_depth.py". The
-	              script will prompt you for the mesh directory and the
-		      filename for the figure.
+plot_wct.py: Plots the water column thickness for the given FESOM grid, in a
+             circumpolar Antarctic projection.
+	     To run: Open python or ipython and type "run plot_wct.py". The
+	             script will prompt you for the mesh directory and the
+		     filename for the figure.
+
+bwtemp.py: Creates a circumpolar plot of bottom water temperature annually
+           averaged over the given year of FESOM simulation.
+	   To run: Open python or ipython and type "run bwtemp.py". The script
+	           will prompt you for the mesh directory, the FESOM output
+		   file containing one year of ocean averages, and whether you
+		   want to save the figure (and if so, what filename) or display
+		   it on the screen.
+
+bwsalt.py: Creates a circumpolar plot of bottom water salinity annually
+           averaged over the given year of FESOM simulation.
+	   To run: Open python or ipython and type "run bwtemp.py". The script
+	           will prompt you for the mesh directory, the FESOM output
+		   file containing one year of ocean averages, and whether you
+		   want to save the figure (and if so, what filename) or display
+		   it on the screen.
+
+ismr_plot.py: Creates a circumpolar plot of ice shelf melt rates annually
+              averaged over the given year of FESOM simulation.
+	      To run: Open python or ipython and type "run ismr_plot.py". The
+	              script will prompt you for the mesh directory, the FESOM
+		      output file containing one year of forcing diagnostic
+		      averages, and whether you want to save the figure (and if
+		      so, what filename) or display it on the screen.
+
+nsidc_aice_monthly.py: Plot monthly averages of sea ice concentration over the
+                       last year of simulation with FEsOM, compared with NSIDC
+		       satellite data for 1995.
+		       To run: First edit the NSIDC file paths if necessary.
+		               Then open python or ipython and type
+		               "run nsidc_aice_monthly.py". The script will
+			       prompt you for the mesh directory, the FESOM
+			       output file containing one year of 5-day averages
+			       for sea ice variables, the month number (1-12),
+			       and whether you want to save the figure (and if
+			       so, what filename) or display it on the screen.
+			       The script will repeat as many times as you like
+			       which is handy if you want to change just one
+			       parameter, e.g. the month number.
+
+nsidc_aice_seasonal.py: Plot seasonal averages of sea ice concentration over the
+                        last year of simulation with FESOM, compared with NSIDC
+			satellite data for 1995.
+			To run: First edit the NSIDC file paths if necessary.
+			        Then open python or ipython and type
+			        "run nsidc_aice_seasonal.py". The script will
+				prompt you for the mesh directory, paths to
+				two FESOM output files containing one year each
+				of 5-day averages for sea ice variables (the
+				script will use December for the first year and
+				January-November for the second year so that
+				DJF is a continuous time period), and whether
+				you want to save the figure (and if so, what
+				filename) or display it on the screen. This
+				script is non-repeating.
+
+sose_fesom_seasonal.py: Creates a 4x2 plot comparing lat vs. depth slices of
+                        seasonally averaged temperature or salinity at the
+			given longitude, between FESOM (given year of
+			simulation) and SOSE (2005-2010 climatology).
+			To run: First edit the path to the SOSE seasonal
+			        climatology file if necessary (if you don't
+				have this file ask Kaitlin for it). Then open
+				python or ipython and type
+				"run sose_fesom_seasonal.py". The script will
+				prompt you for the mesh directory, paths to
+				two FESOM output files containing one year each
+				of 5-day avearges for ocean variables (the
+				script will use December for the first year and
+				January-November for the second year so that
+				DJF is a continuous time period), whether you
+				want to plot temperature or salinity, the
+				longitude to plot, the deepest depth to plot,
+				and whether you want to save the figure (and if
+				so, what filename) or display it on the screen.
+				The script will repeat as many times as you
+				want without unnecessarily re-computing the mesh
+				or asking you for all the parameters again, just
+				the ones you want to change.
+
+timeseries_seaice.py: Calculate and plot timeseries of total sea ice area and
+                      volume during a FESOM simulation.
+		      To run: Open python or ipython and type
+		              "run timeseries_seaice.py". The script will prompt
+			      you for paths to the mesh directory, the output
+			      ice.mean.nc file containing one year of 5-day
+			      averages, and the log file (if it already exists,
+			      previously calculated values will be read from it;
+			      regardless, it will be overwritten with the full
+			      timeseries at the end. This allows you to process
+			      one year of simulation at a time.)
+
+timeseries_massloss.py: Calculate and plot timeseries of basal mass loss and
+                        area-averaged ice shelf melt rates from major ice
+		        shelves and from the entire continent during a FESOM
+			simulation.
+		        To run: Open python or ipython and type
+		                "run timeseries_massloss.py". The script will
+			        prompt you for paths to the mesh directory, the
+			        output forcing.diag.nc file containing one year
+			        of 5-day averages, and the log file (if it
+			        already exists, previously calculated values
+				will be read from it; regardless, it will be
+			        overwritten with the full timeseries at the end.
+			        This allows you to process one year of
+				simulation at a time.)
+
+timeseries_dpt.py: Calculate and plot timeseries of the Drake Passage transport
+                   during a FESOM simulation.
+		   To run: Open python or ipython and type
+		           "run timeseries_dpt.py". The script will prompt you
+			   for paths to the mesh directory, the output
+			   oce.mean.nc file containing one year of 5-day
+			   averages, and the log file (if it already exists,
+			   previously calculated values will be read from it;
+			   regardless, it will be overwritten with the full
+			   timeseries at the end. This allows you to process
+			   one year of simulation at a time.)
+
+timeseries_3D.py: Calculate and plot timeseries of Southern Ocean total heat
+                  content, average salinity, and total kinetic energy during a
+		  FESOM simulation.
+		  To run: Open python or ipython and type
+		          "run timeseries_3D.py". The script will prompt you for
+			  paths to the mesh directory, the output oce.mean.nc
+			  file containing one year of 5-day averages, and the
+			  log file (if it already exists, previously calculated
+			  values will be read from it; regardless, it will be
+			  overwritten with the full timeseries at the end. This
+			  allows you to process one year of simulation at a
+			  time.)
 
 
-*****BACK END TO PLOTTING*****
+*****BACK END*****
 
 fesom_grid.py: Classes and routines to build an object-oriented FESOM grid
                data structure. Includes the classes Node and Element, and the
@@ -132,9 +257,9 @@ fesom_sidegrid.py: Classes and routines to extract a zonal slice (depth vs.
 		   To run: You will probably never run this on its own, and I
 		           would recommend trying to avoid doing so because
 			   it's a bit complicated. It just exists for
-		           zonal_slice_plot.py, so if you really need to call
-			   it for some reason, follow what zonal_slice_plot
-			   does.		  
+		           zonal_slice_plot.py and timeseries_dpt.py, so if you
+			   really need to call it on its own for for some
+			   reason, follow what those files do.
 
 fesom_intersectgrid.py: Classes and routines to zonally average the FESOM grid
                         (as built in fesom_grid.py) between the given longitude
@@ -168,7 +293,7 @@ triangle_area.py: Given the latitude and longitude of a triangular element,
 		  for area-averages or volume-averages, as well as to calculate
 		  resolution.
 		  To run: You shouldn't need to, as the Element object of
-		          fesom_grid.py has a class function area (see
+		          fesom_grid.py has a class function "area" (see
 			  grid_res.py for an example of how to use this).
 			  But if you want to call triangle_area without the
 			  whole data structure, open python or ipython and type
@@ -180,21 +305,49 @@ triangle_area.py: Given the latitude and longitude of a triangular element,
 			  or from 0 to 360, because this script will convert
 			  everything to Cartesian coordinates anyway.
 
+triangle_area_latdepth.py: Given the latitude and depth of a triangular
+                           segment of a SideElement, calculate the area of the
+			   triangle in m^2. This is useful for calculating
+			   zonal transport.
+			   To run: You shouldn't need to, as the SideElement
+			           object of fesom_sidegrid.py has a class
+				   function "area" (see timeseries_dpt for an
+				   example of how to use this). But if you
+				   want to call triangle_area without the
+				   whole data structure, open python or
+				   ipython and type
+				   "from triangle_area_latdepth.py import *"
+				   followed by
+				   "triangle_area_latdepth(lat, depth)" where
+				   lat and depth are both arrays of length 3
+				   containing the latitude values (in degrees
+				   north) and the depth values (in metres,
+				   negative).
 
-*****MODEL PRE- AND POST-PROCESSING*****
+unrotate_vector.py: Given a 2D vector on the rotated FESOM grid, unrotate it so
+                    the components line up with regular lon-lat space and not
+		    the rotated lon-lat that FESOM ran with.
+                    To run: This is usually called within other scripts (see
+		            lonlat.py for an example) but if you want to call
+			    it on its own, open python or ipython and type
+			    "from unrotate_vector.py import *" followed by
+			    "ug, vg = unrotate_vector(rlon, rlat, ur, vr)" where
+			    rlon and rlat are the rotated longitude and latitude
+			    straight out of nod2d.out or nod3d.out (-180 to
+			    180 or 0 to 360 doesn't matter), and ur and vr are
+			    the x- and y- components of the vector at a single
+			    time index, straight out of the FESOM output files
+			    (such as u and v, or uice and vice, or stress_x and
+			    stress_y). The output ug and vg are the x- and y-
+			    components of the vector rotated to regular lon-lat
+			    space.
 
-make_density_file.py: Given a FESOM output file with temperature and salinity,
-                      calculate density fields at each timestep using the 1980
-		      UNESCO seawater equation of state. Save in a new file.
-		      To run: Open python or ipython and type
-		              "run make_density_file.py". The script will
-			      prompt you for the mesh directory, the input file
-			      with temperature and salinity, and the desired
-			      output file in which to save density.
+
+*****MAKING MODEL INPUT FILES OR POST-PROCESSING NEW OUTPUT FILES*****
 
 unesco.py: Compute the UNESCO equation of state for seawater density. Fully
            vectorised.
-	   To run: This function is called by make_density_file.py, but if you
+	   To run: This function is called by timeseries_3D.py, but if you
                    need to call it individually, open python or ipython and type
 		   "from unesco import *" followed by
 		   "rho = unesco(temp, salt, press)" where temp, salt, and
@@ -210,3 +363,14 @@ make_ini.py: Make a FESOM initial conditions text file, with all the columns
 	             at the top of the script. Then open python or ipython
 		     and type "run make_ini.py". This is pretty low-tech and
 		     not encapsulated or anything.
+
+add_iceberg_melt.py: Read Martin and Adcroft's monthly climatology of freshwater
+                     fluxes from iceberg melt, and add to the precipitation
+		     fields used by FESOM.
+		     To run: First edit the variables "iceberg_head",
+		             "iceberg_tail", "iceberg_grid", and "era_grid"
+			     near the top of the file to point to the right
+			     paths. Then open python or ipython and type
+			     "run add_iceberg_melt.py". You will be prompted
+			     for the path to the ERA-Interim file, containing
+			     the variable "tp" (total precipitation), to edit.

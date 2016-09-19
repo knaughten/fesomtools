@@ -7,6 +7,7 @@ from fesom_grid import *
 # Calculate and plot timeseries of basal mass loss and area-averaged ice shelf
 # melt rates from major ice shelves and from the entire continent during a 
 # FESOM simulation.
+# Takes 8 GB memory on raijin for Kaitlin's low_res mesh.
 # Input:
 # mesh_path = path to FESOM mesh directory
 # diag_file = path to output forcing.diag.nc file that contains variable "wnet"

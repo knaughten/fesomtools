@@ -155,7 +155,7 @@ def nsidc_aice_monthly (elements, patches, file_path, month, save=False, fig_nam
 if __name__ == "__main__":
 
     mesh_path = raw_input("Path to FESOM mesh directory: ")
-    file_path = raw_input("Path to one year of 5-day averages for sea ice variables: ")
+    file_path = raw_input("Path to output ice.mean.nc containing one year of 5-day averages: ")
     month = int(raw_input("Month number (1-12): ")) - 1
     action = raw_input("Save figure (s) or display on screen (d)? ")
     if action == 's':

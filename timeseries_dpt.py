@@ -8,9 +8,10 @@ from unrotate_vector import *
 
 # Calculate and plot timeseries of the Drake Passage transport during a FESOM
 # simulation.
+# Takes 8 GB memory on raijin for Kaitlin's low_res mesh.
 # Input:
 # mesh_path = path to FESOM mesh directory
-# ocn_file = path to output ocn.mean.nc, assumed to have 5-day averages
+# ocn_file = path to output oce.mean.nc, assumed to have 5-day averages
 # log_file = path to log file (if it exists, previously calculated values will
 #            be read from it; regardless, it will be overwritten with all
 #            calculated values following computation)
@@ -116,7 +117,7 @@ def timeseries_dpt (mesh_path, ocn_file, log_file):
 if __name__ == "__main__":
 
     mesh_path = raw_input("Path to FESOM mesh directory: ")
-    ocn_file = raw_input("Path to FESOM ocn.mean.nc output file: ")
+    ocn_file = raw_input("Path to FESOM oce.mean.nc output file: ")
     log_file = raw_input("Path to logfile to save values and/or read previously calculated values: ")
     timeseries_dpt(mesh_path, ocn_file, log_file)
     

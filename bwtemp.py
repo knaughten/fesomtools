@@ -62,7 +62,7 @@ def bwtemp (mesh_path, file_path, save=False, fig_name=None):
 if __name__ == "__main__":
 
     mesh_path = raw_input("Path to FESOM mesh directory: ")
-    file_path = raw_input("Path to one year of 5-day averages for ocean variables: ")
+    file_path = raw_input("Path to FESOM oce.mean.nc containing one year of output: ")
     action = raw_input("Save figure (s) or display on screen (d)? ")
     if action == 's':
         save=True

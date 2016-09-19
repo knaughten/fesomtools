@@ -263,11 +263,12 @@ def interp_lon_fesom (elements, lat_max, lon0, data):
     return patches, values
 
 
+# Command-line interface
 if __name__ == "__main__":
 
     mesh_path = raw_input("Path to FESOM mesh directory: ")
-    file_path1 = raw_input("Path to one year of 5-day averages for sea ice variables (December will be used): ")
-    file_path2 = raw_input("Path to the following year of 5-day averages for sea ice variables (January through November will be used): ")
+    file_path1 = raw_input("Path to output oce.mean.nc containing one year of 5-day averages (December will be used): ")
+    file_path2 = raw_input("Path to the following oce.mean.nc containing 5-day averages for the next year (January through November will be used): ")
     var_key = raw_input("Temperature (t) or salinity (s)? ")
     if var_key == 't':
         var_name = 'temp'

@@ -6,6 +6,7 @@ from fesom_grid import *
 
 # Calculate and plot timeseries of total sea ice area and volume during a
 # FESOM simulation.
+# Takes 8 GB memory on raijin for Kaitlin's low_res mesh.
 # Input:
 # mesh_path = path to FESOM mesh directory
 # ice_file = path to output ice.mean.nc, assumed to have 5-day averages
