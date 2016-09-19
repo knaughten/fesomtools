@@ -20,7 +20,7 @@ def timeseries_3D (mesh_path, ocn_file, log_file):
     circumpolar = True   # Only consider elements south of 30S
     cross_180 = False    # Don't make second copies of elements that cross 180E
     days_per_output = 5  # Number of days for each output step
-    Cp = 3974            # Specific heat of polar seawater (J/K/kg)
+    rhoCp = 4.2e6            # Volumetric heat capacity of seawater (J/K/m^3)
     C2K = 273.15         # Celsius to Kelvin conversion
 
     ohc = []
@@ -123,8 +123,8 @@ def timeseries_3D (mesh_path, ocn_file, log_file):
     
     print 'Building timeseries'
     for t in range(num_time):
-        # Integrate temp*rho*Cp*dV to get OHC
-        ohc.append(sum((temp_e3d[t,:]+C2K)*rho_e3d[t,:]*Cp*dV_e3d))
+        # Integrate temp*rhoCp*dV to get OHC
+        ohc.append(sum((temp_e3d[t,:]+C2K)*rhoCp*dV_e3d))
         # Average salinity (weighted with rho*dV)
         avgsalt.append(sum(salt_e3d[t,:]*rho_e3d[t,:]*dV_e3d)/sum(rho_e3d[t,:]*dV_e3d))
         # Integrate 0.5*rho*speed^2*dV to get TKE
