@@ -39,7 +39,9 @@ def ismr_plot (mesh_path, file_path, save=False, fig_name=None):
     mf_cmap = LinearSegmentedColormap.from_list('melt_freeze', cmap_list)
 
     # Build FESOM mesh
+    # Get separate patches for the open ocean elements so we can mask them out
     elements, mask_patches = make_patches(mesh_path, circumpolar, mask_cavities)
+    patches = iceshelf_mask(elements)
 
     # Read freshwater flux
     file = Dataset(file_path, 'r')
@@ -53,9 +55,6 @@ def ismr_plot (mesh_path, file_path, save=False, fig_name=None):
         # for the 3 component Nodes
         if elm.cavity:
             values.append(mean([data[elm.nodes[0].id], data[elm.nodes[1].id], data[elm.nodes[2].id]]))
-
-    # Get patches for the open ocean elements so we can mask them out
-    patches = iceshelf_mask(elements)
 
     # Plot
     fig = figure(figsize=(16,12))

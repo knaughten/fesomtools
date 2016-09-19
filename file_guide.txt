@@ -232,6 +232,31 @@ timeseries_3D.py: Calculate and plot timeseries of Southern Ocean total heat
 			  allows you to process one year of simulation at a
 			  time.)
 
+massloss_map.py: Makes a map of unexplained percent error in annually averaged
+                 simulated basal mass loss from each ice shelf that is over
+		 5,000 km^2 in Rignot et al., 2013.
+		 To run: First make sure your logfile from
+		         timeseries_massloss.py is up to date, as this script
+			 reads mass loss data from that file. Then open python
+			 or ipython and type "run massloss_map.py". You will be
+			 prompted for the mesh directory, the log file from
+			 timeseries_massloss.py, and whether you want to save
+			 the figure (and if so, what filename) or display it
+			 on the screen.
+
+ismr_map.py: Makes a map of unexplained percent error in annually averaged
+             simulated melt rate from each ice shelf that is over 5,000 km^2 in
+	     Rignot et al., 2013.
+	     To run: First edit the array "area" containing the area of each
+	             ice shelf in your mesh, as printed to the screen during
+		     timeseries_massloss.py. Then make sure your logfile from
+		     timeseries_massloss.py is up to date, as this script reads
+		     mass loss data from that file. Then open python or ipython
+		     and type "run ismr_map.py". You will be prompted for the
+		     mesh directory, the log file from timeseries_massloss.py,
+		     and whether you want to save the figure (and if so, what
+		     filename) or display it on the screen.
+
 
 *****BACK END*****
 
