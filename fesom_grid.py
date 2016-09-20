@@ -85,14 +85,15 @@ class Element:
 
   # Initialise
   # Input: node1, node2, node3 = component Nodes
-  # cavity = integer flag indicating if any component node is in an ice shelf
-  #          cavity (0) or not (1)
+  # cavity_nodes = array of booleans indicating whether each node is in an
+  #                ice shelf cavity
+  # coast_nodes = array of booleans indicating whether each node is coastal
   # circumpolar = boolean flag indicating whether the user's plot will be
   #               circumpolar Antarctic (True) or global (False)
   # is_repeat = optional boolean flag indicating if this Element has already
   #             been processed once (Elements crossing the line 180W=180E are
   #             processed twice)
-  def __init__ (self, node1, node2, node3, cavity, circumpolar, is_repeat=False):
+  def __init__ (self, node1, node2, node3, cavity_nodes, coast_nodes, circumpolar, is_repeat=False):
     
     self.nodes = array([node1, node2, node3])
     lon = array([node1.lon, node2.lon, node3.lon])
@@ -100,7 +101,9 @@ class Element:
     self.lon = lon
     self.lat = lat
     self.repeat_next = False
-    self.cavity = cavity != 0
+    self.cavity_nodes = cavity_nodes
+    self.coast_nodes = coast_nodes
+    self.cavity = all(cavity_nodes)
 
     # Check for elements which cross longitude 180W = 180E
     # We want a copy of these elements on both sides of this line
@@ -169,6 +172,7 @@ def fesom_grid (mesh_path, circumpolar=False, cross_180=True):
       lon = float(tmp[1])
       lat = float(tmp[2])
       depth = float(tmp[3])
+      rank = int(tmp[4])
       # Make sure longitude is in the range [-180, 180]
       if lon < -180:
           lon = lon + 360
@@ -259,6 +263,22 @@ def fesom_grid (mesh_path, circumpolar=False, cross_180=True):
       print 'Problem'
   file.close()
 
+  # Read coast flag
+  file = open(mesh_path + 'nod2d.out', 'r')
+  file.readline()
+  coast = []
+
+  for line in file:
+    tmp = line.split()
+    coast_tmp = int(tmp[3])
+    if coast_tmp == 1:
+      coast.append(True)
+    elif coast_tmp == 0:
+      coast.append(False)
+    else:
+      print 'Problem'
+  file.close()
+
   # Read 2D elements (triangles of 3 connecting nodes)
   file = open(mesh_path + 'elem2d.out', 'r')
   file.readline()
@@ -270,11 +290,11 @@ def fesom_grid (mesh_path, circumpolar=False, cross_180=True):
     id1 = int(tmp[0])-1
     id2 = int(tmp[1])-1
     id3 = int(tmp[2])-1
-    # is_cavity will be true if any of the three component nodes are in
-    # an ice shelf cavity
-    is_cavity = cavity[id1]*cavity[id2]*cavity[id3]
+    # Make arrays of cavity and coast flags
+    cavity_nodes = [cavity[id1], cavity[id2], cavity[id3]]
+    coast_nodes = [coast[id1], coast[id2], coast[id3]]
     # Initialise the Element
-    elm = Element(nodes[id1], nodes[id2], nodes[id3], is_cavity, circumpolar)
+    elm = Element(nodes[id1], nodes[id2], nodes[id3], cavity_nodes, coast_nodes, circumpolar)
 
     if circumpolar:
       # Only save elm if it's within the circumpolar Antarctic domain
@@ -286,7 +306,7 @@ def fesom_grid (mesh_path, circumpolar=False, cross_180=True):
     if cross_180 and elm.repeat_next:
       # This element crosses the line of longitude 180W = 180E
       # Process it a second time so it shows up on both sides of the line
-      elm_rep = Element(nodes[id1], nodes[id2], nodes[id3], is_cavity, circumpolar, True)
+      elm_rep = Element(nodes[id1], nodes[id2], nodes[id3], cavity_nodes, coast_nodes, circumpolar, True)
       if circumpolar:
         # Only save elm if it's within the circumpolar Antarctic domain
         if elm.nodes[0].lat < nbdry or elm.nodes[1].lat < nbdry or elm.nodes[2].lat < nbdry:

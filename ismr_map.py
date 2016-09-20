@@ -1,6 +1,6 @@
 from netCDF4 import Dataset
 from numpy import *
-from matplotlib.collections import PatchCollection
+from matplotlib.collections import PatchCollection, LineCollection
 from matplotlib.pyplot import *
 from patches import *
 
@@ -101,6 +101,8 @@ def ismr_map (mesh_path, log_path, save=False, fig_name=None):
 
     # Build a field of ice shelf melt rate unexplained percent error
     values = []
+    # Keep track of which elements are in ice shelves we care about
+    location_flag = zeros(len(elements))
     for i in range(len(elements)):
         elm = elements[i]
         # Make sure we're actually in an ice shelf cavity
@@ -111,10 +113,12 @@ def ismr_map (mesh_path, log_path, save=False, fig_name=None):
                 # Figure out whether or not this element is part of the given
                 # ice shelf
                 if all(elm.lon >= lon_min[index]) and all(elm.lon <= lon_max[index]) and all(elm.lat >= lat_min[index]) and all(elm.lat <= lat_max[index]):
+                    location_flag[i] = 1
                     error_tmp = error_vals[index]
                 if index == len(obs_ismr)-1:
                     # Ross region is split in two
                     if all(elm.lon >= lon_min[index+1]) and all(elm.lon <= lon_max[index+1]) and all(elm.lat >= lat_min[index+1]) and all(elm.lat <= lat_max[index+1]):
+                        location_flag[i] = 1
                         error_tmp = error_vals[index]
             values.append(error_tmp)
 
@@ -130,6 +134,30 @@ def ismr_map (mesh_path, log_path, save=False, fig_name=None):
     overlay = PatchCollection(mask_patches, facecolor=(1,1,1))
     overlay.set_edgecolor('face')
     ax.add_collection(overlay)
+
+    # Contour ice shelf front
+    contour_lines = []
+    for elm in elements:
+        # Select elements where exactly 2 of the 3 nodes are in a cavity
+        if count_nonzero(elm.cavity_nodes) == 2:
+            # Save the coastal flags and x- and y- coordinates of these 2
+            coast_tmp = []
+            x_tmp = []
+            y_tmp = []
+            for i in range(3):
+                if elm.cavity_nodes[i]:
+                    coast_tmp.append(elm.coast_nodes[i])
+                    x_tmp.append(elm.x[i])
+                    y_tmp.append(elm.y[i])
+            # Select elements where at most 1 of these 2 nodes are coastal
+            if count_nonzero(coast_tmp) < 2:
+                # Draw a line between the 2 nodes
+                contour_lines.append([(x_tmp[0], y_tmp[0]), (x_tmp[1], y_tmp[1])])
+    # Add all the lines to the plot
+    contours = LineCollection(contour_lines, edgecolor='black', linewidth=1)
+    ax.add_collection(contours)
+
+    # Configure plot
     xlim([-max_lat_plot, max_lat_plot])
     ylim([-max_lat_plot, max_lat_plot])
     axis('off')
