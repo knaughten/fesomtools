@@ -257,6 +257,21 @@ ismr_map.py: Makes a map of unexplained percent error in annually averaged
 		     and whether you want to save the figure (and if so, what
 		     filename) or display it on the screen.
 
+aice_hi_seasonal.py: Creates a 4x2 plot of seasonally averaged sea ice
+                     concentration (top row) and thickness (bottom row) over the
+		     last year of simulation.
+		     To run: Open python or ipython and type
+		             "run aice_hi_seasonal.py". The script will prompt
+			     you for the mesh directory, paths to two FESOM
+			     output files containing one year each of 5-day
+			     averages for sea ice variables (the script will
+			     use December for the first year and
+			     January-November for the second year so that DJF
+			     is a continuous time period), and whether you want
+			     to save the figure (and if so, what filename) or
+			     display it on the screen. This script is
+			     non-repeating.
+
 
 *****BACK END*****
 

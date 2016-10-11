@@ -5,6 +5,18 @@ from matplotlib.pyplot import *
 from matplotlib.cm import *
 from patches import *
 
+# Creates a 4x2 plot of seasonally averaged sea ice concentration (top row) and
+# thickness (bottom row) over the last year of simulation.
+# Input:
+# mesh_path = path to FESOM mesh directory
+# file_path1 = path to a FESOM output file containing one year of 5-day
+#              averages for sea ice variables (we will just use December)
+# file_path2 = path to a FESOM output file containing the following year of
+#              5-day averages for sea ice variables (we will use January
+#              through November)
+# save = optional boolean indicating to save the figure to a file, rather than
+#        display it on the screen
+# fig_name = if save=True, filename for figure
 def aice_hi_seasonal (mesh_path, file_path1, file_path2, save=False, fig_name=None):
 
     # FESOM parameters
