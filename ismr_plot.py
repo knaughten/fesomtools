@@ -56,9 +56,16 @@ def ismr_plot (mesh_path, file_path, save=False, fig_name=None):
         if elm.cavity:
             values.append(mean([data[elm.nodes[0].id], data[elm.nodes[1].id], data[elm.nodes[2].id]]))
 
+    # Set up a grey square covering the domain, anything that isn't covered
+    # up later is land
+    x_reg, y_reg = meshgrid(linspace(-lat_max, lat_max, num=100), linspace(-lat_max, lat_max, num=100))
+    land_square = zeros(shape(x_reg))
+
     # Plot
     fig = figure(figsize=(16,12))
     ax = fig.add_subplot(1,1,1,aspect='equal')
+    # Start with grey square background for land
+    contourf(x_reg, y_reg, land_square, 1, colors=(('0.6', '0.6', '0.6')))
     img = PatchCollection(patches, cmap=mf_cmap)
     img.set_array(array(values))
     img.set_edgecolor('face')

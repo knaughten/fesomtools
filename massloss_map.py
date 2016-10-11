@@ -111,9 +111,16 @@ def massloss_map (mesh_path, log_path, save=False, fig_name=None):
                         error_tmp = error_vals[index]
             values.append(error_tmp)
 
+    # Set up a grey square covering the domain, anything that isn't covered
+    # up later is land
+    x_reg, y_reg = meshgrid(linspace(-lat_max, lat_max, num=100), linspace(-lat_max, lat_max, num=100))
+    land_square = zeros(shape(x_reg))
+
     # Plot
     fig = figure(figsize=(16,12))
     ax = fig.add_subplot(1,1,1,aspect='equal')
+    # Start with grey square background for land
+    contourf(x_reg, y_reg, land_square, 1, colors=(('0.6', '0.6', '0.6')))
     img = PatchCollection(patches, cmap='RdBu_r')
     img.set_array(array(values))
     img.set_edgecolor('face')

@@ -26,7 +26,7 @@ def ismr_map (mesh_path, log_path, save=False, fig_name=None):
     lat_max = [-69.37, -66.13, -69.5, -74.67, -71.67, -74.17, -74.67, -73.67, -73, -75.17, -76.41, -66.67, -66.5, -64.83, -66.17, -68.33, -68.67, -68.33, -69.33, -69.83, -69.33, -71.5, -77.77, -77]
     # Area of each ice shelf in m^2 (printed to screen during
     # timeseries_massloss.py, update if the mesh changes)
-    area = [8913349811.85, 46584257183.0, 42808123452.1, 427584932349.0, 24722762717.7, 3781726582.37, 2621932896.61, 3962399239.18, 28888280291.9, 4135254416.01, 11700133115.8, 3582900716.02, 3789935863.14, 25475880917.6, 11521918479.5, 63540422738.5, 2734104115.99, 40342528417.8, 6779671751.73, 5666704758.2, 52230325985.9, 70048756435.4, 475369140579.0]
+    area = [9410595961.42, 48147893361.6, 46287951910.9, 429798928470.0, 27030080949.7, 3839594948.81, 2499220358.3, 3908582947.28, 29823059449.5, 4268520899.01, 11108310834.3, 3102730054.84, 4632897701.36, 26030138936.9, 11651566872.8, 64322690314.0, 2957848286.81, 40563562257.6, 6778604330.34, 5671169444.22, 52720412012.5, 72401508276.4, 475666675975.0]
     # Observed melt rate (Rignot 2013) and uncertainty for each ice shelf, in Gt/y
     obs_ismr = [0.1, 0.4, 3.1, 0.3, 1.7, 16.2, 17.7, 7.8, 4.3, 0.6, 1.5, 1.4, 7.7, 2.8, 1.7, 0.6, -0.4, 0.4, 0.7, 0.5, 0.5, 0.1, 0.1]
     obs_ismr_error = [0.6, 1, 0.8, 0.1, 0.6, 1, 1, 0.6, 0.4, 0.3, 0.3, 0.6, 0.7, 0.6, 0.7, 0.4, 0.6, 0.4, 0.2, 0.2, 0.2, 0.2, 0.1]
@@ -122,9 +122,16 @@ def ismr_map (mesh_path, log_path, save=False, fig_name=None):
                         error_tmp = error_vals[index]
             values.append(error_tmp)
 
+    # Set up a grey square covering the domain, anything that isn't covered
+    # up later is land
+    x_reg, y_reg = meshgrid(linspace(-lat_max, lat_max, num=100), linspace(-lat_max, lat_max, num=100))
+    land_square = zeros(shape(x_reg))
+
     # Plot
     fig = figure(figsize=(16,12))
     ax = fig.add_subplot(1,1,1,aspect='equal')
+    # Start with grey square background for land
+    contourf(x_reg, y_reg, land_square, 1, colors=(('0.6', '0.6', '0.6')))
     img = PatchCollection(patches, cmap='RdBu_r')
     img.set_array(array(values))
     img.set_edgecolor('face')
