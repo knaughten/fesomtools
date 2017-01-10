@@ -322,7 +322,7 @@ if __name__ == "__main__":
                 # Get file name for figure
                 fig_name = raw_input("File name for figure: ")
             # Make the plot
-            sose_fesom_seasonal (mesh_path, file_path1, file_path2, var_name, lon0, depth_min, save, fig_name)
+            sose_fesom_seasonal (elements, file_path1, file_path2, var_name, lon0, depth_min, save, fig_name)
         else:
             break
 

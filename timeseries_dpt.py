@@ -15,7 +15,9 @@ from unrotate_vector import *
 # log_file = path to log file (if it exists, previously calculated values will
 #            be read from it; regardless, it will be overwritten with all
 #            calculated values following computation)
-def timeseries_dpt (mesh_path, ocn_file, log_file):
+# fig_dir = optional string containing directory to save figures into. Make
+#           sure it ends with a "/". Default is an empty string.
+def timeseries_dpt (mesh_path, ocn_file, log_file, fig_dir=''):
 
     circumpolar = False  # Don't transform x and y coordinates, we need them!
     cross_180 = False    # Don't make second copies of elements that cross 180E
@@ -103,7 +105,7 @@ def timeseries_dpt (mesh_path, ocn_file, log_file):
     xlabel('Years')
     ylabel('Drake Passage Transport (Sv)')
     grid(True)
-    savefig('drakepsgtrans.png')
+    savefig(fig_dir + 'drakepsgtrans.png')
 
     print 'Saving results to log file'
     f = open(log_file, 'w')

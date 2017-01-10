@@ -3,21 +3,19 @@ from numpy import *
 from scipy.interpolate import griddata
 
 # Read Martin and Adcroft's monthly climatology of freshwater fluxes
-# from iceberg melt, and add to the precipitation fields used by
-# FESOM. I suppose I should technically use a separate field such
-# as runoff, but this is easier and matches ROMS!
+# from iceberg melt, and make an input forcing file on the ERA-Interim
+# grid.
 # Input:
-# file = path to ERA-Interim FC forcing file, containing one year of
-#        monthly averages for total precipitation ("tp") in m/12h
-def add_iceberg_melt (file):
+# out_file = desired path to output file
+def iceberg_melt (out_file):
 
     # Naming conventions for iceberg files
-    iceberg_head = '/short/m68/kaa561/ROMS-CICE-MCT/data/MartinAdcroft2010_iceberg_meltfluxes/icebergs.1861-1960.'
+    iceberg_head = '/short/m68/kaa561/ROMS-CICE-MCT/data/originals/MartinAdcroft2010_iceberg_meltfluxes/icebergs.1861-1960.'
     iceberg_tail = '.melt.nc'
     # Iceberg grid file
-    iceberg_grid = '/short/m68/kaa561/ROMS-CICE-MCT/data/MartinAdcroft2010_iceberg_meltfluxes/icebergs.static.nc'
+    iceberg_grid = '/short/m68/kaa561/ROMS-CICE-MCT/data/originals/MartinAdcroft2010_iceberg_meltfluxes/icebergs.static.nc'
     # File containing ERA-Interim grid
-    era_grid = '/short/y99/kaa561/FESOM/ERA_Interim_monthly/FC_1995_monthly_orig.nc'
+    era_grid = '/short/y99/kaa561/FESOM/ERA_Interim/tair_00.nc'
     # Density of freshwater
     rho_w = 1e3
     # Seconds in 12 hours
@@ -28,6 +26,8 @@ def add_iceberg_melt (file):
     lon_era_1d = id.variables['longitude'][:]
     lat_era_1d = id.variables['latitude'][:]
     id.close()
+    num_lon = size(lon_era_1d)
+    num_lat = size(lat_era_1d)
     # Get a 2D mesh of lon and lat
     lon_era = tile(lon_era_1d, (size(lat_era_1d),1))
     lat_era = transpose(tile(lat_era_1d, (size(lon_era_1d),1)))
@@ -41,6 +41,27 @@ def add_iceberg_melt (file):
     # Make sure longitudes are between 0 and 360
     index = lon_iceberg < 0
     lon_iceberg[index] = lon_iceberg[index] + 360
+
+    # Set up output file
+    out_id = Dataset(out_file, 'w')
+    # Define dimensions
+    out_id.createDimension('longitude', num_lon)
+    out_id.createDimension('latitude', num_lat)
+    out_id.createDimension('time', None)
+    # Define variables
+    out_id.createVariable('longitude', 'f8', ('longitude'))
+    out_id.variables['longitude'].units = 'degrees_east'
+    out_id.variables['longitude'].long_name = 'longitude'
+    out_id.variables['longitude'][:] = lon_era_1d
+    out_id.createVariable('latitude', 'f8', ('latitude'))
+    out_id.variables['latitude'].units = 'degrees_north'
+    out_id.variables['latitude'].long_name = 'latitude'
+    out_id.variables['latitude'][:] = lat_era_1d
+    out_id.createVariable('time', 'f8', ('time'))
+    out_id.variables['time'].units = 'months'
+    out_id.createVariable('icebergs', 'f8', ('time', 'latitude', 'longitude'))
+    out_id.variables['icebergs'].long_name = 'freshwater flux from iceberg melt'
+    out_id.variables['icebergs'].units = 'm_per_12hr'
 
     # Loop over months
     for month in range(12):
@@ -59,10 +80,10 @@ def add_iceberg_melt (file):
         melt_era = interp_iceberg2era(melt_iceberg, lon_iceberg, lat_iceberg, lon_era, lat_era)
         # Convert to m per 12 h
         melt_era = melt_era/rho_w*seconds_per_12h
-        # Add to precipitation field for this month
-        id = Dataset(file, 'a')
-        id.variables['tp'][month,:,:] = id.variables['tp'][month,:,:] + melt_era
-        id.close()
+        # Save to output file
+        out_id.variables['time'][month] = month+1
+        out_id.variables['icebergs'][month,:,:] = melt_era
+    out_id.close()
 
 
 # Given a field A on the iceberg grid, linearly interpolate to the
@@ -106,5 +127,5 @@ def interp_iceberg2era (A, lon_iceberg, lat_iceberg, lon_era, lat_era):
 # Command-line interface
 if __name__ == "__main__":
 
-    file = raw_input('Path to ERA-Interim FC file containing one year of monthly data: ')
-    add_iceberg_melt(file)
+    file = raw_input('Path to desired output file: ')
+    iceberg_melt(file)

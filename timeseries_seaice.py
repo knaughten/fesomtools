@@ -13,7 +13,9 @@ from fesom_grid import *
 # log_file = path to log file (if it exists, previously calculated values will
 #            be read from it; regardless, it will be overwritten with all
 #            calculated values following computation)
-def timeseries_seaice (mesh_path, ice_file, log_file):
+# fig_dir = optional string containing directory to save figures into. Make
+#           sure it ends with a "/". Default is an empty string.
+def timeseries_seaice (mesh_path, ice_file, log_file, fig_dir=''):
 
     circumpolar = True   # Only consider elements south of 30S
     cross_180 = False    # Don't make second copies of elements that cross 180E
@@ -79,15 +81,15 @@ def timeseries_seaice (mesh_path, ice_file, log_file):
     xlabel('Years')
     ylabel(r'Total Sea Ice Area (million km$^2$)')
     grid(True)
-    savefig('seaice_area.png')
+    savefig(fig_dir + 'seaice_area.png')
 
     print 'Plotting total sea ice volume'
     clf()
     plot(time, total_volume)
     xlabel('Years')
-    ylabel(r'Total Sea Ice Volume (million km$^2$)')
+    ylabel(r'Total Sea Ice Volume (million km$^3$)')
     grid(True)
-    savefig('seaice_volume.png')
+    savefig(fig_dir + 'seaice_volume.png')
 
     print 'Saving results to log file'
     f = open(log_file, 'w')

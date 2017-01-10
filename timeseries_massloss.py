@@ -15,7 +15,9 @@ from fesom_grid import *
 # log_file = path to log file (if it exists, previously calculated values will
 #            be read from it; regardless, it will be overwritten with all
 #            calculated values following computation)
-def timeseries_massloss (mesh_path, diag_file, log_file):
+# fig_dir = optional string containing directory to save figures into. Make
+#           sure it ends with a "/". Default is an empty string.
+def timeseries_massloss (mesh_path, diag_file, log_file, fig_dir=''):
 
     # Titles and figure names for each ice shelf
     names = ['All Ice Shelves', 'Larsen D Ice Shelf', 'Larsen C Ice Shelf', 'Wilkins & George VI & Stange Ice Shelves', 'Ronne-Filchner Ice Shelf', 'Abbot Ice Shelf', 'Pine Island Glacier Ice Shelf', 'Thwaites Ice Shelf', 'Dotson Ice Shelf', 'Getz Ice Shelf', 'Nickerson Ice Shelf', 'Sulzberger Ice Shelf', 'Mertz Ice Shelf', 'Totten & Moscow University Ice Shelves', 'Shackleton Ice Shelf', 'West Ice Shelf', 'Amery Ice Shelf', 'Prince Harald Ice Shelf', 'Baudouin & Borchgrevink Ice Shelves', 'Lazarev Ice Shelf', 'Nivl Ice Shelf', 'Fimbul & Jelbart & Ekstrom Ice Shelves', 'Brunt & Riiser-Larsen Ice Shelves', 'Ross Ice Shelf']
@@ -187,7 +189,7 @@ def timeseries_massloss (mesh_path, diag_file, log_file):
             t2.set_color('r')
         # Name of the ice shelf for the main title
         title(names[index])
-        fig.savefig(fig_names[index])     
+        fig.savefig(fig_dir + fig_names[index])     
 
     print 'Saving results to log file'
     f = open(log_file, 'w')

@@ -61,6 +61,10 @@ def unrotate_vector (rlon, rlat, ur, vr):
     vg = -sin(glat)*cos(glon)*vector_xg - sin(glat)*sin(glon)*vector_yg + cos(glat)*vector_zg
     ug = -sin(glon)*vector_xg + cos(glon)*vector_yg
 
+    # Convert rlon and rlat back to degrees for output
+    rlon /= deg2rad
+    rlat /= deg2rad
+
     return ug, vg
     
 

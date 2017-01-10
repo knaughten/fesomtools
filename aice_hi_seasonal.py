@@ -102,7 +102,7 @@ def aice_hi_seasonal (mesh_path, file_path1, file_path2, save=False, fig_name=No
         ax = fig.add_subplot(2, 4, season+5, aspect='equal')
         img = PatchCollection(patches, cmap=jet)
         img.set_array(array(values2))
-        img.set_clim(vmin=0, vmax=1.5)
+        img.set_clim(vmin=0, vmax=2)
         img.set_edgecolor('face')
         ax.add_collection(img)
         xlim([-35, 35])
@@ -112,7 +112,7 @@ def aice_hi_seasonal (mesh_path, file_path1, file_path2, save=False, fig_name=No
             text(-39, 0, 'hi (m)', fontsize=21, ha='right')
         if season == 3:
             cbaxes2 = fig.add_axes([0.92, 0.15, 0.01, 0.3])
-            cbar2 = colorbar(img, ticks=arange(0,1.5+0.5,0.5), cax=cbaxes2)
+            cbar2 = colorbar(img, ticks=arange(0,2+0.5,0.5), cax=cbaxes2)
             cbar2.ax.tick_params(labelsize=16)
     # Decrease space between plots
     subplots_adjust(wspace=0.025,hspace=0.025)

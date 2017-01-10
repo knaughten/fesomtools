@@ -113,7 +113,7 @@ def massloss_map (mesh_path, log_path, save=False, fig_name=None):
 
     # Set up a grey square covering the domain, anything that isn't covered
     # up later is land
-    x_reg, y_reg = meshgrid(linspace(-lat_max, lat_max, num=100), linspace(-lat_max, lat_max, num=100))
+    x_reg, y_reg = meshgrid(linspace(-max_lat_plot, max_lat_plot, num=100), linspace(-max_lat_plot, max_lat_plot, num=100))
     land_square = zeros(shape(x_reg))
 
     # Plot

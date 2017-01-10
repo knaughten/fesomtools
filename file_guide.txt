@@ -235,27 +235,30 @@ timeseries_3D.py: Calculate and plot timeseries of Southern Ocean total heat
 massloss_map.py: Makes a map of unexplained percent error in annually averaged
                  simulated basal mass loss from each ice shelf that is over
 		 5,000 km^2 in Rignot et al., 2013.
-		 To run: First make sure your logfile from
-		         timeseries_massloss.py is up to date, as this script
-			 reads mass loss data from that file. Then open python
-			 or ipython and type "run massloss_map.py". You will be
-			 prompted for the mesh directory, the log file from
-			 timeseries_massloss.py, and whether you want to save
-			 the figure (and if so, what filename) or display it
-			 on the screen.
+		 To run: Make sure your logfile from timeseries_massloss.py is
+		         up to date, as this script reads mass loss data from
+			 that file. Then open python or ipython and type
+			 "run massloss_map.py". You will be prompted for the
+			 mesh directory, the log file from
+			 timeseries_massloss.py, whether you want to save the
+		         figure (and if so, what filename) or display it on the
+		         screen, and whether you are running with Kaitlin's low
+			 or high resolution mesh (if you're running with
+			 something else, code in a third option and make a new
+			 "area" array).
 
 ismr_map.py: Makes a map of unexplained percent error in annually averaged
              simulated melt rate from each ice shelf that is over 5,000 km^2 in
 	     Rignot et al., 2013.
-	     To run: First edit the array "area" containing the area of each
-	             ice shelf in your mesh, as printed to the screen during
-		     timeseries_massloss.py. Then make sure your logfile from
-		     timeseries_massloss.py is up to date, as this script reads
-		     mass loss data from that file. Then open python or ipython
-		     and type "run ismr_map.py". You will be prompted for the
-		     mesh directory, the log file from timeseries_massloss.py,
-		     and whether you want to save the figure (and if so, what
-		     filename) or display it on the screen.
+	     To run: Make sure your logfile from timeseries_massloss.py is up to
+	             date, as this script reads mass loss data from that file.
+		     Then open python or ipython and type "run ismr_map.py".
+		     You will be prompted for the mesh directory, the log file
+		     from timeseries_massloss.py, whether you want to save the
+		     figure (and if so, what filename) or display it on the
+		     screen, and whether you are running with Kaitlin's low or
+		     high resolution mesh (if you're running with something
+		     else, code in a third option and make a new "area" array).
 
 aice_hi_seasonal.py: Creates a 4x2 plot of seasonally averaged sea ice
                      concentration (top row) and thickness (bottom row) over the
@@ -271,6 +274,18 @@ aice_hi_seasonal.py: Creates a 4x2 plot of seasonally averaged sea ice
 			     to save the figure (and if so, what filename) or
 			     display it on the screen. This script is
 			     non-repeating.
+
+timeseries_annual.py: Given the logfiles for 5-day timeseries created using
+                      timeseries_dpt.py, timeseries_seaice.py, and
+		      timeseries_massloss.py, plot annual averages (for Drake
+		      Passage transport and ice shelf melt rates) or annual
+		      max/mins (for sea ice area and volume).
+		      To run: Open python or ipython and type
+			      "run timeseries_annual.py". You will be prompted
+			      for the paths to each log file, and whether you
+			      are running with Kaitlin's low or high resolution
+			      mesh (if you're running with something else, code
+			      in a third option and make a new "area" array).
 
 
 *****BACK END*****
@@ -404,13 +419,12 @@ make_ini.py: Make a FESOM initial conditions text file, with all the columns
 		     and type "run make_ini.py". This is pretty low-tech and
 		     not encapsulated or anything.
 
-add_iceberg_melt.py: Read Martin and Adcroft's monthly climatology of freshwater
-                     fluxes from iceberg melt, and add to the precipitation
-		     fields used by FESOM.
-		     To run: First edit the variables "iceberg_head",
-		             "iceberg_tail", "iceberg_grid", and "era_grid"
-			     near the top of the file to point to the right
-			     paths. Then open python or ipython and type
-			     "run add_iceberg_melt.py". You will be prompted
-			     for the path to the ERA-Interim file, containing
-			     the variable "tp" (total precipitation), to edit.
+iceberg_melt.py: Read Martin and Adcroft's monthly climatology of freshwater
+                 fluxes from iceberg melt, and make an input forcing file on
+		 the ERA-Interim grid.
+		 To run: First edit the variables "iceberg_head",
+		         "iceberg_tail", "iceberg_grid", and "era_grid" near
+			 the top of the file to point to the right paths. Then
+			 open python or ipython and type "run iceberg_melt.py".
+			 You will be prompted or the path to the desired output
+			 file.

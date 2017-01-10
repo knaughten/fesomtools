@@ -9,10 +9,11 @@ from patches import *
 # Input:
 # mesh_path = path to FESOM mesh directory
 # log_path = path to log file created by timeseries_massloss.py
+# res_flag = integer flag indicating low resolution mesh (1) or high (2)
 # save = optional boolean to save the figure to a file, rather than displaying
 #        it on the screen
 # fig_name = if save=True, path to the desired filename for the figure
-def ismr_map (mesh_path, log_path, save=False, fig_name=None):
+def ismr_map (mesh_path, log_path, res_flag, save=False, fig_name=None):
 
     # Limits on longitude and latitude for each ice shelf
     # These depend on the source geometry, in this case RTopo 1.05
@@ -26,8 +27,11 @@ def ismr_map (mesh_path, log_path, save=False, fig_name=None):
     lat_max = [-69.37, -66.13, -69.5, -74.67, -71.67, -74.17, -74.67, -73.67, -73, -75.17, -76.41, -66.67, -66.5, -64.83, -66.17, -68.33, -68.67, -68.33, -69.33, -69.83, -69.33, -71.5, -77.77, -77]
     # Area of each ice shelf in m^2 (printed to screen during
     # timeseries_massloss.py, update if the mesh changes)
-    area = [9410595961.42, 48147893361.6, 46287951910.9, 429798928470.0, 27030080949.7, 3839594948.81, 2499220358.3, 3908582947.28, 29823059449.5, 4268520899.01, 11108310834.3, 3102730054.84, 4632897701.36, 26030138936.9, 11651566872.8, 64322690314.0, 2957848286.81, 40563562257.6, 6778604330.34, 5671169444.22, 52720412012.5, 72401508276.4, 475666675975.0]
-    # Observed melt rate (Rignot 2013) and uncertainty for each ice shelf, in Gt/y
+    if res_flag == 1:
+        area = [9410595961.42, 48147893361.6, 46287951910.9, 429798928470.0, 27030080949.7, 3839594948.81, 2499220358.3, 3908582947.28, 29823059449.5, 4268520899.01, 11108310834.3, 3102730054.84, 4632897701.36, 26030138936.9, 11651566872.8, 64322690314.0, 2957848286.81, 40563562257.6, 6778604330.34, 5671169444.22, 52720412012.5, 72401508276.4, 475666675975.0]
+    elif res_flag == 2:
+        area = [10456222697.1, 50141041705.5, 48253708618.4, 429898475473.0, 28942129634.4, 4388809435.81, 3172043475.79, 4290109356.52, 31663268041.5, 5985509656.36, 12669899186.6, 3911331361.75, 4974780745.66, 27070168363.3, 12236727597.8, 64795820721.7, 3070583821.88, 40914157792.4, 6896940796.67, 5942569502.6, 53559454524.6, 72896644960.9, 476899018047.0]
+    # Observed melt rate (Rignot 2013) and uncertainty for each ice shelf, in m/y
     obs_ismr = [0.1, 0.4, 3.1, 0.3, 1.7, 16.2, 17.7, 7.8, 4.3, 0.6, 1.5, 1.4, 7.7, 2.8, 1.7, 0.6, -0.4, 0.4, 0.7, 0.5, 0.5, 0.1, 0.1]
     obs_ismr_error = [0.6, 1, 0.8, 0.1, 0.6, 1, 1, 0.6, 0.4, 0.3, 0.3, 0.6, 0.7, 0.6, 0.7, 0.4, 0.6, 0.4, 0.2, 0.2, 0.2, 0.2, 0.1]
     # Density of ice in kg/m^3
@@ -124,7 +128,7 @@ def ismr_map (mesh_path, log_path, save=False, fig_name=None):
 
     # Set up a grey square covering the domain, anything that isn't covered
     # up later is land
-    x_reg, y_reg = meshgrid(linspace(-lat_max, lat_max, num=100), linspace(-lat_max, lat_max, num=100))
+    x_reg, y_reg = meshgrid(linspace(-max_lat_plot, max_lat_plot, num=100), linspace(-max_lat_plot, max_lat_plot, num=100))
     land_square = zeros(shape(x_reg))
 
     # Plot
@@ -184,6 +188,7 @@ if __name__ == "__main__":
 
     mesh_path = raw_input("Path to FESOM mesh directory: ")
     log_path = raw_input("Path to mass loss logfile: ")
+    res_flag = int(raw_input("Low resolution (1) or high (2)? "))
     action = raw_input("Save figure (s) or display in window (d)? ")
     if action == 's':
         save = True
@@ -191,7 +196,7 @@ if __name__ == "__main__":
     elif action == 'd':
         save = False
         fig_name = None
-    ismr_map(mesh_path, log_path, save, fig_name)
+    ismr_map(mesh_path, log_path, res_flag, save, fig_name)
         
                 
                 
