@@ -35,11 +35,15 @@ def massloss_map (mesh_path, log_path, save=False, fig_name=None):
     # Assume timeseries are 5-day averages
     days_per_output = 5
     output_per_year = 365.0/days_per_output
+    skipyears=28
+    num_years=14
+    peryear=365/5
 
     # Build FESOM mesh
-    # Get separate patches for the open ocean elements so we can mask them out
-    elements, mask_patches = make_patches(mesh_path, circumpolar, mask_cavities)
-    patches = iceshelf_mask(elements)
+    # Get separate patches for the open ocean and minor ice shelf elements
+    # so we can mask them out
+    elements, mask_patches = make_patches(mesh_path, circumpolar, mask_cavities, only_major=True)
+    patches = iceshelf_mask(elements, only_major=True)
 
     # Read log file
     f = open(log_path, 'r')
@@ -98,18 +102,21 @@ def massloss_map (mesh_path, log_path, save=False, fig_name=None):
     for elm in elements:
         # Make sure we're actually in an ice shelf cavity
         if elm.cavity:
-            error_tmp = 0.0
+            keep = False
             # Loop over ice shelves
             for index in range(len(obs_massloss)):
                 # Figure out whether or not this element is part of the given
                 # ice shelf
                 if all(elm.lon >= lon_min[index]) and all(elm.lon <= lon_max[index]) and all(elm.lat >= lat_min[index]) and all(elm.lat <= lat_max[index]):
+                    keep = True
                     error_tmp = error_vals[index]
                 if index == len(obs_massloss)-1:
                     # Ross region is split into two
                     if all(elm.lon >= lon_min[index+1]) and all(elm.lon <= lon_max[index+1]) and all(elm.lat >= lat_min[index+1]) and all(elm.lat <= lat_max[index+1]):
+                        keep = True
                         error_tmp = error_vals[index]
-            values.append(error_tmp)
+            if keep:
+                values.append(error_tmp)
 
     # Set up a grey square covering the domain, anything that isn't covered
     # up later is land
@@ -158,7 +165,7 @@ def massloss_map (mesh_path, log_path, save=False, fig_name=None):
     ylim([-max_lat_plot, max_lat_plot])
     axis('off')
     title('Bias in Ice Shelf Mass Loss (%)', fontsize=30)
-    cbar = colorbar(img)
+    cbar = colorbar(img, extend='max')
     cbar.ax.tick_params(labelsize=20)
 
     # Finished

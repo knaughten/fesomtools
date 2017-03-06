@@ -46,9 +46,10 @@ def ismr_map (mesh_path, log_path, res_flag, save=False, fig_name=None):
     output_per_year = 365.0/days_per_output
 
     # Build FESOM mesh
-    # Get separate patches for the open ocean elements so we can mask them out
-    elements, mask_patches = make_patches(mesh_path, circumpolar, mask_cavities)
-    patches = iceshelf_mask(elements)
+    # Get separate patches for the open ocean and minor ice shelf elements
+    # so we can mask them out
+    elements, mask_patches = make_patches(mesh_path, circumpolar, mask_cavities, only_major=True)
+    patches = iceshelf_mask(elements, only_major=True)
 
     # Read log file
     f = open(log_path, 'r')
@@ -105,26 +106,25 @@ def ismr_map (mesh_path, log_path, res_flag, save=False, fig_name=None):
 
     # Build a field of ice shelf melt rate unexplained percent error
     values = []
-    # Keep track of which elements are in ice shelves we care about
-    location_flag = zeros(len(elements))
     for i in range(len(elements)):
         elm = elements[i]
         # Make sure we're actually in an ice shelf cavity
         if elm.cavity:
-            error_tmp = 0.0
+            keep = False
             # Loop over ice shelves
             for index in range(len(obs_ismr)):
                 # Figure out whether or not this element is part of the given
                 # ice shelf
                 if all(elm.lon >= lon_min[index]) and all(elm.lon <= lon_max[index]) and all(elm.lat >= lat_min[index]) and all(elm.lat <= lat_max[index]):
-                    location_flag[i] = 1
+                    keep = True
                     error_tmp = error_vals[index]
                 if index == len(obs_ismr)-1:
                     # Ross region is split in two
                     if all(elm.lon >= lon_min[index+1]) and all(elm.lon <= lon_max[index+1]) and all(elm.lat >= lat_min[index+1]) and all(elm.lat <= lat_max[index+1]):
-                        location_flag[i] = 1
+                        keep = True
                         error_tmp = error_vals[index]
-            values.append(error_tmp)
+            if keep:
+                values.append(error_tmp)
 
     # Set up a grey square covering the domain, anything that isn't covered
     # up later is land

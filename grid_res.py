@@ -57,11 +57,12 @@ def grid_res (mesh_path, fig_name, circumpolar=True):
         ax.get_xaxis().set_ticks(arange(-120,120+1,60))
         ax.get_yaxis().set_ticks(arange(-60,60+1,30))
     title('Horizontal grid resolution (km)', fontsize=font_sizes[0])
-    cbar = colorbar(img)
+    cbar = colorbar(img, extend='max')
     cbar.ax.tick_params(labelsize=font_sizes[2])
     img.set_clim(vmin=0, vmax=20)
 
-    savefig(fig_name)
+    show()
+    #savefig(fig_name)
 
 
 # Command-line interface
