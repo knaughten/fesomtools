@@ -166,6 +166,7 @@ if __name__ == "__main__":
                     if int(changes) == 1:
                         update_mesh = True
                         mesh_path = raw_input("Path to FESOM mesh directory: ")
+                        file_path = raw_input("Path to FESOM forcing.diag file: ")
                     elif int(changes) == 2:
                         file_path = raw_input("Path to FESOM forcing.diag file: ")
                     elif int(changes) == 3:

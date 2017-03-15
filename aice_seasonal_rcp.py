@@ -4,6 +4,7 @@ from matplotlib.collections import PatchCollection
 from matplotlib.pyplot import *
 from matplotlib.cm import *
 from patches import *
+from seasonal_avg import *
 
 def aice_seasonal_rcp ():
 
@@ -25,54 +26,12 @@ def aice_seasonal_rcp ():
 
     for expt in range(4):
         # Get seasonal averages of the FESOM output
-        # This is hard-coded and ugly
         # First do 2006-2015 climatology
         file1 = directory_head + expt_paths[expt] + output_dir + filenames[0]
-        id = Dataset(file1, 'r')
-        n2d = id.variables['area'].shape[1]
-        aice1 = zeros([4, n2d])
-        # DJF: 1/5 of index 67 (1-based) and indices 68-73, plus indices 1-11
-         # and 4/5 of index 12; 90 days in total
-        aice1[0,:] = id.variables['area'][66,:] + sum(id.variables['area'][67:73,:]*5, axis=0)
-        aice1[0,:] += sum(id.variables['area'][0:11,:]*5, axis=0) + id.variables['area'][11,:]*4
-        aice1[0,:] /= 90
-        # MAM: 1/5 of index 12, indices 13-30, and 1/5 of index 31;
-        # 92 days in total
-        aice1[1,:] = id.variables['area'][11,:] + sum(id.variables['area'][12:30,:]*5, axis=0) + id.variables['area'][30,:]
-        aice1[1,:] /= 92
-        # JJA: 4/5 of index 31, indices 32-48, and 3/5 of index 49;
-        # 92 days in total
-        aice1[2,:] = id.variables['area'][30,:]*4 + sum(id.variables['area'][31:48,:]*5, axis=0) + id.variables['area'][48,:]*3
-        aice1[2,:] /= 92
-        # SON: 2/5 of index 49, indices 50-66, and 4/5 of index 67;
-        # 91 days in total
-        aice1[3,:] = id.variables['area'][48,:]*2 + sum(id.variables['area'][49:66,:]*5, axis=0) + id.variables['area'][66,:]*4
-        aice1[3,:] /= 91
-        id.close()
+        aice1 = seasonal_avg(file1, file1, 'area')
         # Repeat for 2091-2100 climatology
         file2 = directory_head + expt_paths[expt] + output_dir + filenames[1]
-        id = Dataset(file2, 'r')
-        n2d = id.variables['area'].shape[1]
-        aice2 = zeros([4, n2d])
-        # DJF: 1/5 of index 67 (1-based) and indices 68-73, plus indices 1-11
-         # and 4/5 of index 12; 90 days in total
-        aice2[0,:] = id.variables['area'][66,:] + sum(id.variables['area'][67:73,:]*5, axis=0)
-        aice2[0,:] += sum(id.variables['area'][0:11,:]*5, axis=0) + id.variables['area'][11,:]*4
-        aice2[0,:] /= 90
-        # MAM: 1/5 of index 12, indices 13-30, and 1/5 of index 31;
-        # 92 days in total
-        aice2[1,:] = id.variables['area'][11,:] + sum(id.variables['area'][12:30,:]*5, axis=0) + id.variables['area'][30,:]
-        aice2[1,:] /= 92
-        # JJA: 4/5 of index 31, indices 32-48, and 3/5 of index 49;
-        # 92 days in total
-        aice2[2,:] = id.variables['area'][30,:]*4 + sum(id.variables['area'][31:48,:]*5, axis=0) + id.variables['area'][48,:]*3
-        aice2[2,:] /= 92
-        # SON: 2/5 of index 49, indices 50-66, and 4/5 of index 67;
-        # 91 days in total
-        aice2[3,:] = id.variables['area'][48,:]*2 + sum(id.variables['area'][49:66,:]*5, axis=0) + id.variables['area'][66,:]*4
-        aice2[3,:] /= 91
-        id.close()
-
+        aice2 = seasonal_avg(file2, file2, 'area')
         # Plot
         fig = figure(figsize=(20,9))
         # Loop over seasons

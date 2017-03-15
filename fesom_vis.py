@@ -108,6 +108,7 @@ def fesom_vis_lonlat ():
                         mesh_path = raw_input("Path to mesh directory: ")
                         # We will have to make a new grid
                         new_grid = True
+                        file_path = raw_input("Path to FESOM output file: ")
                     elif int(changes) == 2:
                         # New FESOM output file
                         file_path = raw_input("Path to FESOM output file: ")
@@ -178,13 +179,14 @@ def fesom_vis_lonlat ():
                         new_grid = True
                     mask_cavities = tmp_mask
 
+            if save:
+                # Get file name for figure
+                fig_name = raw_input("File name for figure: ")
+
             if new_grid:
                 # Build a new grid if necessary
                 elements, patches = make_patches(mesh_path, circumpolar, mask_cavities)
-            if save:
-                # Get file name for figure
-                fig_name = raw_input("File name for figure: ")        
-
+                
             # Call lonlat_plot
             lonlat_plot(mesh_path, file_path, var_name, depth_key, depth, depth_bounds, tstep, circumpolar, elements, patches, mask_cavities, save, fig_name, set_limits, limits)
 

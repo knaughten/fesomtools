@@ -4,6 +4,7 @@ from matplotlib.collections import PatchCollection
 from matplotlib.pyplot import *
 from matplotlib.cm import *
 from patches import *
+from monthly_avg import *
 
 # Plot monthly averages of sea ice concentration over the last year of
 # simulation with FESOM, compared with NSIDC satellite data for 1995.
@@ -27,53 +28,9 @@ def nsidc_aice_monthly (elements, patches, file_path, month, save=False, fig_nam
     nsidc_tail = '_v02r00.nc'
     # Degrees to radians conversion factor
     deg2rad = pi/180.0
-    # Number of days per month
-    ndays_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
     # Get monthly average of the FESOM output
-    # This is hard-coded and ugly
-    id = Dataset(file_path, 'r')
-    n2d = id.variables['area'].shape[1]
-    fesom_data = zeros(n2d)
-    if month == 0:
-        # January: indices 1-6 (1-based) and 1/5 of index 7
-        fesom_data = sum(id.variables['area'][0:6,:]*5, axis=0) + id.variables['area'][6,:]
-    elif month == 1:
-        # Feburary: 4/5 of index 7, indices 8-11, and 4/5 of index 12
-        fesom_data = id.variables['area'][6,:]*4 + sum(id.variables['area'][7:11,:]*5, axis=0) + id.variables['area'][11,:]*4
-    elif month == 2:
-        # March: 1/5 of index 12 and indices 13-18
-        fesom_data = id.variables['area'][12,:] + sum(id.variables['area'][12:18,:]*5, axis=0)
-    elif month == 3:
-        # April: indices 19-24
-        fesom_data = sum(id.variables['area'][18:24,:]*5, axis=0)
-    elif month == 4:
-        # May: indices 25-30, 1/5 of index 31
-        fesom_data = sum(id.variables['area'][24:30,:]*5, axis=0) + id.variables['area'][30,:]
-    elif month == 5:
-        # June: 4/5 of index 31, indices 32-36, 1/5 of index 37
-        fesom_data = id.variables['area'][30,:]*4 + sum(id.variables['area'][31:36,:]*5, axis=0) + id.variables['area'][36,:]
-    elif month == 6:
-        # July: 4/5 of index 37, indices 38-42, 2/5 of index 43
-        fesom_data = id.variables['area'][36,:]*4 + sum(id.variables['area'][37:42,:]*5, axis=0) + id.variables['area'][42,:]*2
-    elif month == 7:
-        # August: 3/5 of index 43, indices 44-48, 3/5 of index 49
-        fesom_data = id.variables['area'][42,:]*3 + sum(id.variables['area'][43:48,:]*5, axis=0) + id.variables['area'][48,:]*3
-    elif month == 8:
-        # September: 2/5 of index 49, indices 50-54, 3/5 of index 55
-        fesom_data = id.variables['area'][48,:]*2 + sum(id.variables['area'][49:54,:]*5, axis=0) + id.variables['area'][54,:]*3
-    elif month == 9:
-        # October: 2/5 of index 55, indices 56-60, 4/5 of index 61
-        fesom_data = id.variables['area'][54,:]*2 + sum(id.variables['area'][55:60,:]*5, axis=0) + id.variables['area'][60,:]*4
-    elif month == 10:
-        # November: 1/5 of index 61, indices 62-66, 4/5 of index 67
-        fesom_data = id.variables['area'][60,:] + sum(id.variables['area'][61:66,:]*5, axis=0) + id.variables['area'][66,:]*4
-    elif month == 11:
-        # December: 1/5 of index 67, indices 68-73
-        fesom_data = id.variables['area'][66,:] + sum(id.variables['area'][67:73,:]*5, axis=0)
-    id.close()
-    # Convert from sum to average
-    fesom_data /= ndays_month[month]
+    fesom_data = monthly_avg(file_path, 'area', month)
 
     # Build an array of FESOM data values corresponding to each Element
     values = []

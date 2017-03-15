@@ -4,6 +4,7 @@ from matplotlib.collections import PatchCollection
 from matplotlib.pyplot import *
 from matplotlib.cm import *
 from patches import *
+from monthly_avg import *
 
 def aice_minmax_nsidc ():
 
@@ -23,10 +24,9 @@ def aice_minmax_nsidc ():
     deg2rad = pi/180.0
 
     elements_low, patches_low = make_patches(mesh_low, circumpolar, mask_cavities)
-    id = Dataset(directory_head + expt_dir[0] + fesom_file, 'r')
-    feb_lowres = (id.variables['area'][6,:]*4 + sum(id.variables['area'][7:11,:]*5, axis=0) + id.variables['area'][11,:]*4)/28
-    aug_lowres = (id.variables['area'][42,:]*3 + sum(id.variables['area'][43:48,:]*5, axis=0) + id.variables['area'][48,:]*3)/31
-    id.close()
+    file_path = directory_head + expt_dir[0] + fesom_file
+    feb_lowres = monthly_avg(file_path, 'area', 1)
+    aug_lowres = monthly_avg(file_path, 'area', 7)
     feb_lowres_values = []
     aug_lowres_values = []
     for elm in elements_low:
@@ -35,10 +35,9 @@ def aice_minmax_nsidc ():
             aug_lowres_values.append(mean([aug_lowres[elm.nodes[0].id], aug_lowres[elm.nodes[1].id], aug_lowres[elm.nodes[2].id]]))
 
     elements_high, patches_high = make_patches(mesh_high, circumpolar, mask_cavities)
-    id = Dataset(directory_head + expt_dir[1] + fesom_file, 'r')
-    feb_highres = (id.variables['area'][6,:]*4 + sum(id.variables['area'][7:11,:]*5, axis=0) + id.variables['area'][11,:]*4)/28
-    aug_highres = (id.variables['area'][42,:]*3 + sum(id.variables['area'][43:48,:]*5, axis=0) + id.variables['area'][48,:]*3)/31
-    id.close()
+    file_path = directory_head + expt_dir[1] + fesom_file
+    feb_highres = monthly_avg(file_path, 'area', 1)
+    aug_highres = monthly_avg(file_path, 'area', 7)
     feb_highres_values = []
     aug_highres_values = []
     for elm in elements_high:

@@ -6,6 +6,7 @@ from matplotlib.pyplot import *
 from matplotlib.cm import *
 from fesom_grid import *
 from fesom_sidegrid import *
+from seasonal_avg import *
 
 def temp_salt_seasonal (elements, file_path1, file_path2, lon0, depth_min, save=False, fig_name=None):
 
@@ -22,41 +23,9 @@ def temp_salt_seasonal (elements, file_path1, file_path2, lon0, depth_min, save=
     else:
         lon_string = ' at ' + str(int(round(lon0))) + r'$^{\circ}$E'
 
-    # Get seasonal averages of the FESOM output
-    # This is hard-coded and ugly
-    id = Dataset(file_path1, 'r')
-    n2d = id.variables['temp'].shape[1]
-    temp_data = zeros([4, n2d])
-    salt_data = zeros([4, n2d])
-    # DJF: 1/5 of index 67 (1-based) and indices 68-73 in file1; indices 1-11
-    # and 4/5 of index 12 in file2; 90 days in total
-    temp_data[0,:] = id.variables['temp'][66,:] + sum(id.variables['temp'][67:73,:]*5, axis=0)
-    salt_data[0,:] = id.variables['salt'][66,:] + sum(id.variables['salt'][67:73,:]*5, axis=0)
-    id.close()
-    id = Dataset(file_path2, 'r')
-    temp_data[0,:] += sum(id.variables['temp'][0:11,:]*5, axis=0) + id.variables['temp'][11,:]*4
-    temp_data[0,:] /= 90
-    salt_data[0,:] += sum(id.variables['salt'][0:11,:]*5, axis=0) + id.variables['salt'][11,:]*4
-    salt_data[0,:] /= 90
-    # MAM: 1/5 of index 12, indices 13-30, and 1/5 of index 31 in file2;
-    # 92 days in total
-    temp_data[1,:] = id.variables['temp'][11,:] + sum(id.variables['temp'][12:30,:]*5, axis=0) + id.variables['temp'][30,:]
-    temp_data[1,:] /= 92
-    salt_data[1,:] = id.variables['salt'][11,:] + sum(id.variables['salt'][12:30,:]*5, axis=0) + id.variables['salt'][30,:]
-    salt_data[1,:] /= 92
-    # JJA: 4/5 of index 31, indices 32-48, and 3/5 of index 49 in file2;
-    # 92 days in total
-    temp_data[2,:] = id.variables['temp'][30,:]*4 + sum(id.variables['temp'][31:48]*5, axis=0) + id.variables['temp'][48,:]*3
-    temp_data[2,:] /= 92
-    salt_data[2,:] = id.variables['salt'][30,:]*4 + sum(id.variables['salt'][31:48]*5, axis=0) + id.variables['salt'][48,:]*3
-    salt_data[2,:] /= 92
-    # SON: 2/5 of index 49, indices 50-66, and 4/5 of index 67 in file2;
-    # 91 days in total
-    temp_data[3,:] = id.variables['temp'][48,:]*2 + sum(id.variables['temp'][49:66,:]*5, axis=0) + id.variables['temp'][66,:]*4
-    temp_data[3,:] /= 91
-    salt_data[3,:] = id.variables['salt'][48,:]*2 + sum(id.variables['salt'][49:66,:]*5, axis=0) + id.variables['salt'][66,:]*4
-    salt_data[3,:] /= 91
-    id.close()
+    # Get seasonal averages of temperature and salinity
+    temp_data = seasonal_avg(file_path1, file_path2, 'temp')
+    salt_data = seasonal_avg(file_path1, file_path2, 'salt')
 
     # Set colour levels
     lev1 = linspace(var_min[0], var_max[0], num=50)

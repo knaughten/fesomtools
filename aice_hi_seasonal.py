@@ -4,6 +4,7 @@ from matplotlib.collections import PatchCollection
 from matplotlib.pyplot import *
 from matplotlib.cm import *
 from patches import *
+from seasonal_avg import *
 
 # Creates a 4x2 plot of seasonally averaged sea ice concentration (top row) and
 # thickness (bottom row) over the last year of simulation.
@@ -29,40 +30,8 @@ def aice_hi_seasonal (mesh_path, file_path1, file_path2, save=False, fig_name=No
     elements, patches = make_patches(mesh_path, circumpolar, mask_cavities)
 
     # Get seasonal averages of the FESOM output
-    # This is hard-coded and ugly
-    id = Dataset(file_path1, 'r')
-    n2d = id.variables['area'].shape[1]
-    aice = zeros([4, n2d])
-    hi = zeros([4, n2d])
-    # DJF: 1/5 of index 67 (1-based) and indices 68-73 in file1; indices 1-11
-    # and 4/5 of index 12 in file2; 90 days in total
-    aice[0,:] = id.variables['area'][66,:] + sum(id.variables['area'][67:73,:]*5, axis=0)
-    hi[0,:] = id.variables['hice'][66,:] + sum(id.variables['hice'][67:73,:]*5, axis=0)
-    id.close()
-    id = Dataset(file_path2, 'r')
-    aice[0,:] += sum(id.variables['area'][0:11,:]*5, axis=0) + id.variables['area'][11,:]*4
-    aice[0,:] /= 90
-    hi[0,:] += sum(id.variables['hice'][0:11,:]*5, axis=0) + id.variables['hice'][11,:]*4
-    hi[0,:] /= 90
-    # MAM: 1/5 of index 12, indices 13-30, and 1/5 of index 31 in file2;
-    # 92 days in total
-    aice[1,:] = id.variables['area'][11,:] + sum(id.variables['area'][12:30,:]*5, axis=0) + id.variables['area'][30,:]
-    aice[1,:] /= 92
-    hi[1,:] = id.variables['hice'][11,:] + sum(id.variables['hice'][12:30,:]*5, axis=0) + id.variables['hice'][30,:]
-    hi[1,:] /= 92
-    # JJA: 4/5 of index 31, indices 32-48, and 3/5 of index 49 in file2;
-    # 92 days in total
-    aice[2,:] = id.variables['area'][30,:]*4 + sum(id.variables['area'][31:48,:]*5, axis=0) + id.variables['area'][48,:]*3
-    aice[2,:] /= 92
-    hi[2,:] = id.variables['hice'][30,:]*4 + sum(id.variables['hice'][31:48,:]*5, axis=0) + id.variables['hice'][48,:]*3
-    hi[2,:] /= 92
-    # SON: 2/5 of index 49, indices 50-66, and 4/5 of index 67 in file2;
-    # 91 days in total
-    aice[3,:] = id.variables['area'][48,:]*2 + sum(id.variables['area'][49:66,:]*5, axis=0) + id.variables['area'][66,:]*4
-    aice[3,:] /= 91
-    hi[3,:] = id.variables['hice'][48,:]*2 + sum(id.variables['hice'][49:66,:]*5, axis=0) + id.variables['hice'][66,:]*4
-    hi[3,:] /= 91
-    id.close()
+    aice = seasonal_avg(file_path1, file_path2, 'area')
+    hice = seasonal_avg(file_path1, file_path2, 'hice')
 
     # Plot
     fig = figure(figsize=(20,9))

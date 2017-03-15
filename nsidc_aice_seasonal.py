@@ -4,6 +4,7 @@ from matplotlib.collections import PatchCollection
 from matplotlib.pyplot import *
 from matplotlib.cm import *
 from patches import *
+from seasonal_avg import *
 
 # Plot seasonal averages of sea ice concentration over the last year of
 # simulation with FESOM, compared with NSIDC satellite data for 1995.
@@ -38,30 +39,7 @@ def nsidc_aice_seasonal (mesh_path, file_path1, file_path2, save=False, fig_name
     elements, patches = make_patches(mesh_path, circumpolar, mask_cavities)
 
     # Get seasonal averages of the FESOM output
-    # This is hard-coded and ugly
-    id = Dataset(file_path1, 'r')
-    n2d = id.variables['area'].shape[1]
-    fesom_data = zeros([4, n2d])
-    # DJF: 1/5 of index 67 (1-based) and indices 68-73 in file1; indices 1-11
-    # and 4/5 of index 12 in file2; 90 days in total
-    fesom_data[0,:] = id.variables['area'][66,:] + sum(id.variables['area'][67:73,:]*5, axis=0)
-    id.close()
-    id = Dataset(file_path2, 'r')
-    fesom_data[0,:] += sum(id.variables['area'][0:11,:]*5, axis=0) + id.variables['area'][11,:]*4
-    fesom_data[0,:] /= 90
-    # MAM: 1/5 of index 12, indices 13-30, and 1/5 of index 31 in file2;
-    # 92 days in total
-    fesom_data[1,:] = id.variables['area'][11,:] + sum(id.variables['area'][12:30,:]*5, axis=0) + id.variables['area'][30,:]
-    fesom_data[1,:] /= 92
-    # JJA: 4/5 of index 31, indices 32-48, and 3/5 of index 49 in file2;
-    # 92 days in total
-    fesom_data[2,:] = id.variables['area'][30,:]*4 + sum(id.variables['area'][31:48]*5, axis=0) + id.variables['area'][48,:]*3
-    fesom_data[2,:] /= 92
-    # SON: 2/5 of index 49, indices 50-66, and 4/5 of index 67 in file2;
-    # 91 days in total
-    fesom_data[3,:] = id.variables['area'][48,:]*2 + sum(id.variables['area'][49:66,:]*5, axis=0) + id.variables['area'][66,:]*4
-    fesom_data[3,:] /= 91
-    id.close()
+    fesom_data = seasonal_avg(file_path1, file_path2, 'area')
 
     # Read NSIDC grid from the January file
     id = Dataset(nsidc_head_0 + '199501' + nsidc_tail, 'r')

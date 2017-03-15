@@ -6,6 +6,7 @@ from matplotlib.pyplot import *
 from matplotlib.cm import *
 from fesom_grid import *
 from fesom_sidegrid import *
+from seasonal_avg import *
 
 # Make a 4x2 plot comparing lat vs. depth slices of seasonally averaged
 # temperature or salinity at the given longitude, between FESOM (given year
@@ -70,30 +71,7 @@ def sose_fesom_seasonal (elements, file_path1, file_path2, var_name, lon0, depth
         var_sose[season,:,:] = interp_lon_sose(var_3d_sose[season,:,:,:], lon_sose, lon0)
 
     # Get seasonal averages of the FESOM output
-    # This is hard-coded and ugly
-    id = Dataset(file_path1, 'r')
-    n2d = id.variables[var_name].shape[1]
-    fesom_data = zeros([4, n2d])
-    # DJF: 1/5 of index 67 (1-based) and indices 68-73 in file1; indices 1-11
-    # and 4/5 of index 12 in file2; 90 days in total
-    fesom_data[0,:] = id.variables[var_name][66,:] + sum(id.variables[var_name][67:73,:]*5, axis=0)
-    id.close()
-    id = Dataset(file_path2, 'r')
-    fesom_data[0,:] += sum(id.variables[var_name][0:11,:]*5, axis=0) + id.variables[var_name][11,:]*4
-    fesom_data[0,:] /= 90
-    # MAM: 1/5 of index 12, indices 13-30, and 1/5 of index 31 in file2;
-    # 92 days in total
-    fesom_data[1,:] = id.variables[var_name][11,:] + sum(id.variables[var_name][12:30,:]*5, axis=0) + id.variables[var_name][30,:]
-    fesom_data[1,:] /= 92
-    # JJA: 4/5 of index 31, indices 32-48, and 3/5 of index 49 in file2;
-    # 92 days in total
-    fesom_data[2,:] = id.variables[var_name][30,:]*4 + sum(id.variables[var_name][31:48]*5, axis=0) + id.variables[var_name][48,:]*3
-    fesom_data[2,:] /= 92
-    # SON: 2/5 of index 49, indices 50-66, and 4/5 of index 67 in file2;
-    # 91 days in total
-    fesom_data[3,:] = id.variables[var_name][48,:]*2 + sum(id.variables[var_name][49:66,:]*5, axis=0) + id.variables[var_name][66,:]*4
-    fesom_data[3,:] /= 91
-    id.close()
+    fesom_data = seasonal_avg(file_path1, file_path2, var_name)
 
     # Set colour levels
     lev = linspace(var_min, var_max, num=50)
