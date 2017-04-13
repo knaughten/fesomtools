@@ -10,7 +10,7 @@ from fesom_sidegrid import *
 def temp_salt_slice (elm2D, file_path, tstep, lon0, depth_min, save=False, fig_name=None):
 
     # Set northern boundary and upper (surface) boundary
-    lat_max = -50
+    lat_max = -30
     depth_max = 0
 
     var_min = [-2, 33.8]

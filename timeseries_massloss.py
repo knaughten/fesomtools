@@ -39,7 +39,7 @@ def timeseries_massloss (mesh_path, diag_file, log_file, fig_dir=''):
     obs_ismr = [0.85, 0.1, 0.4, 3.1, 0.3, 1.7, 16.2, 17.7, 7.8, 4.3, 0.6, 1.5, 1.4, 7.7, 2.8, 1.7, 0.6, -0.4, 0.4, 0.7, 0.5, 0.5, 0.1, 0.1]
     obs_ismr_error = [0.1, 0.6, 1, 0.8, 0.1, 0.6, 1, 1, 0.6, 0.4, 0.3, 0.3, 0.6, 0.7, 0.6, 0.7, 0.4, 0.6, 0.4, 0.2, 0.2, 0.2, 0.2, 0.1]
     # Density of ice in kg/m^3
-    rho_ice = 916    
+    rho_ice = 916
 
     circumpolar = True   # Only consider elements south of 30S
     cross_180 = False    # Don't make second copies of elements that cross 180E
@@ -106,7 +106,7 @@ def timeseries_massloss (mesh_path, diag_file, log_file, fig_dir=''):
         # Make sure we're actually in an ice shelf cavity
         if elm.cavity:
             # Average ice shelf melt rate timeseries over 3 component nodes
-            ismr_elm[:,i] = (ismr[:,elm.nodes[0].id] + ismr[:,elm.nodes[1].id] + ismr[:,elm.nodes[2].id])/3
+            ismr_elm[:,i] = (ismr[:,elm.nodes[0].id] + ismr[:,elm.nodes[1].id] +ismr[:,elm.nodes[2].id])/3
             # Call area function
             area_elm[i] = elm.area()
             # Loop over ice shelves
@@ -125,7 +125,7 @@ def timeseries_massloss (mesh_path, diag_file, log_file, fig_dir=''):
     factors = empty(len(names))
     for index in range(len(names)):
         # Calculate area of the ice shelf
-        tmp_area = area_is[index] #sum(area_elm*location_flag[index,:])
+        tmp_area = sum(area_elm*location_flag[index,:])
         factors[index] = 1e12/(rho_ice*tmp_area)
         print 'Area of ' + names[index] + ': ' + str(tmp_area) + ' m^2'
 

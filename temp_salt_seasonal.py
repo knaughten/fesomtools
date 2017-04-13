@@ -13,9 +13,9 @@ def temp_salt_seasonal (elements, file_path1, file_path2, lon0, depth_min, save=
     lat_max = -30
     season_names = ['DJF', 'MAM', 'JJA', 'SON']
 
-    var_min = [-2.5, 33.6]
-    var_max = [3.5, 34.8]
-    var_ticks = [1, 0.2]
+    var_min = [-4, -0.5] #[-2.5, 33.6]
+    var_max = [4, 0.5] #[3.5, 34.8]
+    var_ticks = [2, 0.25] #[1, 0.2]
 
     # Choose what to write on the title about longitude
     if lon0 < 0:
@@ -37,7 +37,7 @@ def temp_salt_seasonal (elements, file_path1, file_path2, lon0, depth_min, save=
         print 'Calculating zonal slices for ' + season_names[season]
         patches, values, lat_min = interp_lon_fesom(elements, lat_max, lon0, temp_data[season,:])
         ax = fig.add_subplot(2, 4, season+1)
-        img = PatchCollection(patches, cmap=jet)
+        img = PatchCollection(patches, cmap='RdBu_r') #jet)
         img.set_array(array(values))
         img.set_edgecolor('face')
         img.set_clim(vmin=var_min[0], vmax=var_max[0])
@@ -53,7 +53,7 @@ def temp_salt_seasonal (elements, file_path1, file_path2, lon0, depth_min, save=
             cbar1.ax.tick_params(labelsize=16)
         patches, values, lat_min = interp_lon_fesom(elements, lat_max, lon0, salt_data[season,:])
         ax = fig.add_subplot(2, 4, season+5)
-        img = PatchCollection(patches, cmap=jet)
+        img = PatchCollection(patches, cmap='RdBu_r') #jet)
         img.set_array(array(values))
         img.set_edgecolor('face')
         img.set_clim(vmin=var_min[1], vmax=var_max[1])
