@@ -63,10 +63,11 @@ def ismr_seasonal (mesh_path, file_path1, file_path2, save=False, fig_name=None)
         ax = fig.add_subplot(1, 4, season+1, aspect='equal')
         # Start with grey square background for land
         contourf(x_reg, y_reg, land_square, 1, colors=(('0.6', '0.6', '0.6')))
-        img = PatchCollection(patches, cmap=mf_cmap)
+        img = PatchCollection(patches, cmap='RdBu_r') #mf_cmap)
         img.set_array(array(values))
         img.set_edgecolor('face')
-        img.set_clim(vmin=-0.1, vmax=8)
+        img.set_clim(vmin=-3, vmax=3)
+        #img.set_clim(vmin=-0.1, vmax=8)
         ax.add_collection(img)
         # Mask out the open ocean in white
         overlay = PatchCollection(mask_patches, facecolor=(1,1,1))
