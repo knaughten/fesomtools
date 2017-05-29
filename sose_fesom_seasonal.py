@@ -28,13 +28,13 @@ def sose_fesom_seasonal (elements, file_path1, file_path2, var_name, lon0, depth
 
     # Path to SOSE seasonal climatology file
     sose_file = '/short/m68/kaa561/SOSE_seasonal_climatology.nc'
-    lat_max = -30
+    lat_max = -60 #-30
     season_names = ['DJF', 'MAM', 'JJA', 'SON']
 
     # Bounds on colour scale
     if var_name == 'temp':
         var_min = -2.5
-        var_max = 7.5
+        var_max = 3.5 #7.5
         var_ticks = 1
     elif var_name == 'salt':
         var_min = 33.8
