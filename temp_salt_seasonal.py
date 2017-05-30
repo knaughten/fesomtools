@@ -8,11 +8,26 @@ from fesom_grid import *
 from fesom_sidegrid import *
 from seasonal_avg import *
 
+# Make a 4x2 plot showing seasonally averaged temperature (top) and salinity
+# (bottom) interpolated to a given longitude, i.e. latitude vs. depth slices.
+# Input:
+# elements = FESOM grid elements (from fesom_grid.py)
+# file_path1, file_path2 = paths to two FESOM output oce.mean.nc files, each
+#                          containing one year of 5-day averages. The script
+#                          will use December from file_path1 and January
+#                          through November from file_path2.
+# lon0 = longitude to interpolate to (-180 to 180)
+# depth_min = deepest depth to plot (negative, in metres)
+# save = optional boolean indicating to save the figure, rather than display
+# fig_name = if save=True, filename for figure
 def temp_salt_seasonal (elements, file_path1, file_path2, lon0, depth_min, save=False, fig_name=None):
 
+    # Northern boundary for plot
     lat_max = -60 #-30
+    # Season names for titles
     season_names = ['DJF', 'MAM', 'JJA', 'SON']
 
+    # Bounds on colour scales for temperature and salinity
     var_min = [-2.5, 33.8]
     var_max = [3.5, 34.8]
     var_ticks = [1, 0.2]
@@ -33,8 +48,10 @@ def temp_salt_seasonal (elements, file_path1, file_path2, lon0, depth_min, save=
 
     # Plot
     fig = figure(figsize=(20,9))
+    # Loop over seasons
     for season in range(4):
         print 'Calculating zonal slices for ' + season_names[season]
+        # Interpolate temperature to lon0
         patches, values, lat_min = interp_lon_fesom(elements, lat_max, lon0, temp_data[season,:])
         ax = fig.add_subplot(2, 4, season+1)
         img = PatchCollection(patches, cmap=jet)
@@ -46,11 +63,14 @@ def temp_salt_seasonal (elements, file_path1, file_path2, lon0, depth_min, save=
         ylim([depth_min, 0])
         title('Temperature (' + season_names[season] + ')', fontsize=24)
         if season == 0:
+            # Add depth label on the left
             ylabel('depth (m)', fontsize=18)
         if season == 3:
+            # Add a colourbar on the right
             cbaxes = fig.add_axes([0.93, 0.6, 0.015, 0.3])
             cbar1 = colorbar(img, cax=cbaxes, ticks=arange(var_min[0], var_max[0]+var_ticks[0], var_ticks[0]))
             cbar1.ax.tick_params(labelsize=16)
+        # Repeat for salinity
         patches, values, lat_min = interp_lon_fesom(elements, lat_max, lon0, salt_data[season,:])
         ax = fig.add_subplot(2, 4, season+5)
         img = PatchCollection(patches, cmap=jet)

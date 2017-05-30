@@ -7,6 +7,16 @@ from matplotlib.colors import LinearSegmentedColormap
 from patches import *
 from seasonal_avg import *
 
+# Make a 4x1 plot of seasonally averaged (DJF, MAM, JJA, SON) circumpolar ice
+# shelf melt rates.
+# Input:
+# mesh_path = path to FESOM mesh directory
+# file_path1 = path to FESOM output forcing.diag.nc file containing one year
+#              of 5-day averages (December will be used)
+# file_path2 = path to forcing.diag.nc file for the following year (January to
+#              November will be used)
+# save = optional boolean indicating to save the figure, rather than display
+# fig_name = if save=True, filename for figure
 def ismr_seasonal (mesh_path, file_path1, file_path2, save=False, fig_name=None):
 
     # Plotting parameters
@@ -114,6 +124,7 @@ def ismr_seasonal (mesh_path, file_path1, file_path2, save=False, fig_name=None)
         fig.show()
 
 
+# Command-line interface
 if __name__ == "__main__":
 
     mesh_path = raw_input("Path to FESOM mesh directory: ")

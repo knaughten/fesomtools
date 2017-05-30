@@ -6,16 +6,34 @@ from matplotlib.cm import *
 from matplotlib.colors import LinearSegmentedColormap
 from patches import *
 
+# Plot the ice shelf melt rate field in the given region.
+# Input:
+# elements = FESOM grid elements (created by fesom_grid.py)
+# mask_patches = plotting patches for all elements (created by make_patches in
+#                patches.py)
+# patches = plotting patches for ice shelf elements (created by iceshelf_mask in
+#           patches.py)
+# file_path = path to FESOM forcing.diag.nc file
+# tstep = time index in file_path to plot
+# bounds = list of size 4 containing minimum longitude, maximum longitude,
+#          minimum latitude, maximum latitude to plot. The actual bounds will
+#          be larger due to the circumpolar projection and the need for a square
+#          plot.
+# save = optional boolean indicating to save the figure, rather than display
+# fig_name = if save=True, filename for figure
 def ismr_plot_bound (elements, mask_patches, patches, file_path, tstep, bounds, save=False, fig_name=None):
 
+    # Constants
     sec_per_year = 365*24*3600
     deg2rad = pi/180.0
 
     # Choose bounds on circumpolar plot
+    # User-defined lon-lat bounds
     lon_min = bounds[0]
     lon_max = bounds[1]
     lat_min = bounds[2]
     lat_max = bounds[3]
+    # Convert to polar coordinates for plotting
     x1 = -(lat_min+90)*cos(lon_min*deg2rad+pi/2)
     y1 = (lat_min+90)*sin(lon_min*deg2rad+pi/2)
     x2 = -(lat_min+90)*cos(lon_max*deg2rad+pi/2)
@@ -24,10 +42,13 @@ def ismr_plot_bound (elements, mask_patches, patches, file_path, tstep, bounds, 
     y3 = (lat_max+90)*sin(lon_min*deg2rad+pi/2)
     x4 = -(lat_max+90)*cos(lon_max*deg2rad+pi/2)
     y4 = (lat_max+90)*sin(lon_max*deg2rad+pi/2)
+    # Find the new bounds on x and y
     x_min = amin(array([x1, x2, x3, x4]))
     x_max = amax(array([x1, x2, x3, x4]))
     y_min = amin(array([y1, y2, y3, y4]))
     y_max = amax(array([y1, y2, y3, y4]))
+    # Now make the plot square: enlarge the smaller of delta_x and delta_y
+    # so they are equal
     delta_x = x_max - x_min
     delta_y = y_max - y_min
     if delta_x > delta_y:
@@ -61,6 +82,7 @@ def ismr_plot_bound (elements, mask_patches, patches, file_path, tstep, bounds, 
 
     # Set colour map
     if var_min < 0:
+        # There is refreezing here; include blue for elements below 0
         cmap_vals = array([var_min, 0, 0.25*var_max, 0.5*var_max, 0.75*var_max, var_max])
         cmap_colors = [(0.26, 0.45, 0.86), (1, 1, 1), (1, 0.9, 0.4), (0.99, 0.59, 0.18), (0.5, 0.0, 0.08), (0.96, 0.17, 0.89)]
         cmap_vals_norm = (cmap_vals - var_min)/(var_max - var_min)
@@ -69,6 +91,7 @@ def ismr_plot_bound (elements, mask_patches, patches, file_path, tstep, bounds, 
             cmap_list.append((cmap_vals_norm[i], cmap_colors[i]))
         mf_cmap = LinearSegmentedColormap.from_list('melt_freeze', cmap_list)
     else:
+        # No refreezing
         cmap_vals = array([0, 0.25*var_max, 0.5*var_max, 0.75*var_max, var_max])
         cmap_colors = [(1, 1, 1), (1, 0.9, 0.4), (0.99, 0.59, 0.18), (0.5, 0.0, 0.08), (0.96, 0.17, 0.89)]
         cmap_vals_norm = cmap_vals/var_max
@@ -77,12 +100,16 @@ def ismr_plot_bound (elements, mask_patches, patches, file_path, tstep, bounds, 
             cmap_list.append((cmap_vals_norm[i], cmap_colors[i]))
         mf_cmap = LinearSegmentedColormap.from_list('melt_freeze', cmap_list)
 
+    # Make grey square to fill in the background as land
     x_reg, y_reg = meshgrid(linspace(x_min, x_max, num=100), linspace(y_min, y_max, num=100))
     land_square = zeros(shape(x_reg))
 
+    # Plot
     fig = figure(figsize=(16,12))
     ax = fig.add_subplot(1,1,1,aspect='equal')
+    # Start with land background
     contourf(x_reg, y_reg, land_square, 1, colors=(('0.6', '0.6', '0.6')))
+    # Add ice shelf elements
     img = PatchCollection(patches, cmap=mf_cmap)
     img.set_array(array(values))
     img.set_edgecolor('face')
@@ -129,6 +156,7 @@ def ismr_plot_bound (elements, mask_patches, patches, file_path, tstep, bounds, 
         fig.show()
 
 
+# Command-line interface
 if __name__ == "__main__":
 
     circumpolar = True
@@ -149,11 +177,14 @@ if __name__ == "__main__":
     elif action == 'd':
         save = False
         fig_name = None
-    
+
+    # Make patches ahead of time
     elements, mask_patches = make_patches(mesh_path, circumpolar, mask_cavities)
+    # Mask out open ocean
     patches = iceshelf_mask(elements)
     ismr_plot_bound(elements, mask_patches, patches, file_path, tstep, bounds, save, fig_name)
 
+    # Repeat until the user is finished
     while True:
         repeat = raw_input("Make another plot (y/n)? ")
         if repeat == 'y':

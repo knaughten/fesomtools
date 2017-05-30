@@ -5,6 +5,14 @@ from matplotlib.pyplot import *
 from matplotlib.colors import LinearSegmentedColormap
 from patches import *
 
+# Make a circumpolar plot of the percentage change in mass loss for each major
+# ice shelf over the given RCP simulation (2091-2100 average minus 2006-2015).
+# Input:
+# mesh_path = path to FESOM mesh directory
+# log_path = path to logfile from timeseries_massloss.py, containing 5-day
+#            averages from 1992 to 2100 inclusive
+# save = optional boolean indicating to save the figure rather than display
+# fig_name = if save=True, filename for figure
 def massloss_percent_change (mesh_path, log_path, save=False, fig_name=None):
 
     # Limits on longitude and latitude for each ice shelf
@@ -25,6 +33,7 @@ def massloss_percent_change (mesh_path, log_path, save=False, fig_name=None):
     circumpolar = True
     # Assume timeseries are 5-day averages
     peryear = 365/5
+    # First 14 years don't count as RCP
     skipyears=14
 
     # Build FESOM mesh

@@ -4,6 +4,20 @@ from scipy.interpolate import griddata
 from monthly_avg import *
 from unrotate_vector import *
 
+# For various 2D fields, calculate the monthly climatology of FESOM output and
+# interpolate to a regular grid (quarter-degree, circumpolar to 50S) for easy
+# comparison with ROMS. The fields are: sea surface temperature and salinity,
+# surface heat and salt fluxes, sea ice concentration and thickness, ocean
+# surface velocity vector, sea ice velocity vector, surface stress vector,
+# and curl of the surface stress.
+# Input:
+# mesh_path = path to FESOM mesh directory
+# output_dir = path to directory containing FESOM output: 5-day averages for
+#              each year between start_year and end_year
+# start_year, end_year = years to calculate climatology over
+# common_file = file containing land mask on the common grid (interpolated from
+#               ROMS, see common_grid.py in roms_tools GitHub repo)
+# out_file = path to desired output file
 def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_file):
 
     # Resolution of common grid (degrees, same for lat and lon)
@@ -300,6 +314,15 @@ def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_f
     id.close()
 
 
+# Interpolate the given FESOM field to the regular grid.
+# Input:
+# lon_1d, lat_1d = 1D arrays containing regular longitude and latitude values
+# lon_fesom, lat_fesom = 1D arrays containing (unrotated) longitude and latitude
+#                        of each 2D node on the FESOM mesh
+# data_fesom = 1D array of data at each 2D node on the FESOM mesh,
+#              corresponding to lon_fesom and lat_fesom
+# Output:
+# data_common = data interpolated to regular grid, dimension lat x lon
 def interp_fesom2common (lon_1d, lat_1d, lon_fesom, lat_fesom, data_fesom):
 
     # Get a 2D field of common latitude and longitude
@@ -321,6 +344,7 @@ def interp_fesom2common (lon_1d, lat_1d, lon_fesom, lat_fesom, data_fesom):
     return data_common
     
 
+# Command-line interface
 if __name__ == "__main__":
 
     mesh_path = raw_input("Path to FESOM mesh directory: ")

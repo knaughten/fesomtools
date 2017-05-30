@@ -5,6 +5,7 @@ from fesom_grid import *
 from unesco import *
 
 # Calculate the meridional overturning streamfunction in latitude-density space.
+# This doesn't seem to quite work yet.
 # Input:
 # mesh_path = path to FESOM mesh directory
 # file_path = path to FESOM output oce.mean.nc file, containing 1 year of output

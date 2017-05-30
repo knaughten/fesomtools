@@ -126,7 +126,7 @@ ismr_plot.py: Creates a circumpolar plot of ice shelf melt rates annually
 		      so, what filename) or display it on the screen.
 
 nsidc_aice_monthly.py: Plot monthly averages of sea ice concentration over the
-                       last year of simulation with FEsOM, compared with NSIDC
+                       last year of simulation with FESOM, compared with NSIDC
 		       satellite data for 1995.
 		       To run: First edit the NSIDC file paths if necessary.
 		               Then open python or ipython and type
@@ -287,6 +287,142 @@ timeseries_annual.py: Given the logfiles for 5-day timeseries created using
 			      mesh (if you're running with something else, code
 			      in a third option and make a new "area" array).
 
+aice_minmax_nsidc.py: Make a 3x2 plot showing sea ice concentration from low-res
+                      FESOM, high-res FESOM, and NSDIC observations for February
+		      (top) and August (bottom).
+		      To run: Make sure the paths near the top of the file (to
+		              FESOM mesh directories, output ice.mean.nc files
+			      containing 1992-2005 climatology, NSIDC files)
+			      are correct. Then open python or ipython and type
+			      "run aice_minmax_nsidc.py".
+
+bw_rcp85_m_hr.py: Make a 2x1 plot showing bottom water temperature and salinity
+                  anomalies for the RCP 8.5 M HR experiment (2091-2100 average
+		  minus 2006-2015 average).
+		  To run: Make sure the paths near the top of the file (to the
+		          FESOM mesh directory and oce.mean anomaly file) are
+			  correct. Then open python or ipython and type
+			  "run bw_rcp85_m_hr.py".
+
+grid_res_compare.py: Like grid_res.py, but plots low-res and high-res beside
+                     each other.
+		     To run: Make sure the paths to mesh directories near the
+		             top of the file are correct. Then open python or
+			     ipython and type "run grid_res_compare.py". The
+			     script will ask if you want to plot the global
+			     resolution (with colour scale maximum 225 km) or
+			     circumpolar Antarctic (20 km), and if you want to
+			     save the figure (and if so, what filename) or
+			     display it on screen.
+
+ismr_plot_bound.py: Like ismr_plot.py, but between specific lon/lat bounds, and
+                    for any time index in the FESOM output file (not necessarily
+		    annually averaged).
+		    To run: Open python or ipython and type
+		            "run ismr_plot_bound.py". The script will prompt you
+			    for paths to the FESOM mesh directory and
+			    forcing.diag.nc file, the timestep to plot, bounds
+			    on longitude and latitude, and whether to save the
+			    figure (and if so, what filename) or display on
+			    the screen. This script repeats as many times as
+			    you like.
+
+ismr_seasonal.py: Make a 4x1 plot of seasonally averaged (DJF, MAM, JJA, SON)
+                  circumpolar ice shelf melt rates.
+		  To run: Open python or ipython and type
+		          "run ismr_seasonal.py". The script will prompt you for
+			  the paths to the FESOM mesh directory and 2 output
+			  forcing.diag.nc files (each containing one year of
+			  5-day averages; the script will use December from the
+			  first file and Jan-Nov from the second), and whether
+			  you want to save the figure (and if so, what filename)
+			  or display it on the screen. This script does not
+			  repeat.
+
+temp_salt_slice.py: 
+
+temp_salt_seasonal.py: Make a 4x2 plot showing seasonally averaged temperature
+                       (top) and salinity (bottom) interpolated to a given
+		       longitude, i.e. latitude vs. depth slices.
+		       To run: Open python or ipython and type
+		               "run temp_salt_seasonal.py". The script will
+			       prompt you for paths to the FESOM mesh directory
+			       and 2 output oce.mean.nc files (each containing
+			       one year of 5-day averages; the script will use
+			       December from the first file and Jan-Nov from
+			       the second), the longitude to interpolate to,
+			       the deepest depth to plot, and whether you want
+			       to save the figure (and if so, what filename) or
+			       display it on the screen. This script repeats
+			       as many times as you like.
+
+make_zonal_slices.py: Call temp_salt_seasonal for a predetermined set of
+                      longitude slices and depth bounds. Save all the figures
+		      in a common directory.
+		      To run: First make sure you have a climatology oce.mean
+		              file containing 5-day averages, created using
+			      average_years.py. Then open python or ipython and
+			      type "run make_zonal_slices.py". The script will
+			      prompt you for paths to the climatology file and
+			      the directory to store the figures, and whether
+			      it is low or high res.
+
+massloss_percent_change.py: Make a circumpolar plot of the percentage change in
+                            mass loss for each major ice shelf over the given
+			    RCP simulation (2091-2100 average minus 2006-2015).
+			    To run: First make sure you have run
+			            timeseries_massloss.py for the years
+				    1992-2100 inclusive, 5-day averages. Then
+				    open python or ipython and type
+				    "run massloss_percent_change.py". The script
+				    will prompt you for the paths to the FESOM
+				    mesh directory and the timeseries_massloss
+				    logfile, and whether you want to save the
+				    figure (and if so, what filename) or
+				    display it on the screen.
+
+massloss_percent_change_res.py: Make a circumpolar plot of the percentage change
+                                in mass loss for each major ice shelf in the
+				high-res spinup (1992-2005 average, rep3)
+				compared to low-res.
+				To run: First make sure you have run
+				        timeseries_massloss.py for at least
+					the first 3 repetitions of 1992-2005
+					(5-day averages) for both the low-res
+					and high-res spinups, and that the
+					logfiles both have the name
+					"massloss.log". Then make sure the paths
+					to the mesh directories and experiment
+					directories, near the top of this
+					script, are correct. Then open python
+					or ipython and type
+					"run massloss_perecent_change_res.py".
+					The figure will be saved as
+					massloss_percent_change_res.png.
+
+moc_lat_density.py: Calculate the meridional overturning streamfunction in
+                    latitude-density space. This doesn't seem to quite work yet.
+		    To run: Open python or ipython and type
+		            "run moc_lat_density.py". The script will prompt you
+			    for the paths to the FESOM mesh directory and
+			    oce.mean.nc file containing one year of output, and
+			    whether you want to save the figure (and if so,
+			    what filename) or display it on the screen. Warning,
+			    it is VERY slow!
+
+sst_sss_seasonal.py: Creates a 4x2 plot of seasonally averaged sea surface
+                     temperature (top row) and salinity (bottom row) over the
+		     last year of simulation.
+		     To run: Open python or ipython and type
+		             "run sst_sss_seasonal.py". The script will prompt
+			     you for the paths to the FESOM mesh directory and
+			     two oce.mean.nc files, each containing one year of
+			     5-day averages (the script will use December from
+			     the first file and Jan-Nov from the second) as well
+			     as whether you want to save the figure (and if so,
+			     what filename) or display it on the screen. This
+			     script does not repeat.
+
 
 *****BACK END*****
 
@@ -397,6 +533,37 @@ unrotate_vector.py: Given a 2D vector on the rotated FESOM grid, unrotate it so
 			    components of the vector rotated to regular lon-lat
 			    space.
 
+monthly_avg.py: Calculate a monthly average of the given variable over the given
+                month. This is hard-coded and ugly, because the FESOM output
+		does not have a proper calendar attached to the time axis.
+		To run: This is usually called within other scripts (see eg
+		        nsidc_aice_monthly.py) but if you want to call it on
+			its own, open python or ipython and type
+			"from monthly_avg import *" followed by
+			"monthly_data = monthlyavg(file_path, var, month)"
+			where file_path is the path to a FESOM output file
+			containing one year of 5-day averages, var is the
+			variable name, and month is the month index from 0-11.
+			The output monthly_data is an array of size n2d or n3d
+			containing the monthly average of the given variable 
+			at each 2D or 3D node.
+
+seasonal_avg.py: Calculate seasonal averages (DJF, MAM, JJA, SON) of the given
+                 variable. This is hard-coded and ugly, because the FESOM output
+		 does not have a proper calendar attached to the time axis.
+		 To run: This is usually called within other scripts (see eg
+		         aice_hi_seasonal.py) but if you want ot call it on its
+			 own, open python or ipython and type
+			 "from seasonal_avg import *" followed by
+			 "seasonal_data = seasonal_avg(file1, file2, var)"
+			 where file1 and file2 are paths to FESOM files
+			 each containing one year of 5-day averages (the script
+			 will use December from file1 and Jan-Nov from file2)
+			 and var is the variable name. The output seasonal_data
+			 is an array of size 4 by n2d or n3d containing the
+			 seasonal averages of the given variable at each 2D or
+			 3D node.
+
 
 *****MAKING MODEL INPUT FILES OR POST-PROCESSING NEW OUTPUT FILES*****
 
@@ -428,3 +595,31 @@ iceberg_melt.py: Read Martin and Adcroft's monthly climatology of freshwater
 			 open python or ipython and type "run iceberg_melt.py".
 			 You will be prompted or the path to the desired output
 			 file.
+
+average_years.py: Calculate a climatology of the given type of FESOM output file
+                  (eg oce.mean) over the given years. It will have the same
+		  frequency as the existing files (eg 5-day averages). Save to
+		  a new NetCDF file.
+		  To run: Make sure the variable expt_name (eg MK44005) is
+		          correct for your simulation. Then open python or
+			  ipython and type "run average_years.py". The script
+			  will prompt you for the path to the FESOM output
+			  directory, the type of file (forcing.diag, ice.diag,
+			  ice.mean, oce.mean), the range of years to process,
+			  and the desired output climatology file.
+
+common_grid.py: For various 2D fields, calculate the monthly climatology of
+                FESOM output and interpolate to a regular grid (quarter-degree,
+		circumpolar to 50S) for easy comparison with ROMS. The fields
+		are: sea surface temperature and salinity, surface heat and salt
+		fluxes, sea ice concentration and thickness, ocean surface
+		velocity vector, sea ice velocity vector, surface stress vector,
+		and curl of the surface stress.
+		To run: First make sure you have a file containing the land mask
+		        on the common grid (most likely interpolated from ROMS,
+			see common_grid.py in my roms_tools GitHub repo). Then
+			open python or ipython and type "run common_grid.py".
+			The script will prompt you for paths to the FESOM mesh
+			directory and output directory, the years to calculate
+			the climatology over, the land mask file discussed
+			above, and the desired path to the output file.
