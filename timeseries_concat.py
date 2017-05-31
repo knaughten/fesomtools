@@ -1,35 +1,51 @@
 from numpy import *
 
+# For the logfiles from timeseries_dpt.py, timeseries_seaice.py, and
+# timeseries_massloss.py, append the third repetition of the forcing in the
+# control simulation (1992-2005) to the beginning of the RCP (2006-2100).
+# Input:
+# spinup_path, rcp_path = paths to experiment directories for the control
+#                         simulation and RCP, each containing the following
+#                         logfiles: dpt.log, seaice.log, massloss.log.
 def timeseries_concat (spinup_path, rcp_path):
 
+    # Name of each ice shelf cavity
     names = ['All Ice Shelves', 'Larsen D Ice Shelf', 'Larsen C Ice Shelf', 'Wilkins & George VI & Stange Ice Shelves', 'Ronne-Filchner Ice Shelf', 'Abbot Ice Shelf', 'Pine Island Glacier Ice Shelf', 'Thwaites Ice Shelf', 'Dotson Ice Shelf', 'Getz Ice Shelf', 'Nickerson Ice Shelf', 'Sulzberger Ice Shelf', 'Mertz Ice Shelf', 'Totten & Moscow University Ice Shelves', 'Shackleton Ice Shelf', 'West Ice Shelf', 'Amery Ice Shelf', 'Prince Harald Ice Shelf', 'Baudouin & Borchgrevink Ice Shelves', 'Lazarev Ice Shelf', 'Nivl Ice Shelf', 'Fimbul & Jelbart & Ekstrom Ice Shelves', 'Brunt & Riiser-Larsen Ice Shelves', 'Ross Ice Shelf']
 
+    # Forcing years for spinup
     year_start = 1992
     year_end = 2005
+    # Skip the first 2 repetitions of the control simulation
     skipyears = 28
     peryear = 365/5
     numyears = year_end - year_start + 1
 
-    dpt = []
+    # Drake Passage transport
+    # Read logfile for control simulation
+    dpt = []    
     f = open(spinup_path + 'dpt.log', 'r')
     f.readline()
     for line in f:
         dpt.append(float(line))
     f.close()
+    # Select the third repetition
     dpt = dpt[skipyears*peryear:(skipyears+numyears)*peryear]
     num_time_spinup = len(dpt)
+    # Read logfile for RCP simulation and append these values to existing array
     f = open(rcp_path + 'dpt.log', 'r')
     f.readline()
     for line in f:
         dpt.append(float(line))
     f.close()
     num_time = len(dpt)
+    # Write a new logfile for the RCP simulation
     f = open(rcp_path + 'dpt.log', 'w')
     f.write('Drake Passage Transport (Sv):\n')
     for elm in dpt:
         f.write(str(elm) + '\n')
     f.close()
 
+    # Repeat for sea ice area and volume
     seaice_area = []
     seaice_volume = []
     f = open(spinup_path + 'seaice.log', 'r')
@@ -63,6 +79,7 @@ def timeseries_concat (spinup_path, rcp_path):
         f.write(str(elm) + '\n')
     f.close()
 
+    # Repeat for ice shelf mass loss for each ice shelf
     massloss = empty([len(names), num_time])
     f = open(spinup_path + 'massloss.log', 'r')
     f.readline()
@@ -95,7 +112,7 @@ def timeseries_concat (spinup_path, rcp_path):
     f.close()
 
     
-
+# Command-line interface
 if __name__ == "__main__":
 
     spinup_path = raw_input("Path to control simulation directory: ")

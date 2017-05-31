@@ -1,10 +1,20 @@
 from numpy import *
 from matplotlib.pyplot import *
 
+# Given the logfiles for 5-day timeseries created using timeseries_dpt.py,
+# timeseries_seaice.py, and timeseries_massloss.py for a given control
+# simulation (1992-2005 repeated a bunch of times), plot just the third
+# repetition of the forcing.
+# Input:
+# dpt_log = path to logfile from timeseries_dpt.py
+# seaice_log = path to logfile from timeseries_seaice.py
+# massloss_log = path to logfile from timeseries_massloss.py
+# res_flag = integer flag indicating low resolution mesh (1) or high (2)
 def timeseries_rep3 (dpt_log, seaice_log, massloss_log, res_flag):
 
     year_start = 1992
     year_end = 2005
+    # Skip the first 2 repetitions
     skipyears = 28
     # Number of records per year (assumes 5-day averages)
     peryear = 365/5
@@ -31,6 +41,7 @@ def timeseries_rep3 (dpt_log, seaice_log, massloss_log, res_flag):
     # Density of ice in kg/m^3
     rho_ice = 916
 
+    # Make time axis
     time = arange(year_start, year_end+1, 1.0/peryear)    
     num_time = size(time)
     num_years = year_end - year_start + 1

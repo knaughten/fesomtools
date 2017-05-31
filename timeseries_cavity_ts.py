@@ -4,6 +4,14 @@ from matplotlib.pyplot import *
 from os.path import *
 from fesom_grid import *
 
+# Plot timeseries of the annually-averaged, volume-averaged temperature and
+# salinity in each ice shelf cavity.
+# Input:
+# mesh_path = path to FESOM mesh directory
+# output_path = path to FESOM experiment directory containing all oce.mean.nc
+#               files (one for each year)
+# start_year, end_year = integers containing range of years to process
+# fig_dir = path to directory to save the figures in
 def timeseries_cavity_ts (mesh_path, output_path, start_year, end_year, fig_dir=''):
 
     # Titles and figure names for each ice shelf
@@ -22,6 +30,7 @@ def timeseries_cavity_ts (mesh_path, output_path, start_year, end_year, fig_dir=
 
     circumpolar = True   # Only consider elements south of 30S
     cross_180 = False    # Don't make second copies of elements that cross 180E
+    # Naming conventions for FESOM output files
     file_head = output_path + 'MK44005.'
     file_tail = '.oce.mean.nc'
     num_years = end_year - start_year + 1
@@ -30,35 +39,52 @@ def timeseries_cavity_ts (mesh_path, output_path, start_year, end_year, fig_dir=
     elements = fesom_grid(mesh_path, circumpolar, cross_180)
 
     print 'Setting up arrays'
+    # Timeseries of temperature and salinity to plot
     cavity_temp_ts = empty([len(names), num_years])
     cavity_salt_ts = empty([len(names), num_years])
+    # Temporary arrays containing integrated temperature, salinity, and volume
+    # for each ice shelf cavity. Will be overwritten every year.
     cavity_temp_int = empty(len(names))
     cavity_salt_int = empty(len(names))
     cavity_volume_int = empty(len(names))
 
+    # Loop over years
     for year in range(start_year, end_year+1):
         print 'Processing year ' + str(year)
+        # Initialise integrals
         cavity_temp_int[:] = 0.0
         cavity_salt_int[:] = 0.0
         cavity_volume_int[:] = 0.0
+        # Read temperature and salinity for this year, annually average
         id = Dataset(file_head + str(year) + file_tail, 'r')
         temp = mean(id.variables['temp'][:,:], axis=0)
         salt = mean(id.variables['salt'][:,:], axis=0)
+        id.close()
+        # Loop over elements
         for elm in elements:
+            # Check if we're in an ice shelf cavity
             if elm.cavity:
+                # Loop over ice shelves
                 for index in range(len(names)):
                     keep = False
+                    # Check if within lat/lon bounds for this ice shelf
                     if all(elm.lon >= lon_min[index]) and all(elm.lon <= lon_max[index]) and all(elm.lat >= lat_min[index]) and all(elm.lat <= lat_max[index]):
                         keep = True
+                    # Ross region is split into 2
                     if index == len(names)-1:
                         if all(elm.lon >= lon_min[index+1]) and all(elm.lon <= lon_max[index+1]) and all(elm.lat >= lat_min[index+1]) and all(elm.lat <= lat_max[index+1]):
                             keep = True
                     if keep:
+                        # Get area of 2D element
                         area = elm.area()
                         nodes = [elm.nodes[0], elm.nodes[1], elm.nodes[2]]
+                        # Loop downward
                         while True:
                             if nodes[0].below is None or nodes[1].below is None or nodes[2].below is None:
+                                # Reached the bottom
                                 break
+                            # Calculate average temperature, salinity, and
+                            # layer thickness for this 3D triangular prism
                             temp_vals = []
                             salt_vals = []
                             dz_vals = []
@@ -68,20 +94,28 @@ def timeseries_cavity_ts (mesh_path, output_path, start_year, end_year, fig_dir=
                                 temp_vals.append(temp[nodes[i].below.id])
                                 salt_vals.append(salt[nodes[i].below.id])
                                 dz_vals.append(abs(nodes[i].depth - nodes[i].below.depth))
+                                # Get ready for next iteration of loop
                                 nodes[i] = nodes[i].below
+                            # Calculate volume
                             volume = area*mean(array(dz_vals))
+                            # Integrate temperature, salinity, volume for this
+                            # cavity
                             cavity_temp_int[index] += mean(array(temp_vals))*volume
                             cavity_salt_int[index] += mean(array(salt_vals))*volume
                             cavity_volume_int[index] += volume
+        # Convert temperature and salinity from integrals to volume-averages,
+        # add to timeseries
         cavity_temp_ts[:,year-start_year] = cavity_temp_int/cavity_volume_int
         cavity_salt_ts[:,year-start_year] = cavity_salt_int/cavity_volume_int
-        id.close()
 
+    # Make timeseries
     time = range(start_year, end_year+1)
 
     print 'Plotting'
+    # One plot for each cavity
     for index in range(len(names)):
         fig, ax1 = subplots()
+        # Temperature
         ax1.plot(time, cavity_temp_ts[index,:], color='b')
         ax1.set_ylabel(r'Average temperature ($^{\circ}$C)', color='b')
         for t1 in ax1.get_yticklabels():
@@ -89,6 +123,7 @@ def timeseries_cavity_ts (mesh_path, output_path, start_year, end_year, fig_dir=
         ax1.set_xlabel('Years')
         ax1.grid(True, axis='x')
         ax2 = ax1.twinx()
+        # Salinity
         ax2.plot(time, cavity_salt_ts[index,:], color='r')
         ax2.set_ylabel('Average salinity (psu)', color='r')
         for t2 in ax2.get_yticklabels():
@@ -97,6 +132,7 @@ def timeseries_cavity_ts (mesh_path, output_path, start_year, end_year, fig_dir=
         fig.savefig(fig_dir + fig_names[index])
 
 
+# Command-line interface
 if __name__ == "__main__":
 
     mesh_path = raw_input("Path to FESOM mesh directory: ")

@@ -278,8 +278,8 @@ aice_hi_seasonal.py: Creates a 4x2 plot of seasonally averaged sea ice
 timeseries_annual.py: Given the logfiles for 5-day timeseries created using
                       timeseries_dpt.py, timeseries_seaice.py, and
 		      timeseries_massloss.py, plot annual averages (for Drake
-		      Passage transport and ice shelf melt rates) or annual
-		      max/mins (for sea ice area and volume).
+		      Passage transport and ice shelf melt rates/mass loss) or
+		      annual max/mins (for sea ice area and volume).
 		      To run: Open python or ipython and type
 			      "run timeseries_annual.py". You will be prompted
 			      for the paths to each log file, and whether you
@@ -339,7 +339,17 @@ ismr_seasonal.py: Make a 4x1 plot of seasonally averaged (DJF, MAM, JJA, SON)
 			  or display it on the screen. This script does not
 			  repeat.
 
-temp_salt_slice.py: 
+temp_salt_slice.py: Make a 2x1 plot showing temperature and salinity
+                    interpolated to a given longitude (i.e. latitude vs. depth
+		    slices) at a single time index.
+		    To run: Open python or ipython and type
+		            "run temp_salt_slice.py". The script will prompt
+			    you for paths to the FESOM mesh directory and
+			    FESOM oce.mean.nc file, the timestep to plot,
+			    longitude to interpolate to, deepest depth to plot,
+			    and whether you want to save the figure (and if so,
+			    what filename) or display it on the screen. This
+			    script repeats as many times as you like.
 
 temp_salt_seasonal.py: Make a 4x2 plot showing seasonally averaged temperature
                        (top) and salinity (bottom) interpolated to a given
@@ -422,6 +432,107 @@ sst_sss_seasonal.py: Creates a 4x2 plot of seasonally averaged sea surface
 			     as whether you want to save the figure (and if so,
 			     what filename) or display it on the screen. This
 			     script does not repeat.
+
+timeseries_annual_compare.py: Compare all RCP experiments and control
+                              experiments by plotting timeseries on the same
+			      axes: annual averages of Drake Passage transport
+			      and ice shelf mass loss, annual max/mins of sea
+			      ice area and volume.
+			      To run: Make sure the logfiles for
+			              timeseries_dpt.py, timeseries_seaice.py,
+				      and timeseries_massloss.py are saved as
+				      dpt.log, seaice.log, and massloss.log
+				      respectively for each RCP experiment
+				      (1992-2100, 5-day averages) and control
+				      experiment (1992-2005 repeated 10 times).
+				      Then make sure the paths to these
+				      experiment directories, near the top of
+				      the script, are correct. Then open python
+				      or ipython and type
+				      "run timeseries_annual_compare.py". The
+				      script will create a bunch of png files.
+
+timeseries_cavity_ts.py: Plot timeseries of the annually-averaged,
+                         volume-averaged temperature and salinity in each ice
+			 shelf cavity.
+			 To run: Change the naming convention for FESOM output
+			         files from "MK44005" to whatever it should be
+				 in the variable file_head. Then open python or
+				 ipython and type "run timeseries_cavity_ts.py".
+				 The script will prompt you for the paths to the
+				 FESOM mesh directory and output directory
+				 (containing one oce.mean.nc file for each
+				 year), the years to process, and the directory
+				 to save the figures into.
+
+timeseries_concat.py: For the logfiles from timeseries_dpt.py,
+                      timeseries_seaice.py, and timeseries_massloss.py, append
+		      the third repetition of the forcing in the control
+		      simulation (1992-2005) to the beginning of the RCP
+		      (2006-2100).
+		      To run: First make sure you have run the 3 timeseries
+		              scripts for the correct control simulation
+			      (1992-2005 repeated at least 3 times) and the
+			      RCP (2006-2100), and that these are saved with the
+			      names dpt.log, seaice.log, and massloss.log in the
+			      relevant experiment directories. Then open python
+			      or ipython and type "run timeseries_concat.py".
+			      The script will prompt you for the paths to these
+			      2 experiment directories, and it will modify the
+			      existing logfiles for the RCP.
+
+timeseries_rep3.py: Given the logfiles for 5-day timeseries created using
+                    timeseries_dpt.py, timeseries_seaice.py, and
+		    timeseries_massloss.py for a given control simulation
+		    (1992-2005 repeated a bunch of times), plot just the third
+		    repetition of the forcing.
+		    To run: First make sure you have run the 3 timeseries
+		            scripts for the control simulation. Then open python
+			    or ipython and type "run timeseries_rep3.py". The
+			    script will prompt you for the paths to these 3
+			    logfiles, and whether you have low or high
+			    resolution. The script will create a bunch of png
+			    files.
+
+timeseries_rep3_compare.py: Plot Drake Passage transport and ice shelf melt
+                            rates/mass loss for the third repetition of the
+			    spinup forcing (1992-2005), for both the low-res and
+			    high-res control simulations.
+			    To run: First make sure you have run
+			            timeseries_dpt.py and timeseries_massloss.py
+				    for both the low-res and high-res
+				    simulations, with the logfiles saved as
+				    dpt.log and massloss.log in the correct
+				    experiment directories. Then make sure the
+				    paths to the experiment directories near the
+				    top of the script are correct. Then open
+				    python or ipython and type
+				    "run timeseries_rep3_compare.py". The
+				    script will create a bunch of png files.
+
+ts_distribution.py: Make a temperature-salinity distribution plot, showing the
+                    volume of each water mass with a log scale, including the
+		    surface freezing point line and density contours.
+		    To run: Open python or ipython and type
+		            "run ts_distribution.py". The script will prompt you
+			    for paths to the FESOM mesh directory and
+			    oce.mean.nc file, the time index to plot, and
+			    whether you want to save the figure (and if so, what
+			    filename) or display on the screen. If the water
+			    masses are getting cut off you can adjust the
+			    temperature and salinity bounds (min_salt etc.) and
+			    possibly also the density contours (density_lev
+			    as well as manual_locations for the labels).
+
+ts_animation.py: Like ts_distribution.py, but make one figure for each year in
+                 the given date range (annually averaged). Save as a bunch of
+		 png files which can be stitched together later into an
+		 animation, using ffmpeg or something similar.
+		 To run: Open python or ipython and type "run ts_animation.py".
+		         The script will prompt you for paths to the FESOM mesh
+			 directory and output directory (containing one
+			 oce.mean.nc file for each year), the range of years to
+			 process, and the directory to save the figures into.
 
 
 *****BACK END*****

@@ -3,8 +3,8 @@ from matplotlib.pyplot import *
 
 # Given the logfiles for 5-day timeseries created using timeseries_dpt.py,
 # timeseries_seaice.py, and timeseries_massloss.py, plot annual averages
-# (for Drake Passage transport and ice shelf melt rates) or annual max/mins
-# (for sea ice area and volume).
+# (for Drake Passage transport and ice shelf melt rates/mass loss) or annual
+# max/mins (for sea ice area and volume).
 # Input:
 # dpt_log = path to logfile from timeseries_dpt.py
 # seaice_log = path to logfile from timeseries_seaice.py

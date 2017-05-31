@@ -7,27 +7,42 @@ from unrotate_vector import *
 from fesom_grid import *
 from fesom_sidegrid import *
 
+# Make a 2x1 plot showing temperature and salinity interpolated to a given
+# longitude (i.e. latitude vs. depth slices) at a single time index.
+# Input:
+# elm2D = FESOM grid elements (from fesom_grid.py)
+# file_path = path to FESOM output oce.mean.nc file
+# tstep = time index in file_path to plot (1-based)
+# lon0 = longitude to interpolate to (-180 to 180)
+# depth_min = deepest depth to plot (negative, in metres)
+# save = optional boolean indicating to save the figure, rather than display
+# fig_name = if save=True, filename for figure
 def temp_salt_slice (elm2D, file_path, tstep, lon0, depth_min, save=False, fig_name=None):
 
     # Set northern boundary and upper (surface) boundary
     lat_max = -30
     depth_max = 0
 
+    # Bounds on colour scales for temperature and salinity
     var_min = [-2, 33.8]
     var_max = [3, 34.8]
     var_tick = [1, 0.2]
 
+    # Read temperature and salinity at each node
     id = Dataset(file_path, 'r')
     temp = id.variables['temp'][tstep-1,:]
     salt = id.variables['salt'][tstep-1,:]
     id.close()
 
+    # Choose what to write on the title about longitude
     if lon0 < 0:
         lon_string = str(-lon0) + 'W'
     else:
         lon_string = str(lon0) + 'E'
 
+    # Set up plots
     fig = figure(figsize=(24,6))
+    # Make SideElements with temperature data
     selements_temp = fesom_sidegrid(elm2D, temp, lon0, lat_max)
     # Build an array of quadrilateral patches for the plot, and of data values
     # corresponding to each SideElement
@@ -45,6 +60,7 @@ def temp_salt_slice (elm2D, file_path, tstep, lon0, depth_min, save=False, fig_n
         lat_min = min(lat_min, amin(selm.y))
     # Set southern boundary to be just south of the minimum latitude
     lat_min = lat_min-1
+    # Add to plot
     ax1 = fig.add_subplot(1,2,1)
     img1 = PatchCollection(patches)
     img1.set_array(array(values))
@@ -88,6 +104,7 @@ def temp_salt_slice (elm2D, file_path, tstep, lon0, depth_min, save=False, fig_n
         fig.show()
 
 
+# Command-line interface
 if __name__ == "__main__":
 
     mesh_path = raw_input("Path to FESOM mesh directory: ")
@@ -105,6 +122,7 @@ if __name__ == "__main__":
     elm2D = fesom_grid(mesh_path)
     temp_salt_slice(elm2D, file_path, tstep, lon0, depth_min, save, fig_name)
 
+    # Repeat until the user is finished
     while True:
         repeat = raw_input("Make another plot (y/n)? ")
         if repeat == 'y':
