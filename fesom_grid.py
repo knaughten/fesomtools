@@ -1,6 +1,6 @@
 from numpy import *
-from numpy.linalg import inv 
 from triangle_area import *
+from unrotate_grid import *
 
 # Classes and routines to build an object-oriented FESOM grid data structure
 
@@ -150,21 +150,14 @@ class Element:
 # elements = array of Element objects
 def fesom_grid (mesh_path, circumpolar=False, cross_180=True):
 
-  # Grid rotation parameters (grep inside mesh_path if unsure; if they're not mentioned, it's probably
-  # not a rotated grid, so set alpha=beta=gamma=0)
-  alpha = 50
-  beta = 15
-  gamma = -90
-  deg2rad = pi/180
-  rad2deg = 180/pi
   # Northern boundary of circumpolar Antarctic domain
   nbdry = -30
 
   # Read 3d node information
   file = open(mesh_path + 'nod3d.out', 'r')
   file.readline()
-  lon3d = []
-  lat3d = []
+  rlon3d = []
+  rlat3d = []
   depth3d = []
 
   for line in file:
@@ -178,46 +171,15 @@ def fesom_grid (mesh_path, circumpolar=False, cross_180=True):
           lon = lon + 360
       elif lon > 180:
           lon = lon - 360
-      lon3d.append(lon)
-      lat3d.append(lat)
+      rlon3d.append(lon)
+      rlat3d.append(lat)
       depth3d.append(depth)
   file.close()
+  rlon3d = array(rlon3d)
+  rlat3d = array(rlat3d)
 
   # Unrotate grid
-  alpha = alpha*deg2rad
-  beta = beta*deg2rad
-  gamma = gamma*deg2rad
-  # Transformation matrix
-  Tm = zeros((3,3))
-  Tm[0,0] = cos(gamma)*cos(alpha) - sin(gamma)*cos(beta)*sin(alpha)
-  Tm[0,1] = cos(gamma)*sin(alpha) + sin(gamma)*cos(beta)*cos(alpha)
-  Tm[0,2] = sin(gamma)*sin(beta)
-  Tm[1,0] = -sin(gamma)*cos(alpha) - cos(gamma)*cos(beta)*sin(alpha)
-  Tm[1,1] = -sin(gamma)*sin(alpha) + cos(gamma)*cos(beta)*cos(alpha)
-  Tm[1,2] = cos(gamma)*sin(beta)
-  Tm[2,0] = sin(beta)*sin(alpha)
-  Tm[2,1] = -sin(beta)*cos(alpha)
-  Tm[2,2] = cos(beta)
-  invTm = asarray(inv(matrix(Tm)))
-  # Convert to radians
-  lon3d = array(lon3d)*deg2rad
-  lat3d = array(lat3d)*deg2rad
-  # Rotated Cartesian coordinates
-  x3d_rot = cos(lat3d)*cos(lon3d)
-  y3d_rot = cos(lat3d)*sin(lon3d)
-  z3d_rot = sin(lat3d)
-  # Geographical Cartesian coordinates
-  x3d_geo = invTm[0,0]*x3d_rot + invTm[0,1]*y3d_rot + invTm[0,2]*z3d_rot
-  y3d_geo = invTm[1,0]*x3d_rot + invTm[1,1]*y3d_rot + invTm[1,2]*z3d_rot
-  z3d_geo = invTm[2,0]*x3d_rot + invTm[2,1]*y3d_rot + invTm[2,2]*z3d_rot
-  # Geographical lat-lon
-  lat3d = arcsin(z3d_geo)
-  lon3d = arctan2(y3d_geo, x3d_geo)
-  index = nonzero(y3d_geo*x3d_geo == 0)
-  lon3d[index] = 0
-  # Convert back to degrees
-  lon3d = lon3d*rad2deg
-  lat3d = lat3d*rad2deg
+  lon3d, lat3d = unrotate_grid(rlon3d, rlat3d)
 
   # Create Nodes from location data
   nodes = []

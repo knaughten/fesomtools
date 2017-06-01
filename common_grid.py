@@ -28,11 +28,6 @@ def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_f
     r = 6.371e6
     # Degrees to radians conversion factor
     deg2rad = pi/180.0
-    rad2deg = 180.0/pi
-    # Grid rotation parameters
-    alpha = 50
-    beta = 15
-    gamma = -90
     # Name stamped on FESOM output files
     expt_name = 'MK44005'
 
@@ -72,42 +67,8 @@ def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_f
     rlon = array(rlon)
     rlat = array(rlat)
     n2d = size(rlon)
-
     # Unrotate grid
-    alpha = alpha*deg2rad
-    beta = beta*deg2rad
-    gamma = gamma*deg2rad
-    # Transformation matrix
-    Tm = zeros((3,3))
-    Tm[0,0] = cos(gamma)*cos(alpha) - sin(gamma)*cos(beta)*sin(alpha)
-    Tm[0,1] = cos(gamma)*sin(alpha) + sin(gamma)*cos(beta)*cos(alpha)
-    Tm[0,2] = sin(gamma)*sin(beta)
-    Tm[1,0] = -sin(gamma)*cos(alpha) - cos(gamma)*cos(beta)*sin(alpha)
-    Tm[1,1] = -sin(gamma)*sin(alpha) + cos(gamma)*cos(beta)*cos(alpha)
-    Tm[1,2] = cos(gamma)*sin(beta)
-    Tm[2,0] = sin(beta)*sin(alpha)
-    Tm[2,1] = -sin(beta)*cos(alpha)
-    Tm[2,2] = cos(beta)
-    invTm = asarray(inv(matrix(Tm)))
-    # Convert to radians
-    rlon_rad = rlon*deg2rad
-    rlat_rad = rlat*deg2rad
-    # Rotated Cartesian coordinates
-    x_rot = cos(rlat_rad)*cos(rlon_rad)
-    y_rot = cos(rlat_rad)*sin(rlon_rad)
-    z_rot = sin(rlat_rad)
-    # Geographical Cartesian coordinates
-    x_geo = invTm[0,0]*x_rot + invTm[0,1]*y_rot + invTm[0,2]*z_rot
-    y_geo = invTm[1,0]*x_rot + invTm[1,1]*y_rot + invTm[1,2]*z_rot
-    z_geo = invTm[2,0]*x_rot + invTm[2,1]*y_rot + invTm[2,2]*z_rot
-    # Geographical lat-lon
-    lat_fesom = arcsin(z_geo)
-    lon_fesom = arctan2(y_geo, x_geo)
-    index = nonzero(y_geo*x_geo == 0)
-    lon_fesom[index] = 0
-    # Convert back to degrees
-    lon_fesom = lon_fesom*rad2deg
-    lat_fesom = lat_fesom*rad2deg
+    lon_fesom, lat_fesom = unrotate_grid(rlon, rlat)
 
     print 'Setting up ' + out_file
     id = Dataset(out_file, 'w')

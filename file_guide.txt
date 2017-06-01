@@ -1,9 +1,8 @@
 *****INTERACTIVE/GENERAL PLOTS*****
 Important note: Before running any FESOM plotting scripts, make sure you edit
                 the rotation parameters alpha, beta, and gamma inside
-		fesom_grid.py (top of the function "fesom_grid") and also
-		unrotate_vector.py to suit your mesh. If you're running with a
-		non-rotated mesh, set them all to zero.
+		unrotate_grid.py and unrotate_vector.py to suit your mesh. If
+		you're running with a non-rotated mesh, set them all to zero.
 
 fesom_vis.py: Command-line interface for interactive plots.
               To run: Open python or ipython and type "run fesom_vis.py".
@@ -663,7 +662,7 @@ seasonal_avg.py: Calculate seasonal averages (DJF, MAM, JJA, SON) of the given
                  variable. This is hard-coded and ugly, because the FESOM output
 		 does not have a proper calendar attached to the time axis.
 		 To run: This is usually called within other scripts (see eg
-		         aice_hi_seasonal.py) but if you want ot call it on its
+		         aice_hi_seasonal.py) but if you want to call it on its
 			 own, open python or ipython and type
 			 "from seasonal_avg import *" followed by
 			 "seasonal_data = seasonal_avg(file1, file2, var)"
@@ -674,6 +673,18 @@ seasonal_avg.py: Calculate seasonal averages (DJF, MAM, JJA, SON) of the given
 			 is an array of size 4 by n2d or n3d containing the
 			 seasonal averages of the given variable at each 2D or
 			 3D node.
+
+unrotate_grid.py: Unrotate longitude and latitude on the FESOM grid.
+                  To run: This is usually called within other scripts (see eg
+		          fesom_grid.py) but if you want to call it on its own,
+			  open python or ipython and type
+			  "from unrotate_grid import *" followed by
+			  "glon, glat = unrotate_grid(rlon, rlat)" where rlon
+			  and rlat are 1D arrays containing the rotated
+			  longitude and latitude at each 2D or 3D node (i.e.
+			  straight out of nod2d.out or nod3d.out). The output
+			  glon and glat contain the geographical longitude and
+			  latitude.
 
 
 *****MAKING MODEL INPUT FILES OR POST-PROCESSING NEW OUTPUT FILES*****
@@ -691,11 +702,10 @@ unesco.py: Compute the UNESCO equation of state for seawater density. Fully
 
 make_ini.py: Make a FESOM initial conditions text file, with all the columns
              in the right format, using ECCO2 temperature and salinity for
-             January 1995.
+             January 1992.
 	     To run: Edit the paths to theta_file, salt_file, and out_file
 	             at the top of the script. Then open python or ipython
-		     and type "run make_ini.py". This is pretty low-tech and
-		     not encapsulated or anything.
+		     and type "run make_ini.py". 
 
 iceberg_melt.py: Read Martin and Adcroft's monthly climatology of freshwater
                  fluxes from iceberg melt, and make an input forcing file on
@@ -734,3 +744,26 @@ common_grid.py: For various 2D fields, calculate the monthly climatology of
 			directory and output directory, the years to calculate
 			the climatology over, the land mask file discussed
 			above, and the desired path to the output file.
+
+ice_ini.py: Make an initial conditions file for the FESOM sea ice, based on
+            NSIDC satellite data of monthly-averaged sea ice concentration in
+	    January 1992. Wherever NSIDC concentration exceeds 15%, set the
+	    initial sea ice area to 1, ice thickness to 1 m (in the Southern
+	    Hemisphere) or 2 m (in the Northern Hemisphere), and snow thickness
+	    to 0.2 m. Set initial sea ice velocity to 0.
+	    To run: First make sure the paths to the FESOM mesh directory,
+	            the NSIDC files, and the desired output files are correct.
+		    Then open python or ipython and type "run ice_ini.py".
+
+eraint_extend.py: Given ERA-Interim files for 1992-2016, each containing
+                  atmospheric forcing data for multiple variables but one year
+		  at a time, unravel into FESOM forcing files, each containing
+		  one variable and one time of the day but all years.
+		  To run: First make sure the input_dir and output_dir paths
+		          near the top of the script are correct, and that
+			  this script has the same naming convention as your
+			  ERA-Interim files (ie AN_yyyy_subdaily.nc for 6 hour
+			  variables, FC_yyyy_subdaily.nc or ER_yyyy_subdaily.nc
+			  for 12 hour variables depending on the variable and
+			  year). Then open python or ipython and type
+			  "run eraint_extend.py".
