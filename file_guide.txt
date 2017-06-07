@@ -533,6 +533,15 @@ ts_animation.py: Like ts_distribution.py, but make one figure for each year in
 			 oce.mean.nc file for each year), the range of years to
 			 process, and the directory to save the figures into.
 
+plot_mask.py: Plot the mask created by restoring_mask.py and display on the
+              screen.
+	      To run: First make sure you have run restoring_mask.py and have
+	              the output file ssrestoring_mask.out saved in your FESOM
+		      mesh directory. Then open python or ipython and type
+		      "run plot_mask.py". The script will prompt you for the
+		      path to the mesh directory, and whether you want the
+		      plot to be global or circumpolar Antarctic.
+
 
 *****BACK END*****
 
@@ -767,3 +776,28 @@ eraint_extend.py: Given ERA-Interim files for 1992-2016, each containing
 			  for 12 hour variables depending on the variable and
 			  year). Then open python or ipython and type
 			  "run eraint_extend.py".
+
+sss_nudging.py: Interpolate the World Ocean Atlas 2013 monthly climatology of
+                sea surface salinity to the ERA-Interim grid so it can be used
+		as a forcing file by FESOM, for sea surface salinity restoring.
+		To run: First make sure the paths near the top of the script
+		        (to the World Ocean Atlas data, file containing
+			ERA-Interim grid, and desired output file) are correct.
+			Then open python or ipython and type
+			"run sss_nudging.py".
+
+restoring_mask.py: Make a mask for the 2D FESOM mesh indicating which nodes
+                   should get surface salinity restoring (1) and which should
+		   be left alone (0). The current formulation is to have
+		   surface salinity restoring everywhere south of 30S except
+		   for the Antarctic continental shelf (defined as regions
+		   south of 60S with bathymetry shallower than 1500 m) and ice
+		   shelf cavities. Write an ASCII file with the mask, similar
+		   to cavity_flag_nod2d.out. To use this with FESOM switch on
+		   use_restoring_mask in namelist.oce.
+		   To run: If you want the mask to have different conditions,
+		           edit the script accordingly. Then open python or
+			   ipython and type "run restoring_mask.py". The script
+			   will prompt you for the path to the FESOM mesh
+			   directory, and the output file ssrestoring_mask.out
+			   will be written to this directory.

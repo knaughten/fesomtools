@@ -12,11 +12,11 @@ def eraint_extend ():
     # Path to directory for output files
     output_dir = '/short/y99/kaa561/FESOM/ERA_Interim_1992_2016/'
     # Variable names
-    var_names_6h = ['t2m', 'd2m', 'u10', 'v10']
+    var_names_6h = ['sp', 't2m', 'd2m', 'u10', 'v10']
     # Variable units
-    var_units_6h = ['K', 'K', 'm/s', 'm/s']
+    var_units_6h = ['Pa', 'K', 'K', 'm/s', 'm/s']
     # Beginning of output filename for each variable
-    file_heads_6h = ['tair', 'tdew', 'uwind', 'vwind']
+    file_heads_6h = ['pair', 'tair', 'tdew', 'uwind', 'vwind']
     # End of output filename for each time of day
     file_tails_6h = ['_00.nc', '_06.nc', '_12.nc', '_18.nc']
     # Same for 12-hourly variables
