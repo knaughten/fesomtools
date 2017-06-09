@@ -15,7 +15,7 @@ def plot_shelf (mesh_path, fig_name):
     # Plotting parameters
     circumpolar = True
     lat_max = -30 + 90
-    font_sizes = [240, 192, 160]
+    font_sizes = [24, 20, 16]
 
     # Build triangular patches for each element
     elements, patches = make_patches(mesh_path, circumpolar)
@@ -33,7 +33,7 @@ def plot_shelf (mesh_path, fig_name):
             elm_shelf.append(0.0)
 
     # Set up figure
-    fig = figure(figsize=(128, 96))
+    fig = figure(figsize=(12, 9))
     ax = fig.add_subplot(1,1,1, aspect='equal')
     # Set colours for patches and add them to plot
     img = PatchCollection(patches, cmap=jet)
@@ -51,7 +51,8 @@ def plot_shelf (mesh_path, fig_name):
     cbar.ax.tick_params(labelsize=font_sizes[2])
     axis('off')
 
-    savefig(fig_name)
+    show()
+    #savefig(fig_name)
 
 
 # Command-line interface

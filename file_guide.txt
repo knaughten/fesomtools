@@ -542,6 +542,21 @@ plot_mask.py: Plot the mask created by restoring_mask.py and display on the
 		      path to the mesh directory, and whether you want the
 		      plot to be global or circumpolar Antarctic.
 
+timeseries_massloss_depth.py: Plot timeseries of total basal mass loss and
+                              area-averaged ice shelf melt rates split up into
+			      3 different depth classes for the ice shelf draft.
+			      To run: Open python or ipython and type
+		                      "run timeseries_massloss_depth.py".
+				      The script will prompt you for paths to
+				      the mesh directory, the output
+				      orcing.diag.nc file containing one year
+				      of 5-day averages, and the log file (if it
+				      already exists, previously calculated
+				      values will be read from it; regardless,
+				      it will be overwritten with the full
+				      timeseries at the end. This allows you to
+				      process one year of simulation at a time.)
+
 
 *****BACK END*****
 
