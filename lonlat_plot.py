@@ -23,7 +23,7 @@ from unrotate_vector import *
 # tstep = int specifying index of time axis in file_path
 # circumpolar = boolean flag indicating whether to use the circumpolar domain
 #               or the global domain
-# elements = array of Elements for the global grid (created using fesom_grid)
+# elements = array of Elements for the FESOM grid (created using fesom_grid)
 # patches = array of Polygon patches corresponding to elements (created using
 #           make_patches)
 # mask_cavities = optional boolean flag indicating whether to mask ice shelf

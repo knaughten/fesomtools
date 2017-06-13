@@ -115,6 +115,7 @@ def timeseries_massloss_depth (mesh_path, diag_file, log_file, fig_dir=''):
     for n in range(num_classes):
         # Calculate total ice shelf area in this class
         tmp_area = sum(area_elm*class_flag[n,:])
+        print 'Area of ice shelf draft between '+str(draft_min[n])+' and '+str(draft_max[n])+'m: '+str(tmp_area)+' m^2'
         factors[n] = 1e12/(rho_ice*tmp_area)
 
     # Build timeseries
@@ -140,6 +141,7 @@ def timeseries_massloss_depth (mesh_path, diag_file, log_file, fig_dir=''):
     title('Basal Mass Loss', fontsize=18)
     xlabel('Year', fontsize=14)
     ylabel('Gt/y', fontsize=14)
+    xlim([time[0], time[-1]])
     grid(True)
     # Move the plot over to make room for legend
     box = ax.get_position()

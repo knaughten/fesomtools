@@ -2,15 +2,17 @@ from numpy import *
 from matplotlib.pyplot import *
 
 # Given the logfiles for 5-day timeseries created using timeseries_dpt.py,
-# timeseries_seaice.py, and timeseries_massloss.py, plot annual averages
-# (for Drake Passage transport and ice shelf melt rates/mass loss) or annual
-# max/mins (for sea ice area and volume).
+# timeseries_seaice.py, timeseries_massloss.py, and
+# timeseries_massloss_depth.py, plot annual averages (for Drake Passage
+# transport and ice shelf melt rates/mass loss) or annual max/mins (for sea ice
+# area and volume).
 # Input:
 # dpt_log = path to logfile from timeseries_dpt.py
 # seaice_log = path to logfile from timeseries_seaice.py
 # massloss_log = path to logfile from timeseries_massloss.py
+# massloss_depth_log = path to logfile from timeseries_massloss_depth.py
 # res_flag = integer flag indicating low resolution mesh (1) or high (2)
-def timeseries_annual (dpt_log, seaice_log, massloss_log, res_flag):
+def timeseries_annual (dpt_log, seaice_log, massloss_log, massloss_depth_log, res_flag):
 
     # Number of records per year (assumes 5-day averages)
     peryear = 365/5
@@ -18,14 +20,26 @@ def timeseries_annual (dpt_log, seaice_log, massloss_log, res_flag):
     names = ['All Ice Shelves', 'Larsen D Ice Shelf', 'Larsen C Ice Shelf', 'Wilkins & George VI & Stange Ice Shelves', 'Ronne-Filchner Ice Shelf', 'Abbot Ice Shelf', 'Pine Island Glacier Ice Shelf', 'Thwaites Ice Shelf', 'Dotson Ice Shelf', 'Getz Ice Shelf', 'Nickerson Ice Shelf', 'Sulzberger Ice Shelf', 'Mertz Ice Shelf', 'Totten & Moscow University Ice Shelves', 'Shackleton Ice Shelf', 'West Ice Shelf', 'Amery Ice Shelf', 'Prince Harald Ice Shelf', 'Baudouin & Borchgrevink Ice Shelves', 'Lazarev Ice Shelf', 'Nivl Ice Shelf', 'Fimbul & Jelbart & Ekstrom Ice Shelves', 'Brunt & Riiser-Larsen Ice Shelves', 'Ross Ice Shelf']
     # Beginning of figure names for each ice shelf
     fig_heads = ['total_massloss', 'larsen_d', 'larsen_c', 'wilkins_georgevi_stange', 'ronne_filchner', 'abbot', 'pig', 'thwaites', 'dotson', 'getz', 'nickerson', 'sulzberger', 'mertz', 'totten_moscowuni', 'shackleton', 'west', 'amery', 'princeharald', 'baudouin_borchgrevink', 'lazarev', 'nivl', 'fimbul_jelbart_ekstrom', 'brunt_riiserlarsen', 'ross']
-    # Area of each ice shelf in m^2 (printed to screen during
-    # timeseries_massloss.py, update if the mesh changes)
+    # Bounds on depth classes
+    draft_min = array([0, 250, 500])
+    draft_max = array([250, 500, 3000])
+    num_classes = size(draft_min)
+    # Labels for legend
+    labels = ['<'+str(draft_max[0])+' m']
+    for n in range(1, num_classes-1):
+        labels.append(str(draft_min[n])+'-'+str(draft_max[n])+' m')
+    labels.append('>'+str(draft_min[-1])+' m')
+    # Area of each ice shelf and depth class in m^2 (printed to screen during
+    # timeseries_massloss.py, and timeseries_massloss_depth.py, update if the
+    # mesh changes)
     if res_flag == 1:
         # Low resolution mesh
         area = [1.41327580791e12, 9410595961.42, 48147893361.6, 46287951910.9, 429798928470.0, 27030080949.7, 3839594948.81, 2499220358.3, 3908582947.28, 29823059449.5, 4268520899.01, 11108310834.3, 3102730054.84, 4632897701.36, 26030138936.9, 11651566872.8, 64322690314.0, 2957848286.81, 40563562257.6, 6778604330.34, 5671169444.22, 52720412012.5, 72401508276.4, 475666675975.0]
+        area_classes = [523352321772.0, 607213429613.0, 282710056521.0]
     elif res_flag == 2:
         # High resolution mesh
         area = [1.43919497627e12, 10456222697.1, 50141041705.5, 48253708618.4, 429898475473.0, 28942129634.4, 4388809435.81, 3172043475.79, 4290109356.52, 31663268041.5, 5985509656.36, 12669899186.6, 3911331361.75, 4974780745.66, 27070168363.3, 12236727597.8, 64795820721.7, 3070583821.88, 40914157792.4, 6896940796.67, 5942569502.6, 53559454524.6, 72896644960.9, 476899018047.0]
+        area_classes = [471894672861.0, 671429173865.0, 295871129544.0]
     # Observed mass loss (Rignot 2013) and uncertainty for each ice shelf, in
     # Gt/y
     obs_massloss = [1325, 1.4, 20.7, 135.4, 155.4, 51.8, 101.2, 97.5, 45.2, 144.9, 4.2, 18.2, 7.9, 90.6, 72.6, 27.2, 35.5, -2, 21.6, 6.3, 3.9, 26.8, 9.7, 47.7]
@@ -36,6 +50,7 @@ def timeseries_annual (dpt_log, seaice_log, massloss_log, res_flag):
     obs_ismr_error = [0.1, 0.6, 1, 0.8, 0.1, 0.6, 1, 1, 0.6, 0.4, 0.3, 0.3, 0.6, 0.7, 0.6, 0.7, 0.4, 0.6, 0.4, 0.2, 0.2, 0.2, 0.2, 0.1]
     # Density of ice in kg/m^3
     rho_ice = 916
+    start_year = 1992  # Assumes 1 repetition of present-day forcing, possibly followed by RCP
 
     # Drake Passage transport
     dpt = []
@@ -55,12 +70,13 @@ def timeseries_annual (dpt_log, seaice_log, massloss_log, res_flag):
     for year in range(num_years):
         dpt_avg.append(mean(array(dpt[peryear*year:peryear*(year+1)])))
     # Make time array
-    time = range(num_years)
+    time = arange(num_years)+start_year
     # Plot
     clf()
     plot(time, dpt_avg)
     xlabel('Years')
     ylabel('Drake Passage Transport (Sv)')
+    xlim([time[0], time[-1]])
     grid(True)
     savefig('drakepsgtrans_avg.png')
 
@@ -96,6 +112,7 @@ def timeseries_annual (dpt_log, seaice_log, massloss_log, res_flag):
     plot(time, area_max)
     xlabel('Years')
     ylabel(r'Annual min and max sea ice area (million km$^2$)')
+    xlim([time[0], time[-1]])
     grid(True)
     savefig('seaice_area_minmax.png')
     clf()
@@ -103,6 +120,7 @@ def timeseries_annual (dpt_log, seaice_log, massloss_log, res_flag):
     plot(time, volume_max)
     xlabel('Years')
     ylabel(r'Annual min and max sea ice volume (million km$^3$)')
+    xlim([time[0], time[-1]])
     grid(True)
     savefig('seaice_volume_minmax.png')
 
@@ -165,6 +183,7 @@ def timeseries_annual (dpt_log, seaice_log, massloss_log, res_flag):
         for t1 in ax1.get_yticklabels():
             t1.set_color('b')
         ax1.set_xlabel('Years')
+        ax1.set_xlim([time[0], time[-1]])
         ax1.grid(True)
         # Twin axis for melt rates
         ax2 = ax1.twinx()
@@ -182,6 +201,72 @@ def timeseries_annual (dpt_log, seaice_log, massloss_log, res_flag):
         title(names[index])
         fig.savefig(fig_heads[index] + '_avg.png')
 
+    # Mass loss by depth class
+    massloss_depth = empty([num_classes, num_output])
+    # Read logfile
+    f = open(massloss_depth_log, 'r')
+    # Skip header
+    f.readline()
+    n = 0
+    # Loop over depth classes
+    while n < num_classes:
+        t = 0
+        for line in f:
+            try:
+                massloss_depth[n,t] = float(line)
+                t += 1
+            except(ValueError):
+                # Reached the header for the next ice shelf
+                break
+        n += 1
+    f.close()
+    # Calculate annual averages
+    massloss_depth_avg = empty([num_classes, num_years])
+    for n in range(num_classes):
+        for year in range(num_years):
+            massloss_depth_avg[n,year] = mean(massloss_depth[n,peryear*year:peryear*(year+1)])
+
+    # Calculate conversion factors from mass loss to area-averaged melt rate
+    # for each depth class
+    factors = empty(num_classes)
+    for n in range(num_classes):
+        factors[n] = 1e12/(rho_ice*area_classes[n])
+
+    # Plot mass loss
+    fig, ax = subplots(figsize=(10,6))
+    # One line for each depth class
+    for n in range(num_classes):
+        ax.plot(time, massloss_depth_avg[n,:], label=labels[n], linewidth=2)
+    # Configure plot
+    title('Basal Mass Loss', fontsize=18)
+    xlabel('Year', fontsize=14)
+    ylabel('Gt/y', fontsize=14)
+    xlim([time[0], time[-1]])
+    grid(True)
+    # Move the plot over to make room for legend
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0, box.width*0.8, box.height])
+    # Make legend
+    ax.legend(loc='center left', bbox_to_anchor=(1,0.5))
+    fig.savefig('massloss_depth_avg.png')
+
+    # Repeat for average melt rate
+    fig, ax = subplots(figsize=(10,6))
+    for n in range(num_classes):
+        ax.plot(time, massloss_depth_avg[n,:]*factors[n], label=labels[n], linewidth=2)
+    # Configure plot
+    title('Area-Averaged Ice Shelf Melt Rate', fontsize=18)
+    xlabel('Year', fontsize=14)
+    ylabel('m/y', fontsize=14)
+    xlim([time[0], time[-1]])
+    grid(True)
+    # Move the plot over to make room for legend
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0, box.width*0.8, box.height])
+    # Make legend
+    ax.legend(loc='center left', bbox_to_anchor=(1,0.5))
+    fig.savefig('ismr_depth_avg.png')
+
 
 # Command-line interface
 if __name__ == '__main__':
@@ -189,8 +274,9 @@ if __name__ == '__main__':
     dpt_log = raw_input("Path to logfile for timeseries_dpt.py: ")
     seaice_log = raw_input("Path to logfile for timeseries_seaice.py: ")
     massloss_log = raw_input("Path to logfile for timeseries_massloss.py: ")
+    massloss_depth_log = raw_input("Path to logfile for timeseries_massloss_depth.py: ")
     res_flag = int(raw_input("Low resolution (1) or high (2)? "))
-    timeseries_annual(dpt_log, seaice_log, massloss_log, res_flag)
+    timeseries_annual(dpt_log, seaice_log, massloss_log, massloss_depth_log, res_flag)
 
     
         

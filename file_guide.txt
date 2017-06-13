@@ -275,10 +275,11 @@ aice_hi_seasonal.py: Creates a 4x2 plot of seasonally averaged sea ice
 			     non-repeating.
 
 timeseries_annual.py: Given the logfiles for 5-day timeseries created using
-                      timeseries_dpt.py, timeseries_seaice.py, and
-		      timeseries_massloss.py, plot annual averages (for Drake
-		      Passage transport and ice shelf melt rates/mass loss) or
-		      annual max/mins (for sea ice area and volume).
+                      timeseries_dpt.py, timeseries_seaice.py, 
+		      timeseries_massloss.py, and timeseries_massloss_depth.py,
+		      plot annual averages (for Drake Passage transport and ice
+		      shelf melt rates/mass loss) or annual max/mins (for sea
+		      ice area and volume).
 		      To run: Open python or ipython and type
 			      "run timeseries_annual.py". You will be prompted
 			      for the paths to each log file, and whether you
@@ -556,6 +557,17 @@ timeseries_massloss_depth.py: Plot timeseries of total basal mass loss and
 				      it will be overwritten with the full
 				      timeseries at the end. This allows you to
 				      process one year of simulation at a time.)
+
+plot_mld.py: Plot the mixed layer depth (defined as in Sallee et al 2013: depth
+             where potential density exceeds surface density by 0.03 kg/m^3).
+	     To run: Open python or ipython and type "run plot_mld.py". The
+	             script will prompt you for the paths to the FESOM mesh
+		     directory and output oce.mean.nc file, the time index to
+		     plot, whether you want a global or circumpolar domain,
+		     optional upper bound on the colour scale, and whether you
+		     want to save the figure (and if so, what filename) or
+		     display it on the screen. This script repeats as many times
+		     as you like.
 
 
 *****BACK END*****
