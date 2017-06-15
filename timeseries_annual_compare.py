@@ -77,7 +77,7 @@ def timeseries_annual_compare ():
     title('Drake Passage Transport (annually averaged)', fontsize=18)
     xlabel('Year', fontsize=14)
     ylabel('Sv', fontsize=14)
-    xlim([year_start, year_end])
+    xlim([year_start, amax(time)])
     grid(True)
     # Move plot over to make room for legend
     box = ax.get_position()
@@ -149,7 +149,7 @@ def timeseries_annual_compare ():
     title('Annual minimum sea ice area', fontsize=18)
     xlabel('Year', fontsize=14)
     ylabel(r'million km$^2$', fontsize=14)
-    xlim([year_start, year_end])
+    xlim([year_start, amax(time)])
     grid(True)
     # Move the plot over to make room for legend
     box = ax.get_position()
@@ -167,7 +167,7 @@ def timeseries_annual_compare ():
     title('Annual maximum sea ice area', fontsize=18)
     xlabel('Year', fontsize=14)
     ylabel(r'million km$^2$', fontsize=14)
-    xlim([year_start, year_end])
+    xlim([year_start, amax(time)])
     grid(True)
     box = ax.get_position()
     ax.set_position([box.x0, box.y0, box.width*0.8, box.height])
@@ -183,7 +183,7 @@ def timeseries_annual_compare ():
     title('Annual minimum sea ice volume', fontsize=18)
     xlabel('Year', fontsize=14)
     ylabel(r'million km$^3$', fontsize=14)
-    xlim([year_start, year_end])
+    xlim([year_start, amax(time)])
     grid(True)
     box = ax.get_position()
     ax.set_position([box.x0, box.y0, box.width*0.8, box.height])
@@ -199,7 +199,7 @@ def timeseries_annual_compare ():
     title('Annual maximum sea ice volume', fontsize=18)
     xlabel('Year', fontsize=14)
     ylabel(r'million km$^3$', fontsize=14)
-    xlim([year_start, year_end])
+    xlim([year_start, amax(time)])
     grid(True)
     box = ax.get_position()
     ax.set_position([box.x0, box.y0, box.width*0.8, box.height])
@@ -255,7 +255,7 @@ def timeseries_annual_compare ():
         for expt in range(len(control_expt)):
             ax.plot(time, massloss[len(rcp_expt)+expt,index,:], label=control_titles[expt], color=control_colours[expt], linewidth=2)
         # Configure plot
-        xlim([year_start, year_end])
+        xlim([year_start, amax(time)])
         xlabel('Year', fontsize=14)
         ylabel('Gt/y', fontsize=14)
         grid(True)

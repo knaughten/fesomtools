@@ -63,7 +63,7 @@ def timeseries_rep3_compare ():
     title('Drake Passage Transport', fontsize=18)
     xlabel('Year', fontsize=14)
     ylabel('Sv', fontsize=14)
-    xlim([year_start, year_end])
+    xlim([year_start, amax(time)])
     grid(True)
     # Move plot over to make room for legend
     box = ax.get_position()
@@ -106,7 +106,7 @@ def timeseries_rep3_compare ():
         title(names[index] + '\nBasal Mass Loss', fontsize=18)
         xlabel('Year', fontsize=14)
         ylabel('Gt/y', fontsize=14)
-        xlim([year_start, year_end])
+        xlim([year_start, amax(time)])
         grid(True)
         # Move plot over to make room for legend
         box = ax.get_position()

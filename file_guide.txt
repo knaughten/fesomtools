@@ -569,6 +569,21 @@ plot_mld.py: Plot the mixed layer depth (defined as in Sallee et al 2013: depth
 		     display it on the screen. This script repeats as many times
 		     as you like.
 
+mld_jja_diff.py: Make a circumpolar Antarctic plot of the change in the winter
+                 (JJA average) mixed layer depth (defined as in Sallee et al
+		 2013: depth at which potential density is 0.03 kg/m^3 higher
+		 than at the surface) in the last 10 years of the RCP compared
+		 to the first 10 years.
+		 To run: First run average_years.py to create oce.mean.nc 5-day
+		         climatologies for the first 10 years and last 10 years
+			 of the RCP. Then open python or ipython and type
+			 "run mld_jja_diff.py". The script will prompt you for
+			 the paths to the FESOM mesh directory and the two
+			 oce.mean.nc climatology files, optional upper bound
+			 for colour scale, and whether you want to save the
+			 figure (and if so, what filename) or display it on
+			 the screen.
+
 
 *****BACK END*****
 
