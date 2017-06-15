@@ -584,6 +584,37 @@ mld_jja_diff.py: Make a circumpolar Antarctic plot of the change in the winter
 			 figure (and if so, what filename) or display it on
 			 the screen.
 
+timeseries_drift.py: Plot timeseries of the annually-averaged, volume-averaged
+                    temperature and salinity between the given latitude and
+		    depth bounds.
+		    To run: Change the naming convention for FESOM output files
+			    from "MK44005" to whatever it should be in the
+			    variable file_head. Then open python or ipython and
+			    type "run timeseries_drift.py". The script will
+			    prompt you for the paths to the FESOM mesh
+			    directory and output directory (containing one
+			    oce.mean.nc file for each year), the years to
+			    process, the log file (if it already exists,
+			    previously calculated values will be read from it;
+			    regardless, it will be overwritten with the full
+			    timeseries at the end. This allows you to process
+			    one forcing repetition at a time), and the filename
+			    for the figure.
+
+timeseries_isfront_ts.py: Like timeseries_cavity_ts.py, but averaging over
+                          elements at the ice shelf front (any depth) rather
+			  than the entire cavity.
+			  To run: Change the naming convention for FESOM output
+			          files from "MK44005" to whatever it should be
+				  in the variable file_head. Then open python
+				  or ipython and type
+				  "run timeseries_isfront_ts.py". The script
+				  will prompt you for the paths to the FESOM
+				  mesh directory and output directory
+				  (containing one oce.mean.nc file for each
+				  year), the years to process, and the
+				  directory to save the figures into.
+
 
 *****BACK END*****
 

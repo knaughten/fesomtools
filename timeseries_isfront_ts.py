@@ -5,18 +5,18 @@ from os.path import *
 from fesom_grid import *
 
 # Plot timeseries of the annually-averaged, volume-averaged temperature and
-# salinity in each ice shelf cavity.
+# salinity at the ice shelf front (all depths) for each major ice shelf.
 # Input:
 # mesh_path = path to FESOM mesh directory
 # output_path = path to FESOM experiment directory containing all oce.mean.nc
 #               files (one for each year)
 # start_year, end_year = integers containing range of years to process
 # fig_dir = path to directory to save the figures in
-def timeseries_cavity_ts (mesh_path, output_path, start_year, end_year, fig_dir=''):
+def timeseries_isfront_ts (mesh_path, output_path, start_year, end_year, fig_dir=''):
 
     # Titles and figure names for each ice shelf
-    names = ['All Ice Shelf Cavities', 'Larsen D Ice Shelf Cavity', 'Larsen C Ice Shelf Cavity', 'Wilkins & George VI & Stange Ice Shelf Cavities', 'Ronne-Filchner Ice Shelf Cavity', 'Abbot Ice Shelf Cavity', 'Pine Island Glacier Ice Shelf Cavity', 'Thwaites Ice Shelf Cavity', 'Dotson Ice Shelf Cavity', 'Getz Ice Shelf Cavity', 'Nickerson Ice Shelf Cavity', 'Sulzberger Ice Shelf Cavity', 'Mertz Ice Shelf Cavity', 'Totten & Moscow University Ice Shelf Cavities', 'Shackleton Ice Shelf Cavity', 'West Ice Shelf Cavity', 'Amery Ice Shelf Cavity', 'Prince Harald Ice Shelf Cavity', 'Baudouin & Borchgrevink Ice Shelf Cavities', 'Lazarev Ice Shelf Cavity', 'Nivl Ice Shelf Cavity', 'Fimbul & Jelbart & Ekstrom Ice Shelf Cavities', 'Brunt & Riiser-Larsen Ice Shelf Cavities', 'Ross Ice Shelf Cavity']
-    fig_names = ['cavity_ts.png', 'larsen_d_ts.png', 'larsen_c_ts.png', 'wilkins_georgevi_stange_ts.png', 'ronne_filchner_ts.png', 'abbot_ts.png', 'pig_ts.png', 'thwaites_ts.png', 'dotson_ts.png', 'getz_ts.png', 'nickerson_ts.png', 'sulzberger_ts.png', 'mertz_ts.png', 'totten_moscowuni_ts.png', 'shackleton_ts.png', 'west_ts.png', 'amery_ts.png', 'princeharald_ts.png', 'baudouin_borchgrevink_ts.png', 'lazarev_ts.png', 'nivl_ts.png', 'fimbul_jelbart_ekstrom_ts.png', 'brunt_riiserlarsen_ts.png', 'ross_ts.png']
+    names = ['All Ice Shelf Fronts', 'Larsen D Ice Shelf Front', 'Larsen C Ice Shelf Front', 'Wilkins & George VI & Stange Ice Shelf Front', 'Ronne-Filchner Ice Shelf Front', 'Abbot Ice Shelf Front', 'Pine Island Glacier Ice Shelf Front', 'Thwaites Ice Shelf Front', 'Dotson Ice Shelf Front', 'Getz Ice Shelf Front', 'Nickerson Ice Shelf Front', 'Sulzberger Ice Shelf Front', 'Mertz Ice Shelf Front', 'Totten & Moscow University Ice Shelf Front', 'Shackleton Ice Shelf Front', 'West Ice Shelf Front', 'Amery Ice Shelf Front', 'Prince Harald Ice Shelf Front', 'Baudouin & Borchgrevink Ice Shelf Front', 'Lazarev Ice Shelf Front', 'Nivl Ice Shelf Front', 'Fimbul & Jelbart & Ekstrom Ice Shelf Front', 'Brunt & Riiser-Larsen Ice Shelf Front', 'Ross Ice Shelf Front']
+    fig_names = ['front_ts.png', 'larsen_d_front_ts.png', 'larsen_c_front_ts.png', 'wilkins_georgevi_stange_front_ts.png', 'ronne_filchner_front_ts.png', 'abbot_front_ts.png', 'pig_front_ts.png', 'thwaites_front_ts.png', 'dotson_front_ts.png', 'getz_front_ts.png', 'nickerson_front_ts.png', 'sulzberger_front_ts.png', 'mertz_front_ts.png', 'totten_moscowuni_front_ts.png', 'shackleton_front_ts.png', 'west_front_ts.png', 'amery_front_ts.png', 'princeharald_front_ts.png', 'baudouin_borchgrevink_front_ts.png', 'lazarev_front_ts.png', 'nivl_front_ts.png', 'fimbul_jelbart_ekstrom_front_ts.png', 'brunt_riiserlarsen_front_ts.png', 'ross_front_ts.png']
     # Limits on longitude and latitude for each ice shelf
     # These depend on the source geometry, in this case RTopo 1.05
     # Note there is one extra index at the end of each array; this is because
@@ -40,21 +40,21 @@ def timeseries_cavity_ts (mesh_path, output_path, start_year, end_year, fig_dir=
 
     print 'Setting up arrays'
     # Timeseries of temperature and salinity to plot
-    cavity_temp_ts = empty([len(names), num_years])
-    cavity_salt_ts = empty([len(names), num_years])
+    front_temp_ts = empty([len(names), num_years])
+    front_salt_ts = empty([len(names), num_years])
     # Temporary arrays containing integrated temperature, salinity, and volume
-    # for each ice shelf cavity. Will be overwritten every year.
-    cavity_temp_int = empty(len(names))
-    cavity_salt_int = empty(len(names))
-    cavity_volume_int = empty(len(names))
+    # for each ice shelf front. Will be overwritten every year.
+    front_temp_int = empty(len(names))
+    front_salt_int = empty(len(names))
+    front_volume_int = empty(len(names))
 
     # Loop over years
     for year in range(start_year, end_year+1):
         print 'Processing year ' + str(year)
         # Initialise integrals
-        cavity_temp_int[:] = 0.0
-        cavity_salt_int[:] = 0.0
-        cavity_volume_int[:] = 0.0
+        front_temp_int[:] = 0.0
+        front_salt_int[:] = 0.0
+        front_volume_int[:] = 0.0
         # Read temperature and salinity for this year, annually average
         id = Dataset(file_head + str(year) + file_tail, 'r')
         temp = mean(id.variables['temp'][:,:], axis=0)
@@ -62,8 +62,9 @@ def timeseries_cavity_ts (mesh_path, output_path, start_year, end_year, fig_dir=
         id.close()
         # Loop over elements
         for elm in elements:
-            # Check if we're in an ice shelf cavity
-            if elm.cavity:
+            # Select elements where some of the 3 nodes are in a cavity, some
+            # aren't: this is the ice shelf front
+            if count_nonzero(elm.cavity_nodes) in [1,2]:
                 # Loop over ice shelves
                 for index in range(len(names)):
                     keep = False
@@ -100,23 +101,23 @@ def timeseries_cavity_ts (mesh_path, output_path, start_year, end_year, fig_dir=
                             volume = area*mean(array(dz_vals))
                             # Integrate temperature, salinity, volume for this
                             # cavity
-                            cavity_temp_int[index] += mean(array(temp_vals))*volume
-                            cavity_salt_int[index] += mean(array(salt_vals))*volume
-                            cavity_volume_int[index] += volume
+                            front_temp_int[index] += mean(array(temp_vals))*volume
+                            front_salt_int[index] += mean(array(salt_vals))*volume
+                            front_volume_int[index] += volume
         # Convert temperature and salinity from integrals to volume-averages,
         # add to timeseries
-        cavity_temp_ts[:,year-start_year] = cavity_temp_int/cavity_volume_int
-        cavity_salt_ts[:,year-start_year] = cavity_salt_int/cavity_volume_int
+        front_temp_ts[:,year-start_year] = front_temp_int/front_volume_int
+        front_salt_ts[:,year-start_year] = front_salt_int/front_volume_int
 
     # Make time axis
     time = range(start_year, end_year+1)
 
     print 'Plotting'
-    # One plot for each cavity
+    # One plot for each ice shelf
     for index in range(len(names)):
         fig, ax1 = subplots()
         # Temperature
-        ax1.plot(time, cavity_temp_ts[index,:], color='b')
+        ax1.plot(time, front_temp_ts[index,:], color='b')
         ax1.set_ylabel(r'Average temperature ($^{\circ}$C)', color='b')
         for t1 in ax1.get_yticklabels():
             t1.set_color('b')
@@ -124,7 +125,7 @@ def timeseries_cavity_ts (mesh_path, output_path, start_year, end_year, fig_dir=
         ax1.grid(True, axis='x')
         ax2 = ax1.twinx()
         # Salinity
-        ax2.plot(time, cavity_salt_ts[index,:], color='r')
+        ax2.plot(time, front_salt_ts[index,:], color='r')
         ax2.set_ylabel('Average salinity (psu)', color='r')
         for t2 in ax2.get_yticklabels():
             t2.set_color('r')
@@ -139,7 +140,7 @@ if __name__ == "__main__":
     output_path = raw_input("Path to FESOM output directory: ")
     start_year = int(raw_input("First year to process: "))
     end_year = int(raw_input("Last year to process: "))
-    timeseries_cavity_ts(mesh_path, output_path, start_year, end_year)
+    timeseries_isfront_ts(mesh_path, output_path, start_year, end_year)
     
     
                     

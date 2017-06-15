@@ -113,7 +113,7 @@ def fesom_intersectgrid (mesh_path, file_path, var_name, tstep, lon_min, lon_max
                 keep = any(elm.y <= lat_vals[j]) and any(elm.y >= lat_vals[j])
             if keep:
                 # Create an IntersectElement
-                ielm = create_ielm(elm, lat_vals[j], depth_edges, data)
+                ielm = create_ielm(elm, lat_vals[j], depth_vals, data)
                 # Check for cases where the Element intersected the given
                 # latitude at exactly one corner; these aren't useful
                 if ielm is not None:                    
