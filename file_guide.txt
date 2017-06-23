@@ -874,3 +874,19 @@ restoring_mask.py: Make a mask for the 2D FESOM mesh indicating which nodes
 			   will prompt you for the path to the FESOM mesh
 			   directory, and the output file ssrestoring_mask.out
 			   will be written to this directory.
+
+seasonal_climatology.py: Create a seasonal climatology (DJF, MAM, JJA, SON) of
+                         ocean variables (3D temperature and salinity) and sea
+			 ice variables (2D concentration and effective
+			 thickness) over the simulation. Output to NetCDF files.
+			 This script assumes the FESOM output is in 5-day
+			 averages.
+			 To run: Make sure the variable expt_name (eg MK44005)
+			         is correct for your simulation. Then open
+				 python or ipython and type
+				 "run seasonal_climatology.py". The script will
+				 prompt you for the FESOM output directory
+				 (containing one oce.mean.nc file and one
+				 ice.mean.nc file for each year), the range
+				 of years to process, and paths to the desired
+				 output files.
