@@ -30,7 +30,7 @@ def timeseries_massloss_depth (mesh_path, diag_file, log_file, fig_dir=''):
     cross_180 = False    # Don't make second copies of elements that cross 180E
     days_per_output = 5  # Number of days for each output step
     rho_ice = 916        # Density of ice in kg/m^3
-    start_year = 1992    # Assumes 1 repetition of present-day forcing, possibly followed by RCP
+    start_year = 1992
 
     tmp_massloss = []
     # Check if the log file exists

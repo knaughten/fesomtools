@@ -71,9 +71,11 @@ def mld_jja_diff (mesh_path, file_path_beg, file_path_end, save=False, fig_name=
                     curr_node = node.below
                     while True:
                         if curr_node is None:
+                            # Reached bottom
                             mld_nodes.append(temp_depth)
                             break
                         if density_beg[curr_node.id] >= density_sfc + density_anom:
+                            # Reached critical density anomaly
                             mld_nodes.append(curr_node.depth)
                             break
                         temp_depth = curr_node.depth

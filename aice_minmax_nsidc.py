@@ -68,7 +68,7 @@ def aice_minmax_nsidc ():
     feb_nsidc = ma.empty([num_years, size(nsidc_lon,0), size(nsidc_lat,1)])
     aug_nsidc = ma.empty([num_years, size(nsidc_lon,0), size(nsidc_lat,1)])
     # Loop over years
-    for year in range(start_year, end_year):
+    for year in range(start_year, end_year+1):
         # Reconstruct file paths
         if year < 1996:
             feb_file = nsidc_head1 + str(year) + '02' + nsidc_tail

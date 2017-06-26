@@ -32,7 +32,7 @@ def nsidc_aice_seasonal (mesh_path, file_path1, file_path2, save=False, fig_name
     nsidc_tail = '_v02r00.nc'
     # Degrees to radians conversion factor
     deg2rad = pi/180.0
-    # Number of days per month (just for CICE)
+    # Number of days per month (just for NSIDC)
     ndays_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
     # Build FESOM mesh

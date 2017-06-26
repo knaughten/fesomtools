@@ -615,6 +615,21 @@ timeseries_isfront_ts.py: Like timeseries_cavity_ts.py, but averaging over
 				  year), the years to process, and the
 				  directory to save the figures into.
 
+timeseries_seaice_extent.py: Calculate and plot timeseries of sea ice extent
+                             (area of ice with concentration >= 15%) during a
+			     FESOM simulation.
+			     To run: Open python or ipython and type
+		                     "run timeseries_seaice_extent.py". The
+				     script will prompt you for paths to the
+				     mesh directory, the output ice.mean.nc
+				     file containing one year of 5-day averages,
+				     and the log file (if it already exists,
+				     previously calculated values will be read
+				     from it; regardless, it will be
+				     overwritten with the full timeseries at
+				     the end. This allows you to process one
+				     year of simulation at a time.)
+
 
 *****BACK END*****
 
