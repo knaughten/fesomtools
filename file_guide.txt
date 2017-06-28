@@ -630,6 +630,43 @@ timeseries_seaice_extent.py: Calculate and plot timeseries of sea ice extent
 				     the end. This allows you to process one
 				     year of simulation at a time.)
 
+cavity_fields_res.py: For each major ice shelf, make a 2x1 plot of the given
+                      field for the low-res spinup (left) and high-res spinup
+		      (right), both averaged over the third repetition of the
+		      forcing, zoomed into the region of interest. Current
+		      options are ice shelf draft, ice shelf melt rate, bottom
+		      water temperature, bottom water salinity, surface
+		      velocity (with vectors overlaid), or vertically averaged
+		      velocity (with vectors overlaid).
+		      To run: First make a multi-year average of rep3 from both
+		              the low and high resolution spinups, saving the
+			      files with the names annual_avg.oce.mean.nc and
+			      annual_avg.forcing.mean.nc. Make sure the paths
+			      near the top of the script (for the mesh
+			      directories and output directories) are correct.
+			      Then open python or ipython and type
+			      "run cavity_fields_res.py". The script will
+			      prompt you for which variable you want to plot.
+			      It will output one png for each ice shelf.
+
+cavity_fields_rcp.py: Like cavity_fields_res.py, but comparing the first 10
+                      years and last 10 years of a given RCP (as opposed to the
+		      same time period with two different resolutions). Ice
+		      shelf draft is not an option because this is
+		      time-invariant.
+		      To run: First make multi-year averages of the first 10
+		              years and last 10 years of the RCP, saving the
+			      files with names annual_avg.oce.mean.2006.2015.nc
+			      and annual_avg.oce.mean.2091.2100.nc (similarly
+			      for forcing.diag in place of oce.mean). Then open
+			      python or ipython and type
+			      "run cavity_fields_rcp.py". The script will
+			      prompt you for which variable you want to plot,
+			      the mesh directory, the directory containing
+			      model output for that RCP, and the directory you
+			      want to save the figures into. It will output one
+			      png for each ice shelf.
+
 
 *****BACK END*****
 
