@@ -399,7 +399,7 @@ if __name__ == "__main__":
     mesh_path = raw_input("Path to FESOM mesh directory: ")
     file_path = raw_input("Path to output directory for RCP: ")
     fig_dir = raw_input("Path to directory to save figures into: ")
-    cavity_fields_rcp(var_name, fig_dir)
+    cavity_fields_rcp(var_name, mesh_path, output_path, fig_dir)
             
                     
             
