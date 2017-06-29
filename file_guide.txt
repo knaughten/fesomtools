@@ -667,6 +667,56 @@ cavity_fields_rcp.py: Like cavity_fields_res.py, but comparing the first 10
 			      want to save the figures into. It will output one
 			      png for each ice shelf.
 
+cavity_melt_diff_rcp.py: For each major ice shelf, plot the change in ice shelf
+                         melt rate during the RCP (last 10 years minus first 10
+			 years) zoomed into the region of interest.
+			 To run: First make multi-year averages of the first 10
+			         years and last 10 years of the RCP, saving the
+				 files with names
+				 annual_avg.forcing.diag.2006.2015.nc and
+				 annual_avg.forcing.diag.2091.2100.nc. Then
+				 open python or ipython and type
+				 "run cavity_melt_diff_rcp.py". The script will
+				 prompt you for the paths to the mesh directory,
+				 the directory containing model output for that
+				 RCP, and the directory you want to save the
+				 figures into. It will output one png for each
+				 ice shelf.
+
+zonal_cavity_ts_res.py:  Create one 2x2 plot for each major ice shelf: zonal
+                         slices of temperature (top) and salinity (bottom),
+			 comparing the low-res mesh (left) and high-res (right).
+			 Longitudes to slice through, and latitude bounds, are
+			 pre-determined.
+			 To run: First make a multi-year average of rep3 from
+			         both the low and high resolution spinups,
+				 saving the files as annual_avg.oce.mean.nc.
+			         Make sure the paths near the top of the script
+				 (for the mesh directories and output
+				 directories) are correct. Then open python or
+				 ipython and type "run zonal_cavity_ts_res.py".
+				 The script will output one png for each ice
+				 shelf.
+
+zonal_ts_rcp_lon.py: Create a 2x2 plot showing zonal slices of temperature
+                     (top) and salinity (bottom) through the given longitude,
+		     comparing the first 10 years of the given RCP (left) to
+		     the last 10 years (right).
+		     To run: First make multi-year averages of the first 10
+			     years and last 10 years of the RCP, saving the
+			     files with names
+			     annual_avg.forcing.diag.2006.2015.nc and
+			     annual_avg.forcing.diag.2091.2100.nc. Then open
+			     python or ipython and type
+			     "run zonal_ts_rcp_lon.py". The script will prompt
+			     you for the longitude to interpolate to, the
+			     bounds on latitudes to plot, the paths to the
+			     FESOM mesh directory and the directory containing
+			     model output for that RCP, and whether you want to
+			     save the figure (and if so, what filename)
+			     display it on the screen. This script does not
+			     repeat.			     
+				
 
 *****BACK END*****
 
