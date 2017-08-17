@@ -26,7 +26,7 @@ def monthly_avg (file_path, var, month):
         monthly_data = id.variables[var][6,:]*4 + sum(id.variables[var][7:11,:]*5, axis=0) + id.variables[var][11,:]*4
     elif month == 2:
         # March: 1/5 of index 12 and indices 13-18
-        monthly_data = id.variables[var][12,:] + sum(id.variables[var][12:18,:]*5, axis=0)
+        monthly_data = id.variables[var][11,:] + sum(id.variables[var][12:18,:]*5, axis=0)
     elif month == 3:
         # April: indices 19-24
         monthly_data = sum(id.variables[var][18:24,:]*5, axis=0)

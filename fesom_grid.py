@@ -143,9 +143,9 @@ class Element:
 # circumpolar = optional boolean flag indicating if the user's plot
 #               will be circumpolar Antarctic (otherwise global)
 # cross_180 = optional boolean flag indicating that elements which cross the
-#             line 180W=180E should not be copied to both sides of the line
+#             line 180W=180E should be copied to both sides of the line
 #             (this is desirable for plotting but not for calculations like
-#             global integrals)
+#             global integrals). Default True.
 # Output:
 # elements = array of Element objects
 def fesom_grid (mesh_path, circumpolar=False, cross_180=True):

@@ -1,24 +1,24 @@
 from numpy import *
 from matplotlib.pyplot import *
 
-# Compare all RCP experiments and control experiments by plotting timeseries on
+# Compare all high-res RCP experiments and control by plotting timeseries on
 # the same axes: annual averages of Drake Passage transport and ice shelf mass
 # loss, annual max/mins of sea ice area and volume.
 def timeseries_annual_compare ():
 
     # Paths to RCP experiment directories
     directory_head = '/short/y99/kaa561/FESOM/'
-    rcp_expt = ['rcp45_M', 'rcp85_M', 'rcp45_A', 'rcp85_A', 'rcp85_M_highres']
+    rcp_expt = ['rcp45_M_highres', 'rcp45_A_highres', 'rcp85_M_highres', 'rcp85_A_highres']
     # Titles for plot
-    rcp_titles = ['RCP_45_M', 'RCP_85_M', 'RCP_45_A', 'RCP_85_A', 'RCP_85_M_HR']
+    rcp_titles = ['RCP 4.5 M', 'RCP 4.5 A', 'RCP 8.5 M', 'RCP 8.5 A']
     # Colours for plotting
-    rcp_colours = ['blue', 'red', 'green', 'magenta', 'cyan']
+    rcp_colours = ['blue', 'cyan', 'green', 'magenta']
     # Paths to control experiment directories
-    control_expt = ['lowres_spinup', 'highres_spinup']
+    control_expt = ['highres_spinup']
     # Titles for plot
-    control_titles = ['CONTROL_LR', 'CONTROL_HR']
+    control_titles = ['CONTROL']
     # Colours for plotting
-    control_colours = ['black', (0.5, 0.5, 0.5)]
+    control_colours = ['black']
     # Years to plot
     year_start = 1992
     year_end = 2100

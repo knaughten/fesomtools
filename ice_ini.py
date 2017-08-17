@@ -11,10 +11,10 @@ from unrotate_grid import *
 def ice_ini ():
 
     # File paths
-    mesh_path = '../FESOM/mesh/low_res/'
+    mesh_path = '../FESOM/mesh/high_res/'
     nsidc_sh_file = '/short/m68/kaa561/nsidc_aice/seaice_conc_monthly_sh_f11_199201_v02r00.nc'
     nsidc_nh_file = '/short/m68/kaa561/nsidc_aice/seaice_conc_monthly_nh_f11_199201_v02r00.nc'
-    out_file = '../FESOM/intercomparison/output/MK44005.initial_ice.nc'
+    out_file = '../FESOM/intercomparison_highres/output/MK44005.initial_ice.nc'
 
     # Read rotated latitude and longitude of 2D nodes
     print "Reading FESOM grid"
