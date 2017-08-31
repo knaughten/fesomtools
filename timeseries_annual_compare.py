@@ -3,7 +3,7 @@ from matplotlib.pyplot import *
 
 # Compare all high-res RCP experiments and control by plotting timeseries on
 # the same axes: annual averages of Drake Passage transport and ice shelf mass
-# loss, annual max/mins of sea ice area and volume.
+# loss, annual max/mins of sea ice area, extent, and volume.
 def timeseries_annual_compare ():
 
     # Paths to RCP experiment directories
@@ -205,6 +205,75 @@ def timeseries_annual_compare ():
     ax.set_position([box.x0, box.y0, box.width*0.8, box.height])
     ax.legend(loc='center left', bbox_to_anchor=(1,0.5))
     fig.savefig('seaice_volume_max.png')
+
+    # Sea ice extent, annual min/max
+    extent_min = empty([len(rcp_expt)+len(control_expt), num_years])
+    extent_max = empty([len(rcp_expt)+len(control_expt), num_years])
+    # Loop over RCP experiments
+    for expt in range(len(rcp_expt)):
+        # Read logfile
+        extent_tmp = []
+        f = open(directory_head + rcp_expt[expt] + '/seaice_extent.log')
+        f.readline()
+        for line in f:
+            extent_tmp.append(float(line))
+        f.close()
+        # Get annual min/max of extent
+        for year in range(num_years):
+            extent_min[expt,year] = amin(array(extent_tmp[peryear*year:peryear*(year+1)]))
+            extent_max[expt,year] = amax(array(extent_tmp[peryear*year:peryear*(year+1)]))
+    # Loop over control experiments
+    for expt in range(len(control_expt)):
+        # Read logfile
+        extent_tmp = []
+        f = open(directory_head + control_expt[expt] + '/seaice_extent.log')
+        f.readline()
+        for line in f:
+            extent_tmp.append(float(line))
+        f.close()
+        # Throw away spinup years
+        extent_tmp = extent_tmp[control_skipyears*peryear:]
+        # Get annual min/max of extent
+        for year in range(num_years):
+            extent_min[len(rcp_expt)+expt,year] = amin(array(extent_tmp[peryear*year:peryear*(year+1)]))
+            extent_max[len(rcp_expt)+expt,year] = amax(array(extent_tmp[peryear*year:peryear*(year+1)]))
+
+    # Plot extent min             
+    fig, ax = subplots(figsize=(10,6))
+    # One line for each RCP
+    for expt in range(len(rcp_expt)):
+        ax.plot(time, extent_min[expt,:], label=rcp_titles[expt], color=rcp_colours[expt], linewidth=2)
+    # One line for each control experiment
+    for expt in range(len(control_expt)):
+        ax.plot(time, extent_min[len(rcp_expt)+expt,:], label=control_titles[expt], color=control_colours[expt], linewidth=2)
+    # Configure plot
+    title('Annual minimum sea ice extent', fontsize=18)
+    xlabel('Year', fontsize=14)
+    ylabel(r'million km$^2$', fontsize=14)
+    xlim([year_start, amax(time)])
+    grid(True)
+    # Move the plot over to make room for legend
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0, box.width*0.8, box.height])
+    # Make legend
+    ax.legend(loc='center left', bbox_to_anchor=(1,0.5))
+    fig.savefig('seaice_extent_min.png')
+
+    # Repeat for extent max
+    fig, ax = subplots(figsize=(10,6))
+    for expt in range(len(rcp_expt)):
+        ax.plot(time, extent_max[expt,:], label=rcp_titles[expt], color=rcp_colours[expt], linewidth=2)
+    for expt in range(len(control_expt)):
+        ax.plot(time, extent_max[len(rcp_expt)+expt,:], label=control_titles[expt], color=control_colours[expt], linewidth=2)
+    title('Annual maximum sea ice extent', fontsize=18)
+    xlabel('Year', fontsize=14)
+    ylabel(r'million km$^2$', fontsize=14)
+    xlim([year_start, amax(time)])
+    grid(True)
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0, box.width*0.8, box.height])
+    ax.legend(loc='center left', bbox_to_anchor=(1,0.5))
+    fig.savefig('seaice_extent_max.png')
 
     # Ice shelf basal mass loss
     massloss = empty([len(rcp_expt)+len(control_expt), len(names), num_years])

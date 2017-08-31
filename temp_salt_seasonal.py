@@ -23,7 +23,7 @@ from seasonal_avg import *
 def temp_salt_seasonal (elements, file_path1, file_path2, lon0, depth_min, save=False, fig_name=None):
 
     # Northern boundary for plot
-    lat_max = -60 #-30
+    lat_max = -30
     # Season names for titles
     season_names = ['DJF', 'MAM', 'JJA', 'SON']
 
@@ -34,9 +34,9 @@ def temp_salt_seasonal (elements, file_path1, file_path2, lon0, depth_min, save=
 
     # Choose what to write on the title about longitude
     if lon0 < 0:
-        lon_string = ' at ' + str(int(round(-lon0))) + r'$^{\circ}$W'
+        lon_string = str(int(round(-lon0))) + r'$^{\circ}$W'
     else:
-        lon_string = ' at ' + str(int(round(lon0))) + r'$^{\circ}$E'
+        lon_string = str(int(round(lon0))) + r'$^{\circ}$E'
 
     # Get seasonal averages of temperature and salinity
     temp_data = seasonal_avg(file_path1, file_path2, 'temp')
@@ -82,11 +82,13 @@ def temp_salt_seasonal (elements, file_path1, file_path2, lon0, depth_min, save=
         ylim([depth_min, 0])
         title('Salinity (' + season_names[season] + ')', fontsize=24)
         if season == 0:
-            ylabel('depth (m)', fontsize=18)
+            ylabel('Depth (m)', fontsize=18)
+        xlabel('Latitude', fontsize=18)
         if season == 3:
             cbaxes = fig.add_axes([0.93, 0.1, 0.015, 0.3])
             cbar2 = colorbar(img, cax=cbaxes, ticks=arange(var_min[1], var_max[1]+var_ticks[1], var_ticks[1]))
             cbar2.ax.tick_params(labelsize=16)
+    suptitle(lon_string, fontsize=30)
 
     # Finished
     if save:

@@ -24,7 +24,7 @@ def ismr_seasonal (mesh_path, file_path1, file_path2, save=False, fig_name=None)
     circumpolar = True
     mask_cavities = True
     # Seconds per year
-    sec_per_year = 365*24*3600
+    sec_per_year = 365.25*24*3600
     # Season names for plot titles
     season_names = ['DJF', 'MAM', 'JJA', 'SON']
 

@@ -51,7 +51,7 @@ def lonlat_plot (mesh_path, file_path, var_name, depth_key, depth, depth_bounds,
     # Set font sizes
     font_sizes = [30, 24, 20]
     # Seconds per year, for conversion of ice shelf melt rate
-    sec_per_year = 365*24*3600
+    sec_per_year = 365.25*24*3600
 
     # Read data
     file = Dataset(file_path, 'r')
@@ -342,7 +342,7 @@ def lonlat_plot (mesh_path, file_path, var_name, depth_key, depth, depth_bounds,
             colour_map = 'jet'
     else:
         # Determine bounds automatically
-        if var_name in ['uwind', 'vwind', 'qnet', 'olat', 'osen', 'wnet', 'virtual_salt', 'relax_salt', 'stress_x', 'stress_y', 'uice', 'vice', 'u', 'v', 'w']:
+        if var_name in ['uwind', 'vwind', 'qnet', 'olat', 'osen', 'wnet', 'virtual_salt', 'relax_salt', 'stress_x', 'stress_y', 'uice', 'vice', 'u', 'v', 'w', 'thdr', 'uhice', 'vhice']:
             # Center levels on 0 for certain variables, with a blue-to-red
             # colourmap
             max_val = amax(abs(array(values)))

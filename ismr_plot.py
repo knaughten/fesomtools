@@ -21,7 +21,7 @@ def ismr_plot (mesh_path, file_path, save=False, fig_name=None):
     circumpolar = True
     mask_cavities = True
     # Seconds per year
-    sec_per_year = 365*24*3600
+    sec_per_year = 365.25*24*3600
 
     # Set colour map
     # Values for change points

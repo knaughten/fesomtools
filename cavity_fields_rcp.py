@@ -45,7 +45,7 @@ def cavity_fields_rcp (var_name, mesh_path, output_path, fig_dir=''):
     num_shelves = len(shelf_names)
 
     # Constants
-    sec_per_year = 365*24*3600
+    sec_per_year = 365.25*24*3600
     deg2rad = pi/180.0
     # Number of bins in each direction for vector overlay
     num_bins = 50

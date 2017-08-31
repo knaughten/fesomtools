@@ -12,15 +12,17 @@ from fesom_sidegrid import *
 # through, and latitude bounds, are pre-determined.
 # Input:
 # mesh_path = path to FESOM mesh directory
-# output_path = path to directory containing the files
-#               annual_avg.oce.mean.2006.2015.nc and
-#               annual_avg.oce.mean.2091.2100.nc, which contain 3D temperature
-#               and salinity averaged over 2006-2015 and 2091-2100 respectively
+# spinup_path = path to the control simulation directory containing the file
+#               annual_avg.oce.mean.1996.2005.nc, which contains 3D temperature
+#               and salinity averaged over 1996-2005 
+# rcp_path = path to the RCP directory containing the file
+#            annual_avg.oce.mean.2091.2100.nc, which contains 3D temperature
+#            and salinity averaged over 2091-2100 respectively
 # fig_dir = optional string containing path to directory to store figures in
-def zonal_cavity_ts_rcp (mesh_path, output_path, fig_dir=''):
+def zonal_cavity_ts_rcp (mesh_path, spinup_path, rcp_path, fig_dir=''):
 
-    file_name_beg = 'annual_avg.oce.mean.2006.2015.nc'
-    file_name_end = 'annual_avg.oce.mean.2091.2100.nc'
+    file_name_beg = spinup_path + 'annual_avg.oce.mean.1996.2005.nc'
+    file_name_end = rcp_path + 'annual_avg.oce.mean.2091.2100.nc'
 
     # Name of each ice shelf
     shelf_names = ['Larsen D Ice Shelf', 'Larsen C Ice Shelf', 'Wilkins & George VI & Stange Ice Shelves', 'Ronne-Filchner Ice Shelf', 'Abbot Ice Shelf', 'Pine Island Glacier Ice Shelf', 'Thwaites Ice Shelf', 'Dotson Ice Shelf', 'Getz Ice Shelf', 'Nickerson Ice Shelf', 'Sulzberger Ice Shelf', 'Mertz Ice Shelf', 'Totten & Moscow University Ice Shelves', 'Shackleton Ice Shelf', 'West Ice Shelf', 'Amery Ice Shelf', 'Prince Harald Ice Shelf', 'Baudouin & Borchgrevink Ice Shelves', 'Lazarev Ice Shelf', 'Nivl Ice Shelf', 'Fimbul & Jelbart & Ekstrom Ice Shelves', 'Brunt & Riiser-Larsen Ice Shelves', 'Ross Ice Shelf']
@@ -36,11 +38,11 @@ def zonal_cavity_ts_rcp (mesh_path, output_path, fig_dir=''):
     print 'Building FESOM mesh'
     elm2D = fesom_grid(mesh_path)
     print 'Reading temperature and salinity data'
-    id = Dataset(output_path + file_name_beg, 'r')
+    id = Dataset(file_name_beg, 'r')
     temp_nodes_beg = id.variables['temp'][0,:]
     salt_nodes_beg = id.variables['salt'][0,:]
     id.close()
-    id = Dataset(output_path + file_name_end, 'r')
+    id = Dataset(file_name_end, 'r')
     temp_nodes_end = id.variables['temp'][0,:]
     salt_nodes_end = id.variables['salt'][0,:]
     id.close()
@@ -118,7 +120,7 @@ def zonal_cavity_ts_rcp (mesh_path, output_path, fig_dir=''):
         ax.add_collection(img)
         xlim([lat_min[index], lat_max[index]])
         ylim([depth_min, 0])
-        title(r'Temperature ($^{\circ}$C), 2006-2015', fontsize=20)
+        title(r'Temperature ($^{\circ}$C), 1996-2005', fontsize=20)
         ylabel('Depth (m)', fontsize=16)
         # Add colorbar for absolute temperature
         cbaxes_temp = fig.add_axes([0.05, 0.575, 0.01, 0.3])
@@ -159,7 +161,7 @@ def zonal_cavity_ts_rcp (mesh_path, output_path, fig_dir=''):
         ax.add_collection(img)
         xlim([lat_min[index], lat_max[index]])
         ylim([depth_min, 0])
-        title('Salinity (psu), 2006-2015', fontsize=20)
+        title('Salinity (psu), 1995-2005', fontsize=20)
         ylabel('Depth (m)', fontsize=16)
         # Add colorbar for absolute salinity
         cbaxes_salt = fig.add_axes([0.05, 0.125, 0.01, 0.3])
@@ -201,6 +203,7 @@ def zonal_cavity_ts_rcp (mesh_path, output_path, fig_dir=''):
 if __name__ == "__main__":
 
     mesh_path = raw_input("Path to FESOM mesh directory: ")
-    output_path = raw_input("Path to output directory for RCP: ")
+    spinup_path = raw_input("Path to control simulation directory: ")
+    rcp_path = raw_input("Path to output directory for RCP: ")
     fig_dir = raw_input("Directory to store figures (blank for current directory, otherwise ending in /): ")
-    zonal_cavity_ts_rcp(mesh_path, output_path, fig_dir)
+    zonal_cavity_ts_rcp(mesh_path, spinup_path, rcp_path, fig_dir)

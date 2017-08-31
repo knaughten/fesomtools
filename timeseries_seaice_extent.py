@@ -11,7 +11,7 @@ from fesom_grid import *
 # log_file = path to log file (if it exists, previously calculated values will
 #            be read from it; regardless, it will be overwritten with all
 #            calculated values following computation)
-def timeseries_seaice_extent (mesh_path, ice_file, log_file):
+def timeseries_seaice_extent (mesh_path, ice_file, log_file, fig_dir=''):
 
     circumpolar = True   # Only consider elements south of 30S
     cross_180 = False    # Don't make second copies of elements that cross 180E
@@ -66,7 +66,7 @@ def timeseries_seaice_extent (mesh_path, ice_file, log_file):
     xlabel('Years')
     ylabel(r'Sea Ice Extent (million km$^2$)')
     grid(True)
-    savefig('seaice_extent.png')
+    savefig(fig_dir+'seaice_extent.png')
 
     print 'Saving results to log file'
     f = open(log_file, 'w')

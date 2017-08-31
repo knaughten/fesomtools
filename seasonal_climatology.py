@@ -17,7 +17,7 @@ def seasonal_climatology (directory, start_year, end_year, out_file_oce, out_fil
     # Filename head
     expt_name = 'MK44005'
 
-    print 'Processing ocean'
+    '''print 'Processing ocean'
     # Read number of 3D nodes from first file
     id = Dataset(directory + expt_name + '.' + str(start_year) + '.oce.mean.nc', 'r')
     n3d = id.variables['temp'].shape[1]
@@ -74,9 +74,9 @@ def seasonal_climatology (directory, start_year, end_year, out_file_oce, out_fil
     id.variables['salt'].description = 'mean salinity'
     id.variables['salt'].units = 'psu'
     id.variables['salt'][:,:] = seasonal_salt
-    id.close()
+    id.close()'''
 
-    '''print 'Processing sea ice'
+    print 'Processing sea ice'
     # Similar, but 2D nodes not 3D, sea ice area and effective thickness
     id = Dataset(directory + expt_name + '.' + str(start_year) + '.ice.mean.nc', 'r')
     n2d = id.variables['area'].shape[1]
@@ -127,7 +127,7 @@ def seasonal_climatology (directory, start_year, end_year, out_file_oce, out_fil
     id.variables['hice'].description = 'effective ice thickness'
     id.variables['hice'].units = 'm'
     id.variables['hice'][:,:] = seasonal_hice
-    id.close()'''
+    id.close()
     
 
 # Command-line interface
