@@ -263,7 +263,7 @@ def rcp_map_circles (key=1):
     if key == 1:
         suptitle('Change in ice shelf basal mass loss (Gt/y),\n2091-2100 minus 1996-2005', fontsize=30)
     elif key == 2:
-        suptitle('Percent change in ice shelf basal mass loss (Gt/y),\n2091-2100 with respect to 1996-2005', fontsize=30)
+        suptitle('Percent change in ice shelf basal mass loss by sector,\n2091-2100 with respect to 1996-2005', fontsize=30)
     fig.show()
     if key == 1:
         fig.savefig('rcp_map_circles.png')
@@ -274,7 +274,7 @@ def rcp_map_circles (key=1):
 # Command-line interface
 if __name__ == "__main__":
 
-    key = percent('Plot absolute change (1) or percent change (2)? ')
+    key = int(raw_input('Plot absolute change (1) or percent change (2)? '))
     rcp_map_circles(key)
         
 

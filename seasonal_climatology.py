@@ -20,6 +20,65 @@ def seasonal_climatology (directory, start_year, end_year, out_file_oce, out_fil
     '''print 'Processing ocean'
     # Read number of 3D nodes from first file
     id = Dataset(directory + expt_name + '.' + str(start_year) + '.oce.mean.nc', 'r')
+    n3d = id.variables['u'].shape[1]
+    id.close()
+    # Set up arrays to integrate seasonal climatology of u and v
+    seasonal_u = ma.empty([4, n3d]) 
+    seasonal_v = ma.empty([4, n3d])
+    seasonal_u[:,:] = 0.0
+    seasonal_v[:,:] = 0.0
+    # Also integrate number of days in each season
+    ndays = zeros(4)
+    # Loop over years
+    for year in range(start_year, end_year+1):
+        print '...' + str(year)
+        id = Dataset(directory + expt_name + '.' + str(year) + '.oce.mean.nc', 'r')
+        # Indices 1-11 and 4/5 of index 12 are DJF (59 days)
+        seasonal_u[0,:] += sum(id.variables['u'][0:11,:]*5, axis=0) + id.variables['u'][11,:]*4
+        seasonal_v[0,:] += sum(id.variables['v'][0:11,:]*5, axis=0) + id.variables['v'][11,:]*4
+        ndays[0] += 59
+        # 1/5 of index 12, indices 13-30, and 1/5 of index 31 are MAM (92 days)
+        seasonal_u[1,:] += id.variables['u'][11,:] + sum(id.variables['u'][12:30,:]*5, axis=0) + id.variables['u'][30,:]
+        seasonal_v[1,:] += id.variables['v'][11,:] + sum(id.variables['v'][12:30,:]*5, axis=0) + id.variables['v'][30,:]
+        ndays[1] += 92
+        # 4/5 of index 31, indices 32-48, and 3/5 of index 49 are JJA (92 days)
+        seasonal_u[2,:] += id.variables['u'][30,:]*4 + sum(id.variables['u'][31:48]*5, axis=0) + id.variables['u'][48,:]*3
+        seasonal_v[2,:] += id.variables['v'][30,:]*4 + sum(id.variables['v'][31:48]*5, axis=0) + id.variables['v'][48,:]*3
+        ndays[2] += 92
+        # 2/5 of index 49, indices 50-66, and 4/5 of index 67 are SON (91 days)
+        seasonal_u[3,:] += id.variables['u'][48,:]*2 + sum(id.variables['u'][49:66,:]*5, axis=0) + id.variables['u'][66,:]*4
+        seasonal_v[3,:] += id.variables['v'][48,:]*2 + sum(id.variables['v'][49:66,:]*5, axis=0) + id.variables['v'][66,:]*4
+        ndays[3] += 91
+        # 1/5 of index 67 and indices 68-73 are DJF again (31 days)
+        seasonal_u[0,:] += id.variables['u'][66,:] + sum(id.variables['u'][67:73,:]*5, axis=0)
+        seasonal_v[0,:] += id.variables['v'][66,:] + sum(id.variables['v'][67:73,:]*5, axis=0)
+        ndays[0] += 31
+        id.close()
+    # Convert from sums to averages
+    for season in range(4):
+        seasonal_u[season,:] = seasonal_u[season,:]/ndays[season]
+        seasonal_v[season,:] = seasonal_v[season,:]/ndays[season]
+    # Write to file
+    print 'Writing ' + out_file_oce
+    id = Dataset(out_file_oce, 'w')
+    id.createDimension('nodes_3d', n3d)
+    id.createDimension('T', None)
+    id.createVariable('season', 'f8', ('T'))
+    id.variables['season'].long_name = 'DJF, MAM, JJA, SON'
+    id.variables['season'][:] = arange(1,4+1)
+    id.createVariable('u', 'f8', ('T', 'nodes_3d'))
+    id.variables['u'].description = 'mean zonal velocity'
+    id.variables['u'].units = 'm/s'
+    id.variables['u'][:,:] = seasonal_u
+    id.createVariable('v', 'f8', ('T', 'nodes_3d'))
+    id.variables['v'].description = 'mean meridional velocity'
+    id.variables['v'].units = 'm/s'
+    id.variables['v'][:,:] = seasonal_v
+    id.close()'''
+
+    print 'Processing ocean'
+    # Read number of 3D nodes from first file
+    id = Dataset(directory + expt_name + '.' + str(start_year) + '.oce.mean.nc', 'r')
     n3d = id.variables['temp'].shape[1]
     id.close()
     # Set up arrays to integrate seasonal climatology of temp and salt
@@ -74,9 +133,9 @@ def seasonal_climatology (directory, start_year, end_year, out_file_oce, out_fil
     id.variables['salt'].description = 'mean salinity'
     id.variables['salt'].units = 'psu'
     id.variables['salt'][:,:] = seasonal_salt
-    id.close()'''
+    id.close()
 
-    print 'Processing sea ice'
+    '''print 'Processing sea ice'
     # Similar, but 2D nodes not 3D, sea ice area and effective thickness
     id = Dataset(directory + expt_name + '.' + str(start_year) + '.ice.mean.nc', 'r')
     n2d = id.variables['area'].shape[1]
@@ -127,7 +186,7 @@ def seasonal_climatology (directory, start_year, end_year, out_file_oce, out_fil
     id.variables['hice'].description = 'effective ice thickness'
     id.variables['hice'].units = 'm'
     id.variables['hice'][:,:] = seasonal_hice
-    id.close()
+    id.close()'''
     
 
 # Command-line interface

@@ -40,9 +40,9 @@ def plot_wct (mesh_path, fig_name):
     # For each element, calculate the minimum wct of the 3 component nodes
     elm_wct = []
     for elm in elements:
-        wct1 = node_wct[(elm.nodes[0]).id-1]
-        wct2 = node_wct[(elm.nodes[1]).id-1]
-        wct3 = node_wct[(elm.nodes[2]).id-1]
+        wct1 = elm.nodes[0].find_bottom().depth - elm.nodes[0].depth #node_wct[(elm.nodes[0]).id-1]
+        wct2 = elm.nodes[1].find_bottom().depth - elm.nodes[1].depth #node_wct[(elm.nodes[1]).id-1]
+        wct3 = elm.nodes[2].find_bottom().depth - elm.nodes[2].depth #node_wct[(elm.nodes[2]).id-1]
         elm_wct.append(amin(array([wct1, wct2, wct3])))
 
     # Set up figure
@@ -52,6 +52,7 @@ def plot_wct (mesh_path, fig_name):
     img = PatchCollection(patches, cmap=jet)
     img.set_array(array(elm_wct))
     img.set_edgecolor('face')
+    img.set_clim(vmin=0, vmax=200)
     ax.add_collection(img)
 
     # Configure plot
@@ -61,7 +62,7 @@ def plot_wct (mesh_path, fig_name):
     ax.get_yaxis().set_ticks([])
     title('Water column thickness (m)', fontsize=font_sizes[0])
     cbar = colorbar(img)
-    cbar.ax.tick_params(labelsize=font_sizes[2])
+    cbar.ax.tick_params(labelsize=font_sizes[2])    
     axis('off')
 
     # Plot specified points

@@ -32,6 +32,9 @@ def triangle_area (lon, lat):
     # Calculate two of the three angles in this triangle (cosine law)
     theta2 = arccos((l12**2 + l23**2 - l13**2)/(2*l12*l23))
     theta3 = arccos((l13**2 + l23**2 - l12**2)/(2*l23*l13))
+    if theta2 < 1e-5 or theta3 < 1e-5 or isnan(theta2) or isnan(theta3):
+        print 'Warning: triangle area close to zero. Okay for barycentric interpolation. lon=' + str(lon) + ', lat=' + str(lat)
+        return 0.0
 
     # Consider the triangle split down the middle by a line L1, containing
     # point 1 and intersecting the opposite side (l23) at a right angle.
@@ -45,6 +48,7 @@ def triangle_area (lon, lat):
     error1 = abs((l23-b2-b3)/l23)
     if error1 > 0.01:
         print 'Greater than 1% error in two values of base'
+        exit
     # Similarly, find h2 and h3, which both measure the length of L1.
     h2 = l12*sin(theta2)
     h3 = l13*sin(theta3)
