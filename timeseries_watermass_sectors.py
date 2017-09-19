@@ -1,7 +1,6 @@
 from netCDF4 import Dataset
 from numpy import *
 from matplotlib.pyplot import *
-from os.path import *
 from fesom_grid import *
 
 def timeseries_watermass_sectors (mesh_path, output_path, start_year, end_year, log_file, fig_dir=''):
@@ -34,6 +33,8 @@ def timeseries_watermass_sectors (mesh_path, output_path, start_year, end_year, 
         # Make sure we're actually in an ice shelf cavity
         if elm.cavity:
             # Figure out which sector this ice shelf element falls into
+            lon = mean(elm.lon)
+            lat = mean(elm.lat)
             if lon >= -85 and lon < -30 and lat < -74:
                 # Filchner-Ronne
                 location_flag[0,i] = 1           
@@ -95,14 +96,14 @@ def timeseries_watermass_sectors (mesh_path, output_path, start_year, end_year, 
                     temp_vals = []
                     salt_vals = []
                     dz_vals = []
-                    for i in range(3):
-                        temp_vals.append(temp[nodes[i].id])
-                        salt_vals.append(salt[nodes[i].id])
-                        temp_vals.append(temp[nodes[i].below.id])
-                        salt_vals.append(salt[nodes[i].below.id])
-                        dz_vals.append(abs(nodes[i].depth - nodes[i].below.depth))
+                    for n in range(3):
+                        temp_vals.append(temp[nodes[n].id])
+                        salt_vals.append(salt[nodes[n].id])
+                        temp_vals.append(temp[nodes[n].below.id])
+                        salt_vals.append(salt[nodes[n].below.id])
+                        dz_vals.append(abs(nodes[n].depth - nodes[n].below.depth))
                         # Get ready for next iteration of loop
-                        nodes[i] = nodes[i].below
+                        nodes[n] = nodes[n].below
                     curr_temp = mean(array(temp_vals))
                     curr_salt = mean(array(salt_vals))
                     curr_volume = area*mean(array(dz_vals))
@@ -167,7 +168,7 @@ def timeseries_watermass_sectors (mesh_path, output_path, start_year, end_year, 
         ax.set_position([box.x0, box.y0, box.width*0.8, box.height])
         # Make legend
         ax.legend(loc='center left', bbox_to_anchor=(1,0.5))
-        fig.savefig(fig_names[sector])
+        fig.savefig(fig_dir + fig_names[sector])
 
     print 'Saving results to log file'
     f = open(log_file, 'w')
