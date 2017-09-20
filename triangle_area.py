@@ -33,7 +33,7 @@ def triangle_area (lon, lat):
     theta2 = arccos((l12**2 + l23**2 - l13**2)/(2*l12*l23))
     theta3 = arccos((l13**2 + l23**2 - l12**2)/(2*l23*l13))
     if theta2 < 1e-5 or theta3 < 1e-5 or isnan(theta2) or isnan(theta3):
-        print 'Warning: triangle area close to zero. Okay for barycentric interpolation. lon=' + str(lon) + ', lat=' + str(lat)
+        #print 'Warning: triangle area close to zero. Okay for barycentric interpolation. lon=' + str(lon) + ', lat=' + str(lat)
         return 0.0
 
     # Consider the triangle split down the middle by a line L1, containing
