@@ -5,8 +5,8 @@ from matplotlib.collections import PatchCollection
 from matplotlib.pyplot import *
 from matplotlib.cm import *
 from fesom_grid import *
-from fesom_sidegrid import *
 from seasonal_avg import *
+from side_patches import *
 
 # Make a 4x2 plot comparing lat vs. depth slices of seasonally averaged
 # temperature or salinity at the given longitude, between FESOM (given year
@@ -84,7 +84,7 @@ def sose_fesom_seasonal (elements, file_path1, file_path2, var_name, lon0, depth
     for season in range(4):
         # FESOM
         print 'Calculating zonal slices for ' + season_names[season]
-        patches, values = interp_lon_fesom(elements, lat_max, lon0, fesom_data[season,:])
+        patches, values, tmp = side_patches(elements, lat_max, lon0, fesom_data[season,:])
         ax = fig.add_subplot(2, 4, season+1)
         img = PatchCollection(patches, cmap=jet)
         img.set_array(array(values))
@@ -158,87 +158,6 @@ def interp_lon_sose (data_3d, lon, lon0):
     # Interpolate
     data = coeff1*data_3d[:,:,ie] + coeff2*data_3d[:,:,iw]
     return data
-
-
-# Linearly interpolate FESOM data to the specified longitude.
-# Input:
-# elements = array of 2D Elements created by fesom_grid.py
-# lat_max = maximum latitude to consider
-# lon0 = longitude to interpolate to, from -180 to 180
-# data = array of FESOM data on original mesh
-def interp_lon_fesom (elements, lat_max, lon0, data): 
-
-    snode_pairs = []
-    for elm in elements:
-        # Don't consider elements outside the Southern Ocean
-        if any(elm.y <= lat_max):
-            # Select elements which intersect lon0
-            if any(elm.x <= lon0) and any(elm.x >= lon0):
-                # Special case where nodes (corners) of the element are
-                # exactly at longitude lon0
-                if any(elm.x == lon0):
-                    # If exactly one of the corners is at lon0, ignore it;
-                    # this element only touches lon0 at one point
-                    # If two of the corners are at lon0, an entire side of
-                    # the element lies along the line lon0
-                    if count_nonzero(elm.x == lon0) == 2:
-                        # Select these two Nodes
-                        index = nonzero(elm.x == lon0)
-                        nodes = elm.nodes[index]
-                        node1 = nodes[0]
-                        node2 = nodes[1]
-                        # Convert to SideNodes and add them to snode_pairs
-                        coincide_snode(node1, node2, data, snode_pairs)
-                    # Impossible for all three corners to be at lon0
-                else:
-                    # Regular case
-                    snodes_curr = []
-                    # Find the two sides of the triangular element which
-                    # intersect longitude lon0
-                    # For each such side, interpolate a SideNode between the
-                    # two endpoint Nodes.
-                    if any(array([elm.x[0], elm.x[1]]) < lon0) and any(array([elm.x[0], elm.x[1]]) > lon0):
-                        snodes_curr.append(interp_snode(elm.nodes[0], elm.nodes[1], lon0, data))
-                    if any(array([elm.x[1], elm.x[2]]) < lon0) and any(array([elm.x[1], elm.x[2]]) > lon0):
-                        snodes_curr.append(interp_snode(elm.nodes[1], elm.nodes[2], lon0, data))
-                    if any(array([elm.x[0], elm.x[2]]) < lon0) and any(array([elm.x[0], elm.x[2]]) > lon0):
-                        snodes_curr.append(interp_snode(elm.nodes[0], elm.nodes[2], lon0, data))
-                    # Add the two resulting SideNodes to snode_pairs
-                    snode_pairs.append(SideNodePair(snodes_curr[0], snodes_curr[1]))
-    selements = []
-    # Build the quadrilateral SideElements
-    for pair in snode_pairs:
-        # Start at the surface
-        snode1_top = pair.south
-        snode2_top = pair.north
-        while True:
-            # Select the SideNodes directly below
-            snode1_bottom = snode1_top.below
-            snode2_bottom = snode2_top.below
-            if snode1_bottom is None or snode2_bottom is None:
-                # Reached the bottom, so stop
-                break
-            # Make a SideElement from these four SideNodes
-            # The order they are passed to the SideElement initialisation
-            # function is important: must trace continuously around the
-            # border of the SideElement, i.e. not jump between diagonal
-            # corners.
-            selements.append(SideElement(snode1_top, snode2_top, snode2_bottom, snode1_bottom))
-            # Get ready for the next SideElement below
-            snode1_top = snode1_bottom
-            snode2_top = snode2_bottom
-    # Build an array of quadrilateral patches for the plot, and of data
-    # values corresponding to each SideElement
-    patches = []
-    values = []
-    for selm in selements:
-        # Make patch
-        coord = transpose(vstack((selm.y,selm.z)))
-        patches.append(Polygon(coord, True, linewidth=0.))
-        # Save data value
-        values.append(selm.var)
-
-    return patches, values
 
 
 # Command-line interface

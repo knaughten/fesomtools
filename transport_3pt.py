@@ -10,7 +10,9 @@ def transport_3pt ():
     # Titles for plot
     rcp_titles = ['RCP 4.5 M', 'RCP 4.5 A', 'RCP 8.5 M', 'RCP 8.5 A']
     # Colours for plotting
-    rcp_colours = ['blue', 'cyan', 'green', 'magenta']
+    rcp_colours = [(0, 0, 1), (0.6, 0, 0.8), (0, 0.6, 0), (1, 0, 0), (0, 0, 0)]
+    # Orders to plot
+    zorders = [4, 2, 5, 3, 1]
     # Paths to control experiment directories
     control_expt = 'highres_spinup/'
     # Title for plot
@@ -21,6 +23,10 @@ def transport_3pt ():
     year_start = 1992
     rcp_year_start = 2006
     year_end = 2100
+    # Trends in transport for each scenario
+    dpt_trends = ['-0.10 %/y', '-0.14 %/y', '-0.13 %/y', '-0.16 %/y', 'n/a']
+    wsg_trends = ['+0.18 %/y', '+0.23 %/y', '+0.31 %/y', '+0.28 %/y', '-0.11 %/y']
+    rsg_trends = ['n/a', '+0.10 %/y', '+0.18 %/y', '+0.15 %/y', 'n/a']
 
     # Subpolar gyre parameters
     subpolar_log = 'subpolar_gyres.log'
@@ -104,42 +110,52 @@ def transport_3pt ():
         f.close()
 
     # Plot
-    fig = figure(figsize=(15,6))
+    fig = figure(figsize=(15,5))
     gs = GridSpec(1,3)
-    gs.update(left=0.05, right=0.95, bottom=0.15, top=0.92)
+    gs.update(left=0.05, right=0.95, bottom=0.17, top=0.92)
     # Drake Passage transport
     ax = subplot(gs[0,0])
     # One line for each RCP
     for expt in range(num_rcps):
-        ax.plot(time, dpt[expt,:], color=rcp_colours[expt], linewidth=1.8)
+        ax.plot(time, dpt[expt,:], color=rcp_colours[expt], linewidth=1.8, zorder=zorders[expt])
     # One line for control experiment
-    ax.plot(time, dpt[-1,:], color=control_colour, linewidth=1.8)
-    title('Drake Passage Transport', fontsize=18)
+    ax.plot(time, dpt[-1,:], color=control_colour, linewidth=1.8, zorder=zorders[-1])
+    title('a) Drake Passage Transport', fontsize=18)
     xlabel('Year', fontsize=14)
     ylabel('Sv', fontsize=14)
     xlim([year_start, year_end])
-    grid(True)
+    ylim([125, 170])
+    # Text labels showing trends
+    for expt in range(num_rcps):
+        text(1997, 146-expt*2.5, dpt_trends[expt], color=rcp_colours[expt], fontsize=13)
+    text(1997, 146-num_rcps*2.5, dpt_trends[-1], color=control_colour, fontsize=13)
     # Weddell Sea Gyre transport
     ax = subplot(gs[0,1])
     for expt in range(num_rcps):
-        ax.plot(time, ws_trans[expt,:], color=rcp_colours[expt], linewidth=1.8)
-    ax.plot(time, ws_trans[-1,:], color=control_colour, linewidth=1.8)
-    title('Weddell Sea Gyre Transport', fontsize=18)
+        ax.plot(time, ws_trans[expt,:], color=rcp_colours[expt], linewidth=1.8, zorder=zorders[expt])
+    ax.plot(time, ws_trans[-1,:], color=control_colour, linewidth=1.8, zorder=zorders[-1])
+    title('b) Weddell Sea Gyre Transport', fontsize=18)
     xlabel('Year', fontsize=14)
     ylabel('Sv', fontsize=14)
     xlim([year_start, year_end])
-    grid(True)
+    ylim([50, 92])
+    for expt in range(num_rcps):
+        text(1997, 89-expt*2.4, wsg_trends[expt], color=rcp_colours[expt], fontsize=13)
+    text(1997, 89-num_rcps*2.4, wsg_trends[-1], color=control_colour, fontsize=13)
     # Ross Sea Gyre transport
     ax = subplot(gs[0,2])
     for expt in range(num_rcps):
         # Add labels now
-        ax.plot(time, rs_trans[expt,:], color=rcp_colours[expt], label=rcp_titles[expt], linewidth=1.8)
-    ax.plot(time, rs_trans[-1,:], color=control_colour, label=control_title, linewidth=1.8)
-    title('Ross Sea Gyre Transport', fontsize=18)
+        ax.plot(time, rs_trans[expt,:], color=rcp_colours[expt], label=rcp_titles[expt], linewidth=1.8, zorder=zorders[expt])
+    ax.plot(time, rs_trans[-1,:], color=control_colour, label=control_title, linewidth=1.8, zorder=zorders[-1])
+    title('c) Ross Sea Gyre Transport', fontsize=18)
     xlabel('Year', fontsize=14)
     ylabel('Sv', fontsize=14)
     xlim([year_start, year_end])
-    grid(True)
+    ylim([33,60])
+    for expt in range(num_rcps):
+        text(1997, 58.5-expt*1.5, rsg_trends[expt], color=rcp_colours[expt], fontsize=13)
+        text(1997, 58.5-num_rcps*1.5, rsg_trends[-1], color=control_colour, fontsize=13)
     subplots_adjust(wspace=0.15)
     # Add legend at bottom
     ax.legend(bbox_to_anchor=(0.5,-0.09), ncol=5, fontsize=14)

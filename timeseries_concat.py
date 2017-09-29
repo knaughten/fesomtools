@@ -1,14 +1,15 @@
 from numpy import *
 
 # For the logfiles from timeseries_dpt.py, timeseries_seaice.py,
-# timeseries_seaice_extent.py, timeseries_massloss.py, and
-# timeseries_massloss_sectors.py, append the third repetition of the forcing in
-# the control simulation (1992-2005) to the beginning of the RCP (2006-2100).
+# timeseries_seaice_extent.py, timeseries_massloss.py,
+# timeseries_massloss_sectors.py, and timeseries_amundsen.py, append the third
+# repetition of the forcing in the control simulation (1992-2005) to the
+# beginning of the RCP (2006-2100).
 # Input:
 # spinup_path, rcp_path = paths to experiment directories for the control
 #                         simulation and RCP, each containing the following
 #                         logfiles: dpt.log, seaice.log, seaice_extent.log,
-#                         massloss.log, massloss_sectors.log.
+#                         massloss.log, massloss_sectors.log, amundsen.log.
 def timeseries_concat (spinup_path, rcp_path):
 
     # Name of each ice shelf cavity
@@ -133,9 +134,6 @@ def timeseries_concat (spinup_path, rcp_path):
             f.write(str(massloss[index, t]) + '\n')
     f.close()
 
-    #num_time_spinup = numyears*peryear
-    #num_time = (2100-1992+1)*peryear
-
     # Repeat for ice shelf mass loss for each sector
     massloss_sectors = empty([len(sector_names), num_time])
     f = open(spinup_path + 'massloss_sectors.log', 'r')
@@ -166,6 +164,26 @@ def timeseries_concat (spinup_path, rcp_path):
         f.write(names[index] + ' Basal Mass Loss (Gt/y)\n')
         for t in range(num_time):
             f.write(str(massloss_sectors[index, t]) + '\n')
+    f.close()
+
+    # Repeat for Amundsen Sea ice-to-ocean freshwater flux
+    ice2ocn = []    
+    f = open(spinup_path + 'amundsen.log', 'r')
+    f.readline()
+    for line in f:
+        ice2ocn.append(float(line))
+    f.close()
+    # Select the third repetition
+    ice2ocn = ice2ocn[skipyears*peryear:(skipyears+numyears)*peryear]
+    f = open(rcp_path + 'amundsen.log', 'r')
+    f.readline()
+    for line in f:
+        ice2ocn.append(float(line))
+    f.close()
+    f = open(rcp_path + 'amundsen.log', 'w')
+    f.write('Average ice-to-ocean freshwater flux (1e-8 m/s):\n')
+    for elm in ice2ocn:
+        f.write(str(elm) + '\n')
     f.close()
 
     

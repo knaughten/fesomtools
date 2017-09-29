@@ -19,7 +19,7 @@ from unrotate_vector import *
 #           sure it ends with a "/". Default is an empty string.
 def timeseries_dpt (mesh_path, ocn_file, log_file, fig_dir=''):
 
-    circumpolar = False  # Don't transform x and y coordinates, we need them!
+    circumpolar = False  # Needs to be global for SideElements
     cross_180 = False    # Don't make second copies of elements that cross 180E
     days_per_output = 5  # Number of days for each output step
 

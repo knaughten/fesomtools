@@ -1,12 +1,11 @@
 from netCDF4 import Dataset
 from numpy import *
-from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 from matplotlib.pyplot import *
 from matplotlib.cm import *
 from fesom_grid import *
-from fesom_sidegrid import *
 from seasonal_avg import *
+from side_patches import *
 
 # Make a 4x2 plot showing seasonally averaged temperature (top) and salinity
 # (bottom) interpolated to a given longitude, i.e. latitude vs. depth slices.
@@ -51,8 +50,8 @@ def temp_salt_seasonal (elements, file_path1, file_path2, lon0, depth_min, save=
     # Loop over seasons
     for season in range(4):
         print 'Calculating zonal slices for ' + season_names[season]
-        # Interpolate temperature to lon0
-        patches, values, lat_min = interp_lon_fesom(elements, lat_max, lon0, temp_data[season,:])
+        # Interpolate temperature to lon0 and get plotting patches
+        patches, values, lat_min = side_patches(elements, lat_max, lon0, temp_data[season,:])
         ax = fig.add_subplot(2, 4, season+1)
         img = PatchCollection(patches, cmap=jet)
         img.set_array(array(values))
@@ -71,7 +70,7 @@ def temp_salt_seasonal (elements, file_path1, file_path2, lon0, depth_min, save=
             cbar1 = colorbar(img, cax=cbaxes, ticks=arange(var_min[0], var_max[0]+var_ticks[0], var_ticks[0]))
             cbar1.ax.tick_params(labelsize=16)
         # Repeat for salinity
-        patches, values, lat_min = interp_lon_fesom(elements, lat_max, lon0, salt_data[season,:])
+        patches, values, lat_min = side_patches(elements, lat_max, lon0, salt_data[season,:])
         ax = fig.add_subplot(2, 4, season+5)
         img = PatchCollection(patches, cmap=jet)
         img.set_array(array(values))
@@ -94,92 +93,7 @@ def temp_salt_seasonal (elements, file_path1, file_path2, lon0, depth_min, save=
     if save:
         fig.savefig(fig_name)
     else:
-        fig.show()
-
-
-# Linearly interpolate FESOM data to the specified longitude.
-# Input:
-# elements = array of 2D Elements created by fesom_grid.py
-# lat_max = maximum latitude to consider
-# lon0 = longitude to interpolate to, from -180 to 180
-# data = array of FESOM data on original mesh
-def interp_lon_fesom (elements, lat_max, lon0, data): 
-
-    snode_pairs = []
-    for elm in elements:
-        # Don't consider elements outside the Southern Ocean
-        if any(elm.y <= lat_max):
-            # Select elements which intersect lon0
-            if any(elm.x <= lon0) and any(elm.x >= lon0):
-                # Special case where nodes (corners) of the element are
-                # exactly at longitude lon0
-                if any(elm.x == lon0):
-                    # If exactly one of the corners is at lon0, ignore it;
-                    # this element only touches lon0 at one point
-                    # If two of the corners are at lon0, an entire side of
-                    # the element lies along the line lon0
-                    if count_nonzero(elm.x == lon0) == 2:
-                        # Select these two Nodes
-                        index = nonzero(elm.x == lon0)
-                        nodes = elm.nodes[index]
-                        node1 = nodes[0]
-                        node2 = nodes[1]
-                        # Convert to SideNodes and add them to snode_pairs
-                        coincide_snode(node1, node2, data, snode_pairs)
-                    # Impossible for all three corners to be at lon0
-                else:
-                    # Regular case
-                    snodes_curr = []
-                    # Find the two sides of the triangular element which
-                    # intersect longitude lon0
-                    # For each such side, interpolate a SideNode between the
-                    # two endpoint Nodes.
-                    if any(array([elm.x[0], elm.x[1]]) < lon0) and any(array([elm.x[0], elm.x[1]]) > lon0):
-                        snodes_curr.append(interp_snode(elm.nodes[0], elm.nodes[1], lon0, data))
-                    if any(array([elm.x[1], elm.x[2]]) < lon0) and any(array([elm.x[1], elm.x[2]]) > lon0):
-                        snodes_curr.append(interp_snode(elm.nodes[1], elm.nodes[2], lon0, data))
-                    if any(array([elm.x[0], elm.x[2]]) < lon0) and any(array([elm.x[0], elm.x[2]]) > lon0):
-                        snodes_curr.append(interp_snode(elm.nodes[0], elm.nodes[2], lon0, data))
-                    # Add the two resulting SideNodes to snode_pairs
-                    snode_pairs.append(SideNodePair(snodes_curr[0], snodes_curr[1]))
-    selements = []
-    # Build the quadrilateral SideElements
-    for pair in snode_pairs:
-        # Start at the surface
-        snode1_top = pair.south
-        snode2_top = pair.north
-        while True:
-            # Select the SideNodes directly below
-            snode1_bottom = snode1_top.below
-            snode2_bottom = snode2_top.below
-            if snode1_bottom is None or snode2_bottom is None:
-                # Reached the bottom, so stop
-                break
-            # Make a SideElement from these four SideNodes
-            # The order they are passed to the SideElement initialisation
-            # function is important: must trace continuously around the
-            # border of the SideElement, i.e. not jump between diagonal
-            # corners.
-            selements.append(SideElement(snode1_top, snode2_top, snode2_bottom, snode1_bottom))
-            # Get ready for the next SideElement below
-            snode1_top = snode1_bottom
-            snode2_top = snode2_bottom
-    # Build an array of quadrilateral patches for the plot, and of data
-    # values corresponding to each SideElement
-    patches = []
-    values = []
-    lat_min = lat_max
-    for selm in selements:
-        # Make patch
-        coord = transpose(vstack((selm.y,selm.z)))
-        patches.append(Polygon(coord, True, linewidth=0.))
-        # Save data value
-        values.append(selm.var)
-        lat_min = min(lat_min, amin(selm.y))
-    # Show a little bit of the land mask
-    lat_min = lat_min-0.5
-
-    return patches, values, lat_min
+        fig.show()    
 
 
 # Command-line interface

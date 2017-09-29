@@ -19,9 +19,11 @@ def watermass_9pt (control, rcp, model, fig_name):
     sector_names = ['Filchner-Ronne Ice Shelf', 'Eastern Weddell Region', 'Amery Ice Shelf', 'Australian Sector', 'Ross Sea', 'Amundsen Sea', 'Bellingshausen Sea', 'Larsen Ice Shelf', 'All Ice Shelves']
     num_sectors = len(sector_names)
     # Water masses
-    wm_names = ['ISW', 'AASW', 'CDW', 'MCDW', 'WW', 'HSSW']
+    wm_names = ['ISW', 'AASW', 'MCDW', 'WW', 'HSSW']
     num_watermasses = len(wm_names)
-    wm_colours = ['blue', 'green', 'red', 'magenta', 'cyan', 'black']
+    wm_colours = ['cyan', 'green', 'red', 'blue', 'black']
+    # Order to plot water masses: HSSW, WW, ISW, MCDW, AASW
+    wm_order = [4, 3, 0, 2, 1]
 
     num_years_control = end_year_control - start_year_control + 1
     num_years_rcp = end_year_rcp - start_year_rcp + 1
@@ -82,10 +84,10 @@ def watermass_9pt (control, rcp, model, fig_name):
             wm_key += 1
 
     # Set up plot
-    fig = figure(figsize=(14,10))
+    fig = figure(figsize=(12,10))
     for sector in range(num_sectors):
         ax = fig.add_subplot(3,3,sector+1)
-        for wm_key in range(num_watermasses):
+        for wm_key in wm_order:
             plot(time, percent_watermass[wm_key, sector, :], color=wm_colours[wm_key], label=wm_names[wm_key], linewidth=2)        
         xlim([start_year_control, end_year_rcp])
         ylim([0, 100])
@@ -101,12 +103,12 @@ def watermass_9pt (control, rcp, model, fig_name):
             ylabel('% volume', fontsize=14)
         title(sector_names[sector], fontsize=17)
     if control:
-        suptitle('CONTROL', fontsize=24)
+        suptitle('Water masses in ice shelf cavities: CONTROL', fontsize=24)
     else:
-        suptitle('RCP ' + rcp[0] + '.' + rcp[1] + ' ' + model, fontsize=24)
-    subplots_adjust(wspace=0.15, hspace=0.2)
+        suptitle('Water masses in ice shelf cavities: RCP ' + rcp[0] + '.' + rcp[1] + ' ' + model, fontsize=24)
+    subplots_adjust(wspace=0.1, hspace=0.2)
     # Add legend at bottom
-    ax.legend(bbox_to_anchor=(0.6,-0.2), ncol=6, fontsize=14)
+    ax.legend(bbox_to_anchor=(0.6,-0.2), ncol=5, fontsize=14)
     fig.show()
     fig.savefig(fig_name)
 

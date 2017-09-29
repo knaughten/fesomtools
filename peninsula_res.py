@@ -3,7 +3,6 @@ from numpy import *
 from matplotlib.collections import PatchCollection
 from matplotlib.pyplot import *
 from patches import *
-from fesom_grid import *
 from unrotate_vector import *
 from triangle_area import *
 from unrotate_grid import *

@@ -8,13 +8,12 @@ from unrotate_grid import *
 # Wherever NSIDC concentration exceeds 15%, set the initial sea ice area to 1,
 # ice thickness to 1 m (in the Southern Hemisphere) or 2 m (in the Northern
 # Hemisphere), and snow thickness to 0.2 m. Set initial sea ice velocity to 0.
-def ice_ini ():
+def ice_ini (mesh_path, out_dir):
 
     # File paths
-    mesh_path = '../FESOM/mesh/high_res/'
     nsidc_sh_file = '/short/m68/kaa561/nsidc_aice/seaice_conc_monthly_sh_f11_199201_v02r00.nc'
     nsidc_nh_file = '/short/m68/kaa561/nsidc_aice/seaice_conc_monthly_nh_f11_199201_v02r00.nc'
-    out_file = '../FESOM/intercomparison_highres/output/MK44005.initial_ice.nc'
+    out_file = out_dir + 'MK44005.initial_ice.nc'
 
     # Read rotated latitude and longitude of 2D nodes
     print "Reading FESOM grid"
@@ -170,4 +169,6 @@ def ice_ini ():
 # Command-line interface
 if __name__ == "__main__":
 
-    ice_ini()
+    mesh_path = raw_input("Path to FESOM mesh directory: ")
+    out_dir = raw_input("Path to FESOM simulation's output directory: ")
+    ice_ini(mesh_path, out_dir)

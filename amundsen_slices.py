@@ -4,8 +4,7 @@ from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 from matplotlib.pyplot import *
 from fesom_grid import *
-from fesom_sidegrid import *
-from temp_salt_seasonal import interp_lon_fesom 
+from side_patches import *
 
 def amundsen_slices (rcp, model, fig_name):
 
@@ -58,8 +57,8 @@ def amundsen_slices (rcp, model, fig_name):
     print 'Temperature, 1996-2005'
     for season in range(4):
         print '...' + season_names[season]
-        # Interpolate to lon0
-        patches, values, tmp = interp_lon_fesom(elements, lat_max, lon0, temp_nodes_beg[season,:])
+        # Interpolate to lon0 and get plotting patches
+        patches, values, tmp = side_patches(elements, lat_max, lon0, temp_nodes_beg[season,:])
         ax = subplot(gs_temp[0,season])
         img = PatchCollection(patches, cmap='jet')
         img.set_array(array(values))
@@ -86,7 +85,7 @@ def amundsen_slices (rcp, model, fig_name):
     print 'Temperature, 2091-2100'
     for season in range(4):
         print '...' + season_names[season]
-        patches, values, tmp = interp_lon_fesom(elements, lat_max, lon0, temp_nodes_end[season,:])
+        patches, values, tmp = side_patches(elements, lat_max, lon0, temp_nodes_end[season,:])
         ax = subplot(gs_temp[1,season])
         img = PatchCollection(patches, cmap='jet')
         img.set_array(array(values))
@@ -103,7 +102,7 @@ def amundsen_slices (rcp, model, fig_name):
     print 'Salinity, 1996-2005'
     for season in range(4):
         print '...' + season_names[season]
-        patches, values, tmp = interp_lon_fesom(elements, lat_max, lon0, salt_nodes_beg[season,:])
+        patches, values, tmp = side_patches(elements, lat_max, lon0, salt_nodes_beg[season,:])
         ax = subplot(gs_salt[0,season])
         img = PatchCollection(patches, cmap='jet')
         img.set_array(array(values))
@@ -130,7 +129,7 @@ def amundsen_slices (rcp, model, fig_name):
     print 'Salinity, 2091-2100'
     for season in range(4):
         print '...' + season_names[season]
-        patches, values, tmp = interp_lon_fesom(elements, lat_max, lon0, salt_nodes_end[season,:])
+        patches, values, tmp = side_patches(elements, lat_max, lon0, salt_nodes_end[season,:])
         ax = subplot(gs_salt[1,season])
         img = PatchCollection(patches, cmap='jet')
         img.set_array(array(values))

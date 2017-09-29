@@ -57,7 +57,7 @@ def rcp_amundsen_budget ():
         ice2ocn_nodes_end[expt,:,:] = -1*id.variables['thdgr'][:,:]
         id.close()
 
-    print 'Averaging over Weddell Sea'
+    print 'Averaging over Amundsen Sea'
     wnet_beg = zeros(num_time)
     pminuse_beg = zeros(num_time)
     ice2ocn_beg = zeros(num_time)
