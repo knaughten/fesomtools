@@ -5,7 +5,7 @@ def trends ():
 
     # Paths to RCP experiment directories
     directory_head = '/short/y99/kaa561/FESOM/'
-    rcp_expt = ['rcp45_M_highres/', 'rcp45_A_highres/', 'rcp85_M_highres/', 'rcp85_A_highres/']
+    rcp_expt = ['rcp45_M/', 'rcp45_A/', 'rcp85_M/', 'rcp85_A/']
     num_rcps = len(rcp_expt)
     # Titles 
     rcp_titles = ['RCP 4.5 M', 'RCP 4.5 A', 'RCP 8.5 M', 'RCP 8.5 A']

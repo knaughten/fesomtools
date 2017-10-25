@@ -17,7 +17,7 @@ def seasonal_climatology (directory, start_year, end_year, out_file_oce, out_fil
     # Filename head
     expt_name = 'MK44005'
 
-    '''print 'Processing ocean'
+    '''print 'Processing ocean velocity'
     # Read number of 3D nodes from first file
     id = Dataset(directory + expt_name + '.' + str(start_year) + '.oce.mean.nc', 'r')
     n3d = id.variables['u'].shape[1]

@@ -94,13 +94,12 @@ def make_vectors (x_min, x_max, y_min, y_max, num_bins_x, num_bins_y):
 
     # Loop over 2D nodes to fill in the velocity bins
     for n in range(n2d):
-        if node_cavity[n]:
-            if x[n] > x_min and x[n] < x_max and y[n] > y_min and y[n] < y_max:
-                x_index = nonzero(x_bins > x[n])[0][0]-1
-                y_index = nonzero(y_bins > y[n])[0][0]-1
-                ubin_beg[y_index, x_index] += u_circ_beg[n]
-                vbin_beg[y_index, x_index] += v_circ_beg[n]
-                num_pts[y_index, x_index] += 1
+        if x[n] > x_min and x[n] < x_max and y[n] > y_min and y[n] < y_max:
+            x_index = nonzero(x_bins > x[n])[0][0]-1
+            y_index = nonzero(y_bins > y[n])[0][0]-1
+            ubin_beg[y_index, x_index] += u_circ_beg[n]
+            vbin_beg[y_index, x_index] += v_circ_beg[n]
+            num_pts[y_index, x_index] += 1
 
     # Convert from sums to averages
     # First mask out points with no data
@@ -548,22 +547,21 @@ def plot_velavg (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, x_centres, y_
     x_reg, y_reg = meshgrid(linspace(x_min, x_max, num=100), linspace(y_min, y_max, num=100))
     land_square = zeros(shape(x_reg))
     # Find bounds on speed in this region
-    var_min, var_max, diff_max = get_min_max(velavg_beg, velavg_diff, x_min, x_max, y_min, y_max)
+    var_min, var_max, diff_max = get_min_max(velavg_beg, velavg_diff, x_min, x_max, y_min, y_max, cavity=False)
 
     # Plot velocity at the beginning of the simulation
     ax = subplot(gs[0,0], aspect='equal')
     # Start with land background
     contourf(x_reg, y_reg, land_square, 1, colors=(('0.6', '0.6', '0.6')))
     # Add ice shelf elements
-    img = PatchCollection(patches, cmap='cool')
+    img = PatchCollection(patches_all, cmap='cool')
     img.set_array(array(velavg_beg))
     img.set_edgecolor('face')
     img.set_clim(vmin=var_min, vmax=var_max)
     ax.add_collection(img)
-    # Mask out the open ocean in white
-    overlay = PatchCollection(mask_patches, facecolor=(1,1,1))
-    overlay.set_edgecolor('face')
-    ax.add_collection(overlay)
+    # Add ice shelf front contour lines
+    contours = LineCollection(contour_lines, edgecolor='black', linewidth=1)
+    ax.add_collection(contours)
     # Overlay vectors
     if x_centres is not None:
         quiver(x_centres, y_centres, ubin_beg, vbin_beg, scale=arrow_scale, headwidth=arrow_headwidth, headlength=arrow_headlength, color='black')
@@ -581,14 +579,13 @@ def plot_velavg (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, x_centres, y_
         ax = subplot(gs[0,expt+1], aspect='equal')
         contourf(x_reg, y_reg, land_square, 1, colors=(('0.6', '0.6', '0.6')))
         # Add ice shelf elements
-        img = PatchCollection(patches, cmap='RdBu_r')
+        img = PatchCollection(patches_all, cmap='RdBu_r')
         img.set_array(array(velavg_diff[expt,:]))
         img.set_edgecolor('face')
         img.set_clim(vmin=-diff_max, vmax=diff_max)
         ax.add_collection(img)
-        overlay = PatchCollection(mask_patches, facecolor=(1,1,1))
-        overlay.set_edgecolor('face')
-        ax.add_collection(overlay)
+        contours = LineCollection(contour_lines, edgecolor='black', linewidth=1)
+        ax.add_collection(contours)
         xlim([x_min, x_max])
         ylim([y_min, y_max])
         ax.set_xticks([])
@@ -601,9 +598,9 @@ def plot_velavg (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, x_centres, y_
 #***********MAIN PROCESSING***********
 
 # File paths
-mesh_path = '/short/y99/kaa561/FESOM/mesh/high_res/'
+mesh_path = '/short/y99/kaa561/FESOM/mesh/meshB/'
 directory_beg = '/short/y99/kaa561/FESOM/highres_spinup/'
-directories = ['/short/y99/kaa561/FESOM/rcp45_M_highres/output/', '/short/y99/kaa561/FESOM/rcp45_A_highres/output/', '/short/y99/kaa561/FESOM/rcp85_M_highres/output/', '/short/y99/kaa561/FESOM/rcp85_A_highres/output/', '/short/y99/kaa561/FESOM/highres_spinup/']
+directories = ['/short/y99/kaa561/FESOM/rcp45_M/', '/short/y99/kaa561/FESOM/rcp45_A/', '/short/y99/kaa561/FESOM/rcp85_M/', '/short/y99/kaa561/FESOM/rcp85_A/', '/short/y99/kaa561/FESOM/highres_spinup/']
 forcing_file_beg = 'annual_avg.forcing.diag.1996.2005.nc'
 forcing_file_end = 'annual_avg.forcing.diag.2091.2100.nc'
 oce_file_beg = 'annual_avg.oce.mean.1996.2005.nc'
@@ -793,7 +790,7 @@ for expt in range(num_expts):
         sss_diff[expt,i] = mean([node_salt_diff[elm.nodes[0].id], node_salt_diff[elm.nodes[1].id], node_salt_diff[elm.nodes[2].id]])
         i += 1
 
-print 'Calculating sea ice concentration'
+'''print 'Calculating sea ice concentration'
 aice_beg = zeros(num_ice_elm)
 # First read concentration at beginning
 id = Dataset(directory_beg + ice_file_beg, 'r')
@@ -818,10 +815,10 @@ for expt in range(num_expts):
     for elm in elements:
         if not elm.cavity:
             aice_diff[expt,i] = mean([node_aice_diff[elm.nodes[0].id], node_aice_diff[elm.nodes[1].id], node_aice_diff[elm.nodes[2].id]])
-            i += 1
+            i += 1'''
 
 print 'Calculating vertically averaged velocity'
-velavg_beg = zeros([num_cavity_elm])
+velavg_beg = zeros([num_elm])
 # Read full 3D fields for both u and v
 id = Dataset(directory_beg + oce_file_beg, 'r')
 node_ur_3d_beg = id.variables['u'][0,:]
@@ -856,10 +853,9 @@ node_speed_beg = sqrt(node_u_beg**2 + node_v_beg**2)
 # Calculate speed at each element, averaged over 3 corners
 i = 0
 for elm in elements:
-    if elm.cavity:
-        velavg_beg[i] = mean([node_speed_beg[elm.nodes[0].id], node_speed_beg[elm.nodes[1].id], node_speed_beg[elm.nodes[2].id]])
-        i += 1
-velavg_diff = zeros([num_expts, num_cavity_elm])
+    velavg_beg[i] = mean([node_speed_beg[elm.nodes[0].id], node_speed_beg[elm.nodes[1].id], node_speed_beg[elm.nodes[2].id]])
+    i += 1
+velavg_diff = zeros([num_expts, num_elm])
 for expt in range(num_expts):
     id = Dataset(directories[expt] + oce_file_end, 'r')
     node_ur_3d_end = id.variables['u'][0,:]
@@ -888,17 +884,16 @@ for expt in range(num_expts):
     node_speed_diff = node_speed_end - node_speed_beg
     i = 0
     for elm in elements:
-        if elm.cavity:
-            velavg_diff[expt,i] = mean([node_speed_diff[elm.nodes[0].id], node_speed_diff[elm.nodes[1].id], node_speed_diff[elm.nodes[2].id]])
-            i += 1
+        velavg_diff[expt,i] = mean([node_speed_diff[elm.nodes[0].id], node_speed_diff[elm.nodes[1].id], node_speed_diff[elm.nodes[2].id]])
+        i += 1
 
 
 # **************** USER MODIFIED SECTION ****************
 # Filchner-Ronne
-x_min_tmp = -14
+x_min_tmp = -15
 x_max_tmp = -4.5
 y_min_tmp = 1
-y_max_tmp = 10
+y_max_tmp = 11
 fig = figure(figsize=(18,12))
 fig.patch.set_facecolor('white')
 # Melt rate
@@ -906,29 +901,29 @@ gs_a = GridSpec(1,6)
 gs_a.update(left=0.07, right=0.93, bottom=0.7, top=0.88, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.72, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.94, 0.72, 0.02, 0.14])
-plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, cbaxes_right, [0.5, 3, 4.5], 'a', 1.2, set_diff_max=3)
-# Temperature
+plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, cbaxes_right, [0.5, 3, 4.5], 'a', 1.2, set_diff_max=5)
+# Bottom water temperature
 gs_b = GridSpec(1,6)
 gs_b.update(left=0.07, right=0.93, bottom=0.48, top=0.66, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.5, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.94, 0.5, 0.02, 0.14])
-#plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
-plot_sst(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
-# Salinity
+plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
+#plot_sst(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
+# Bottom water salinity
 gs_c = GridSpec(1,6)
 gs_c.update(left=0.07, right=0.93, bottom=0.26, top=0.44, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.28, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.94, 0.28, 0.02, 0.14])
-#plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
-plot_sss(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
-# Velocity OR sea ice concentration
-#x_centres, y_centres, ubin_beg, vbin_beg = make_vectors(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, 20, 20)
+plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
+#plot_sss(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
+# Velocity
+x_centres, y_centres, ubin_beg, vbin_beg = make_vectors(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, 20, 20)
 gs_d = GridSpec(1,6)
 gs_d.update(left=0.07, right=0.93, bottom=0.04, top=0.22, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.06, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.94, 0.06, 0.02, 0.14])
-#plot_velavg(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, x_centres, y_centres, ubin_beg, vbin_beg, 'd')
-plot_aice(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, 'd')
+plot_velavg(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, x_centres, y_centres, ubin_beg, vbin_beg, 'd')
+#plot_aice(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, 'd')
 suptitle('Filchner-Ronne Ice Shelf', fontsize=30)
 fig.show()
 fig.savefig('filchner_ronne.png')
@@ -945,29 +940,29 @@ gs_a = GridSpec(1,6)
 gs_a.update(left=0.07, right=0.93, bottom=0.7, top=0.88, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.73, 0.015, 0.12])
 cbaxes_right = fig.add_axes([0.94, 0.73, 0.015, 0.12])
-plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, cbaxes_right, [1, 2, 3], 'a', 1.26, set_diff_max=3)
-# Temperature
+plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, cbaxes_right, [1, 2, 3], 'a', 1.26, set_diff_max=6)
+# Bottom water temperature
 gs_b = GridSpec(1,6)
 gs_b.update(left=0.07, right=0.93, bottom=0.48, top=0.66, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.51, 0.015, 0.12])
 cbaxes_right = fig.add_axes([0.94, 0.51, 0.015, 0.12])
-#plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
-plot_sst(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
-# Salinity
+plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
+#plot_sst(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
+# Bottom water salinity
 gs_c = GridSpec(1,6)
 gs_c.update(left=0.07, right=0.93, bottom=0.26, top=0.44, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.29, 0.015, 0.12])
 cbaxes_right = fig.add_axes([0.94, 0.29, 0.015, 0.12])
-#plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
-plot_sss(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
-# Velocity OR sea ice concentration
-#x_centres, y_centres, ubin_beg, vbin_beg = make_vectors(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, 40, 20)
+plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
+#plot_sss(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
+# Velocity
+x_centres, y_centres, ubin_beg, vbin_beg = make_vectors(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, 40, 20)
 gs_d = GridSpec(1,6)
 gs_d.update(left=0.07, right=0.93, bottom=0.04, top=0.22, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.07, 0.015, 0.12])
 cbaxes_right = fig.add_axes([0.94, 0.07, 0.015, 0.12])
-#plot_velavg(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, x_centres, y_centres, ubin_beg, vbin_beg, 'd')
-plot_aice(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, 'd')
+plot_velavg(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, x_centres, y_centres, ubin_beg, vbin_beg, 'd')
+#plot_aice(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, 'd')
 suptitle('Eastern Weddell Region', fontsize=30)
 fig.show()
 fig.savefig('eweddell.png')
@@ -985,28 +980,28 @@ gs_a.update(left=0.07, right=0.93, bottom=0.7, top=0.88, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.72, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.94, 0.72, 0.02, 0.14])
 plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, cbaxes_right, [2, 4, 6], 'a', 1.2)
-# Temperature
+# Bottom water temperature
 gs_b = GridSpec(1,6)
 gs_b.update(left=0.07, right=0.93, bottom=0.48, top=0.66, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.5, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.94, 0.5, 0.02, 0.14])
-#plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
-plot_sst(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
-# Salinity
+plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
+#plot_sst(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
+# Bottom water salinity
 gs_c = GridSpec(1,6)
 gs_c.update(left=0.07, right=0.93, bottom=0.26, top=0.44, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.28, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.94, 0.28, 0.02, 0.14])
-#plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
-plot_sss(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
-# Velocity OR sea ice concentration
-#x_centres, y_centres, ubin_beg, vbin_beg = make_vectors(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, 20, 15)
+plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
+#plot_sss(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
+# Velocity
+x_centres, y_centres, ubin_beg, vbin_beg = make_vectors(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, 20, 15)
 gs_d = GridSpec(1,6)
 gs_d.update(left=0.07, right=0.93, bottom=0.04, top=0.22, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.06, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.94, 0.06, 0.02, 0.14])
-#plot_velavg(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, x_centres, y_centres, ubin_beg, vbin_beg, 'd')
-plot_aice(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, 'd')
+plot_velavg(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, x_centres, y_centres, ubin_beg, vbin_beg, 'd')
+#plot_aice(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, 'd')
 suptitle('Amery Ice Shelf', fontsize=30)
 fig.show()
 fig.savefig('amery.png')
@@ -1023,28 +1018,28 @@ gs_a = GridSpec(1,6)
 gs_a.update(left=0.1, right=0.9, bottom=0.7, top=0.88, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.72, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.91, 0.72, 0.02, 0.14])
-plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, cbaxes_right, [1, 2, 3], 'a', 1.2, set_diff_max=2)
-# Temperature
+plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, cbaxes_right, [1, 2, 3], 'a', 1.2, set_diff_max=3)
+# Bottom water temperature
 gs_b = GridSpec(1,6)
 gs_b.update(left=0.1, right=0.9, bottom=0.48, top=0.66, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.5, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.91, 0.5, 0.02, 0.14])
-#plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
-plot_sst(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
-# Salinity
+plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
+#plot_sst(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
+# Bottom water salinity
 gs_c = GridSpec(1,6)
 gs_c.update(left=0.1, right=0.9, bottom=0.26, top=0.44, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.28, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.91, 0.28, 0.02, 0.14])
-#plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
-plot_sss(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
-# Velocity OR sea ice concentration
+plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
+#plot_sss(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
+# Velocity
 gs_d = GridSpec(1,6)
 gs_d.update(left=0.1, right=0.9, bottom=0.04, top=0.22, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.06, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.91, 0.06, 0.02, 0.14])
-#plot_velavg(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, None, None, None, None, 'd')
-plot_aice(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, 'd')
+plot_velavg(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, None, None, None, None, 'd')
+#plot_aice(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, 'd')
 suptitle('Australian Sector', fontsize=30)
 fig.show()
 fig.savefig('australian.png')
@@ -1061,29 +1056,29 @@ gs_a = GridSpec(1,6)
 gs_a.update(left=0.07, right=0.93, bottom=0.7, top=0.88, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.72, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.94, 0.72, 0.02, 0.14])
-plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, cbaxes_right, [0.5, 2, 4], 'a', 1.2, set_diff_max=1.5)
-# Temperature
+plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, cbaxes_right, [0.5, 2, 3.5], 'a', 1.2, set_diff_max=1.5)
+# Bottom water temperature
 gs_b = GridSpec(1,6)
 gs_b.update(left=0.07, right=0.93, bottom=0.48, top=0.66, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.5, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.94, 0.5, 0.02, 0.14])
-#plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
-plot_sst(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
-# Salinity
+plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
+#plot_sst(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
+# Bottom water salinity
 gs_c = GridSpec(1,6)
 gs_c.update(left=0.07, right=0.93, bottom=0.26, top=0.44, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.28, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.94, 0.28, 0.02, 0.14])
-#plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
-plot_sss(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
-# Velocity OR sea ice concentration
-#x_centres, y_centres, ubin_beg, vbin_beg = make_vectors(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, 20, 15)
+plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
+#plot_sss(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
+# Velocity
+x_centres, y_centres, ubin_beg, vbin_beg = make_vectors(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, 20, 15)
 gs_d = GridSpec(1,6)
 gs_d.update(left=0.07, right=0.93, bottom=0.04, top=0.22, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.06, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.94, 0.06, 0.02, 0.14])
-#plot_velavg(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, x_centres, y_centres, ubin_beg, vbin_beg, 'd')
-plot_aice(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, 'd')
+plot_velavg(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, x_centres, y_centres, ubin_beg, vbin_beg, 'd')
+#plot_aice(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, 'd')
 suptitle('Ross Sea', fontsize=30)
 fig.show()
 fig.savefig('ross.png')
@@ -1100,28 +1095,28 @@ gs_a = GridSpec(1,6)
 gs_a.update(left=0.08, right=0.92, bottom=0.7, top=0.88, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.72, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.93, 0.72, 0.02, 0.14])
-plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, cbaxes_right, [1, 3, 6], 'a', 1.2, set_diff_max=15)
-# Temperature
+plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, cbaxes_right, [1, 3, 6], 'a', 1.2, set_diff_max=18)
+# Bottom water temperature
 gs_b = GridSpec(1,6)
 gs_b.update(left=0.08, right=0.92, bottom=0.48, top=0.66, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.5, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.93, 0.5, 0.02, 0.14])
-#plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
-plot_sst(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
-# Salinity
+plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
+#plot_sst(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
+# Bottom water salinity
 gs_c = GridSpec(1,6)
 gs_c.update(left=0.08, right=0.92, bottom=0.26, top=0.44, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.28, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.93, 0.28, 0.02, 0.14])
-#plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
-plot_sss(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
-# Velocity OR sea ice concentration
+plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
+#plot_sss(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
+# Velocity
 gs_d = GridSpec(1,6)
 gs_d.update(left=0.08, right=0.92, bottom=0.04, top=0.22, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.06, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.93, 0.06, 0.02, 0.14])
-#plot_velavg(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, None, None, None, None, 'd')
-plot_aice(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, 'd')
+plot_velavg(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, None, None, None, None, 'd')
+#plot_aice(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, 'd')
 suptitle('Amundsen Sea', fontsize=30)
 fig.show()
 fig.savefig('amundsen.png')
@@ -1138,28 +1133,28 @@ gs_a = GridSpec(1,6)
 gs_a.update(left=0.1, right=0.9, bottom=0.7, top=0.88, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.72, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.91, 0.72, 0.02, 0.14])
-plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, cbaxes_right, [0.5, 2, 4], 'a', 1.2, set_diff_max=8)
-# Temperature
+plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, cbaxes_right, [0.5, 2, 4], 'a', 1.2, set_diff_max=12)
+# Bottom water temperature
 gs_b = GridSpec(1,6)
 gs_b.update(left=0.1, right=0.9, bottom=0.48, top=0.66, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.5, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.91, 0.5, 0.02, 0.14])
-#plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
-plot_sst(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
-# Salinity
+plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
+#plot_sst(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
+# Bottom water salinity
 gs_c = GridSpec(1,6)
 gs_c.update(left=0.1, right=0.9, bottom=0.26, top=0.44, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.28, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.91, 0.28, 0.02, 0.14])
-#plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
-plot_sss(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
-# Velocity OR sea ice concentration
+plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
+#plot_sss(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
+# Velocity
 gs_d = GridSpec(1,6)
 gs_d.update(left=0.1, right=0.9, bottom=0.04, top=0.22, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.06, 0.02, 0.14])
 cbaxes_right = fig.add_axes([0.91, 0.06, 0.02, 0.14])
-#plot_velavg(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, None, None, None, None, 'd')
-plot_aice(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, 'd')
+plot_velavg(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, None, None, None, None, 'd')
+#plot_aice(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, 'd')
 suptitle('Bellingshausen Sea', fontsize=30)
 fig.show()
 fig.savefig('bellingshausen.png')
@@ -1176,29 +1171,29 @@ gs_a = GridSpec(1,6)
 gs_a.update(left=0.06, right=0.94, bottom=0.7, top=0.88, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.71, 0.015, 0.16])
 cbaxes_right = fig.add_axes([0.95, 0.71, 0.015, 0.16])
-plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, cbaxes_right, [0.5, 2, 4], 'a', 1.2, set_diff_max=6)
-# Temperature
+plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, cbaxes_right, [0.5, 2, 4], 'a', 1.2) #, set_diff_max=6)
+# Bottom water temperature
 gs_b = GridSpec(1,6)
 gs_b.update(left=0.06, right=0.94, bottom=0.48, top=0.66, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.49, 0.015, 0.16])
 cbaxes_right = fig.add_axes([0.95, 0.49, 0.015, 0.16])
-#plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
-plot_sst(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
-# Salinity
+plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
+#plot_sst(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b')
+# Bottom water salinity
 gs_c = GridSpec(1,6)
 gs_c.update(left=0.06, right=0.94, bottom=0.26, top=0.44, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.27, 0.015, 0.16])
 cbaxes_right = fig.add_axes([0.95, 0.27, 0.015, 0.16])
-#plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
+plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
 plot_sss(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c')
-# Velocity OR sea ice concentration
+# Velocity
 x_centres, y_centres, ubin_beg, vbin_beg = make_vectors(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, 18, 18)
 gs_d = GridSpec(1,6)
 gs_d.update(left=0.06, right=0.94, bottom=0.04, top=0.22, wspace=0.05)
 cbaxes_left = fig.add_axes([0.02, 0.05, 0.015, 0.16])
 cbaxes_right = fig.add_axes([0.95, 0.05, 0.015, 0.16])
-#plot_velavg(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, x_centres, y_centres, ubin_beg, vbin_beg, 'd')
-plot_aice(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, 'd')
+plot_velavg(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, x_centres, y_centres, ubin_beg, vbin_beg, 'd')
+#plot_aice(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, 'd')
 suptitle('Larsen Ice Shelves', fontsize=30)
 fig.show()
 fig.savefig('larsen.png')

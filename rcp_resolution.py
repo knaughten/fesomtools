@@ -9,7 +9,7 @@ from matplotlib.patches import Polygon
 def rcp_resolution ():
 
     # Path to mesh directory
-    mesh_path = '/short/y99/kaa561/FESOM/mesh/high_res/'
+    mesh_path = '/short/y99/kaa561/FESOM/mesh/meshB/'
     # Colourbar limit for circumpolar view
     circumpolar_max = 15
     # Northern boundary for circumpolar view: 63S

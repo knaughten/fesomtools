@@ -9,9 +9,9 @@ from side_patches import *
 def amundsen_slices (rcp, model, fig_name):
 
     # File paths
-    mesh_path = '/short/y99/kaa561/FESOM/mesh/high_res/'
+    mesh_path = '/short/y99/kaa561/FESOM/mesh/meshB/'
     file_beg = '/short/y99/kaa561/FESOM/highres_spinup/seasonal_climatology_oce_1996_2005.nc'
-    file_end = '/short/y99/kaa561/FESOM/rcp'+rcp+'_'+model+'_highres/output/seasonal_climatology_oce_2091_2100.nc'
+    file_end = '/short/y99/kaa561/FESOM/rcp'+rcp+'_'+model+'/seasonal_climatology_oce_2091_2100.nc'
     # Longitude to interpolate to
     lon0 = -104
     # Latitude range to plot

@@ -9,21 +9,19 @@ def watermass_9pt (control, rcp, model, fig_name):
         log_file = directory_head + 'highres_spinup/water_masses.log'
     else:
         beg_log = directory_head + 'highres_spinup/rep3/water_masses.log'
-        rcp_log = directory_head + 'rcp' + rcp + '_' + model + '_highres/water_masses.log'
+        rcp_log = directory_head + 'rcp' + rcp + '_' + model + '/water_masses.log'
     # Years to consider
     start_year_control = 1992
     end_year_control = 2005
     start_year_rcp = 2006
     end_year_rcp = 2100
     # Sectors
-    sector_names = ['Filchner-Ronne Ice Shelf', 'Eastern Weddell Region', 'Amery Ice Shelf', 'Australian Sector', 'Ross Sea', 'Amundsen Sea', 'Bellingshausen Sea', 'Larsen Ice Shelf', 'All Ice Shelves']
+    sector_names = ['Filchner-Ronne Ice Shelf', 'Eastern Weddell Region', 'Amery Ice Shelf', 'Australian Sector', 'Ross Sea', 'Amundsen Sea', 'Bellingshausen Sea', 'Larsen Ice Shelves', 'All Ice Shelves']
     num_sectors = len(sector_names)
     # Water masses
-    wm_names = ['ISW', 'AASW', 'MCDW', 'WW', 'HSSW']
+    wm_names = ['ISW', 'HSSW', 'LSSW', 'AASW', 'MCDW', 'CDW']
     num_watermasses = len(wm_names)
-    wm_colours = ['cyan', 'green', 'red', 'blue', 'black']
-    # Order to plot water masses: HSSW, WW, ISW, MCDW, AASW
-    wm_order = [4, 3, 0, 2, 1]
+    wm_colours = ['cyan', 'black', 'blue', 'green', 'magenta', 'red']
 
     num_years_control = end_year_control - start_year_control + 1
     num_years_rcp = end_year_rcp - start_year_rcp + 1
@@ -87,7 +85,7 @@ def watermass_9pt (control, rcp, model, fig_name):
     fig = figure(figsize=(12,10))
     for sector in range(num_sectors):
         ax = fig.add_subplot(3,3,sector+1)
-        for wm_key in wm_order:
+        for wm_key in range(num_watermasses):
             plot(time, percent_watermass[wm_key, sector, :], color=wm_colours[wm_key], label=wm_names[wm_key], linewidth=2)        
         xlim([start_year_control, end_year_rcp])
         ylim([0, 100])
@@ -108,7 +106,7 @@ def watermass_9pt (control, rcp, model, fig_name):
         suptitle('Water masses in ice shelf cavities: RCP ' + rcp[0] + '.' + rcp[1] + ' ' + model, fontsize=24)
     subplots_adjust(wspace=0.1, hspace=0.2)
     # Add legend at bottom
-    ax.legend(bbox_to_anchor=(0.6,-0.2), ncol=5, fontsize=14)
+    ax.legend(bbox_to_anchor=(0.85,-0.2), ncol=6, fontsize=14)
     fig.show()
     fig.savefig(fig_name)
 

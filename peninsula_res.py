@@ -12,8 +12,8 @@ from in_triangle import *
 def peninsula_res (var_name):
 
     # File paths
-    mesh_path_lr = '/short/y99/kaa561/FESOM/mesh/low_res/'
-    mesh_path_hr = '/short/y99/kaa561/FESOM/mesh/high_res/'
+    mesh_path_lr = '/short/y99/kaa561/FESOM/mesh/meshA/'
+    mesh_path_hr = '/short/y99/kaa561/FESOM/mesh/meshB/'
     directory_lr = '/short/y99/kaa561/FESOM/intercomparison_lowres/output/'
     directory_hr = '/short/y99/kaa561/FESOM/intercomparison_highres/output/'
     if var_name == 'hi':

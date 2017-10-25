@@ -8,7 +8,7 @@ def timeseries_annual_compare ():
 
     # Paths to RCP experiment directories
     directory_head = '/short/y99/kaa561/FESOM/'
-    rcp_expt = ['rcp45_M_highres', 'rcp45_A_highres', 'rcp85_M_highres', 'rcp85_A_highres']
+    rcp_expt = ['rcp45_M', 'rcp45_A', 'rcp85_M', 'rcp85_A']
     # Titles for plot
     rcp_titles = ['RCP 4.5 M', 'RCP 4.5 A', 'RCP 8.5 M', 'RCP 8.5 A']
     # Colours for plotting
@@ -206,7 +206,7 @@ def timeseries_annual_compare ():
     ax.legend(loc='center left', bbox_to_anchor=(1,0.5))
     fig.savefig('seaice_volume_max.png')
 
-    # Sea ice extent, annual min/max
+    '''# Sea ice extent, annual min/max
     extent_min = empty([len(rcp_expt)+len(control_expt), num_years])
     extent_max = empty([len(rcp_expt)+len(control_expt), num_years])
     # Loop over RCP experiments
@@ -273,7 +273,7 @@ def timeseries_annual_compare ():
     box = ax.get_position()
     ax.set_position([box.x0, box.y0, box.width*0.8, box.height])
     ax.legend(loc='center left', bbox_to_anchor=(1,0.5))
-    fig.savefig('seaice_extent_max.png')
+    fig.savefig('seaice_extent_max.png')'''
 
     # Ice shelf basal mass loss
     massloss = empty([len(rcp_expt)+len(control_expt), len(names), num_years])

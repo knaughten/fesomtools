@@ -6,9 +6,9 @@ from fesom_grid import *
 def hssw_aabw_distribution ():
 
     # File paths
-    mesh_path = '/short/y99/kaa561/FESOM/mesh/high_res/'
+    mesh_path = '/short/y99/kaa561/FESOM/mesh/meshB/'
     directory_beg = '/short/y99/kaa561/FESOM/highres_spinup/'
-    directories = ['/short/y99/kaa561/FESOM/rcp45_M_highres/output/', '/short/y99/kaa561/FESOM/rcp45_A_highres/output/', '/short/y99/kaa561/FESOM/rcp85_M_highres/output/', '/short/y99/kaa561/FESOM/rcp85_A_highres/output/', '/short/y99/kaa561/FESOM/highres_spinup/']
+    directories = ['/short/y99/kaa561/FESOM/rcp45_M/', '/short/y99/kaa561/FESOM/rcp45_A/', '/short/y99/kaa561/FESOM/rcp85_M/', '/short/y99/kaa561/FESOM/rcp85_A/', '/short/y99/kaa561/FESOM/highres_spinup/']
     file_beg = 'annual_avg.oce.mean.1996.2005.nc'
     file_end = 'annual_avg.oce.mean.2091.2100.nc'
     # Titles for plotting
@@ -28,14 +28,14 @@ def hssw_aabw_distribution ():
     max_temp = 3.8
     # Bounds to plot for HSSW and AABW
     hssw_salt_bounds = [34.3, 35]
-    hssw_temp_bounds = [-2.25, -0.75]
+    hssw_temp_bounds = [-2.25, -1.25]
     aabw_salt_bounds = [34.55, 34.8]
     aabw_temp_bounds = [-1, 2.5]
     # More readable labels
     hssw_salt_ticks = arange(34.3, 35+0.1, 0.1)
     hssw_salt_labels = ['', '34.4', '', '34.6', '', '34.8', '', '35']
-    hssw_temp_ticks = arange(-2.25, -0.75+0.25, 0.25)
-    hssw_temp_labels = ['', '-2', '', '-1.5', '', '-1', '']
+    hssw_temp_ticks = arange(-2.25, -1.25+0.25, 0.25)
+    hssw_temp_labels = ['', '-2', '', '-1.5', '']
     aabw_salt_ticks = arange(34.55, 34.8+0.05, 0.05)
     aabw_salt_labels = ['', '34.6', '', '34.7', '', '34.8']
     aabw_temp_ticks = arange(-1, 2.5+0.5, 0.5)
@@ -127,7 +127,7 @@ def hssw_aabw_distribution ():
     fig = figure(figsize=(20,11))
     # HSSW
     gs_a = GridSpec(1,num_expts+1)
-    gs_a.update(left=0.05, right=0.98, bottom=0.62, top=0.86, wspace=0.16)
+    gs_a.update(left=0.05, right=0.98, bottom=0.66, top=0.86, wspace=0.16)
     for expt in range(num_expts+1):
         ax = subplot(gs_a[0,expt])
         # Log scale is more visible
@@ -153,10 +153,10 @@ def hssw_aabw_distribution ():
             title(expt_names[expt-1], fontsize=19)
         # HSSW title
         if expt == 2:
-            text(34.83, hssw_temp_bounds[1]+0.3, 'a) HSSW', ha='left', fontsize=30)
+            text(34.83, hssw_temp_bounds[1]+0.2, 'a) HSSW', ha='left', fontsize=30)
     # AABW
     gs_b = GridSpec(1,num_expts+1)
-    gs_b.update(left=0.05, right=0.98, bottom=0.12, top=0.5, wspace=0.16)
+    gs_b.update(left=0.05, right=0.98, bottom=0.12, top=0.54, wspace=0.16)
     for expt in range(num_expts+1):
         ax = subplot(gs_b[0,expt])
         img = pcolor(salt_centres, temp_centres, log(ts_vals[expt,:,:]), vmin=min_val, vmax=max_val, cmap='jet')

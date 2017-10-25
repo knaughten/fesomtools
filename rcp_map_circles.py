@@ -9,9 +9,9 @@ from patches import *
 def rcp_map_circles (key=1):
 
     # File paths
-    mesh_path = '/short/y99/kaa561/FESOM/mesh/high_res/'
+    mesh_path = '/short/y99/kaa561/FESOM/mesh/meshB/'
     directory_beg = '/short/y99/kaa561/FESOM/highres_spinup/'
-    directories = ['/short/y99/kaa561/FESOM/rcp45_M_highres/output/', '/short/y99/kaa561/FESOM/rcp45_A_highres/output/', '/short/y99/kaa561/FESOM/rcp85_M_highres/output/', '/short/y99/kaa561/FESOM/rcp85_A_highres/output/']
+    directories = ['/short/y99/kaa561/FESOM/rcp45_M/', '/short/y99/kaa561/FESOM/rcp45_A/', '/short/y99/kaa561/FESOM/rcp85_M/', '/short/y99/kaa561/FESOM/rcp85_A/']
     file_beg = 'annual_avg.forcing.diag.1996.2005.nc'
     file_end = 'annual_avg.forcing.diag.2091.2100.nc'
     # Titles for plotting
@@ -35,13 +35,10 @@ def rcp_map_circles (key=1):
         x_circles = [-12, 10, 25, 22, -2, -17, -23, -21]
         y_circles = [14, 24, 8, -16, -17, -13, 2, 18]
     elif key == 2:
-        x_circles = [-12, 9, 25, 22, -2, -18, -24, -22]
-        y_circles = [14, 23, 8, -17, -16, -14, 2, 18]
+        x_circles = [-12, 10, 25, 22, -2, -19, -24, -22]
+        y_circles = [14, 24, 8, -17, -16, -15, 2, 18]
     # Scaling factor for radius of circles
-    if key == 1:
-        k = 0.4
-    elif key == 2:
-        k = 0.4
+    k = 0.4
 
     print 'Building mesh'
     # One set of elements for calculating: doesn't cross 180

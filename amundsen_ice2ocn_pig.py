@@ -5,7 +5,7 @@ def amundsen_ice2ocn_pig (smoothing_years, fig_name):
 
     # Paths to RCP experiment directories
     directory_head = '/short/y99/kaa561/FESOM/'
-    rcp_expt = ['rcp45_M_highres/', 'rcp45_A_highres/', 'rcp85_M_highres/', 'rcp85_A_highres/']
+    rcp_expt = ['rcp45_M/', 'rcp45_A/', 'rcp85_M/', 'rcp85_A/']
     num_rcps = len(rcp_expt)
     # Titles for plot
     rcp_titles = ['RCP 4.5 M', 'RCP 4.5 A', 'RCP 8.5 M', 'RCP 8.5 A']
@@ -145,7 +145,7 @@ def amundsen_ice2ocn_pig (smoothing_years, fig_name):
     # Ice to ocean freshwater flux
     ax = subplot(gs[0,0])
     # Horizontal line at "threshold"
-    ax.axhline(-4, color=(0.6,0.6,0.6), linewidth=2, linestyle='dashed')
+    #ax.axhline(-4, color=(0.6,0.6,0.6), linewidth=2, linestyle='dashed')
     # One line for each RCP
     for expt in range(num_rcps):
         ax.plot(time, ice2ocn[expt,:], color=rcp_colours[expt], linewidth=1.5)
@@ -160,7 +160,7 @@ def amundsen_ice2ocn_pig (smoothing_years, fig_name):
     # PIG mass loss
     ax = subplot(gs[1,0])
     # Horizontal line at "threshold"
-    ax.axhline(15, color=(0.6,0.6,0.6), linewidth=2, linestyle='dashed')
+    #ax.axhline(15, color=(0.6,0.6,0.6), linewidth=2, linestyle='dashed')
     for expt in range(num_rcps):
         ax.plot(time, pig_massloss[expt,:], color=rcp_colours[expt], label=rcp_titles[expt], linewidth=1.5)
     ax.plot(time, pig_massloss[-1,:], color=control_colour, label=control_title, linewidth=1.5)

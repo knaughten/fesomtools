@@ -83,7 +83,7 @@ def timeseries_concat (spinup_path, rcp_path):
         f.write(str(elm) + '\n')
     f.close()
 
-    # Repeat for sea ice extent
+    '''# Repeat for sea ice extent
     seaice_extent = []
     f = open(spinup_path + 'seaice_extent.log', 'r')
     f.readline()
@@ -100,7 +100,7 @@ def timeseries_concat (spinup_path, rcp_path):
     f.write('Sea Ice Extent (million km^2):\n')
     for elm in seaice_extent:
         f.write(str(elm) + '\n')
-    f.close()
+    f.close()'''
 
     # Repeat for ice shelf mass loss for each ice shelf
     massloss = empty([len(names), num_time])
@@ -166,7 +166,7 @@ def timeseries_concat (spinup_path, rcp_path):
             f.write(str(massloss_sectors[index, t]) + '\n')
     f.close()
 
-    # Repeat for Amundsen Sea ice-to-ocean freshwater flux
+    '''# Repeat for Amundsen Sea ice-to-ocean freshwater flux
     ice2ocn = []    
     f = open(spinup_path + 'amundsen.log', 'r')
     f.readline()
@@ -184,7 +184,7 @@ def timeseries_concat (spinup_path, rcp_path):
     f.write('Average ice-to-ocean freshwater flux (1e-8 m/s):\n')
     for elm in ice2ocn:
         f.write(str(elm) + '\n')
-    f.close()
+    f.close()'''
 
     
 # Command-line interface

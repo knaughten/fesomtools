@@ -80,7 +80,7 @@ def timeseries_annual (dpt_log, seaice_log, massloss_log, massloss_depth_log, re
     grid(True)
     savefig('drakepsgtrans_avg.png')
 
-    # Sea ice area and volume
+    '''# Sea ice area and volume
     seaice_area = []
     seaice_volume = []
     # Read log file
@@ -265,7 +265,7 @@ def timeseries_annual (dpt_log, seaice_log, massloss_log, massloss_depth_log, re
     ax.set_position([box.x0, box.y0, box.width*0.8, box.height])
     # Make legend
     ax.legend(loc='center left', bbox_to_anchor=(1,0.5))
-    fig.savefig('ismr_depth_avg.png')
+    fig.savefig('ismr_depth_avg.png')'''
 
 
 # Command-line interface

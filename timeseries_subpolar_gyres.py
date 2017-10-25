@@ -1,6 +1,7 @@
 from netCDF4 import Dataset
 from numpy import *
 from matplotlib.pyplot import *
+from os.path import *
 from fesom_grid import *
 from unrotate_vector import *
 from in_triangle import *
@@ -28,6 +29,35 @@ def timeseries_subpolar_gyres (mesh_path, output_path, start_year, end_year, log
     file_head = output_path + 'MK44005.'
     file_tail = '.oce.mean.nc'
     num_years = end_year - start_year + 1
+
+    # Check if the log file exists
+    if exists(log_file):
+        print 'Reading previously calculated values'
+        f = open(log_file, 'r')
+        f.readline()
+        ws_trans_tmp = []
+        for line in f:
+            try:
+                ws_trans_tmp.append(float(line))
+            except(ValueError):
+                break
+        rs_trans_tmp = []
+        for line in f:
+            try:
+                rs_trans_tmp.append(float(line))
+            except(ValueError):
+                break
+        f.close()
+        prev_years = len(ws_trans_tmp)
+        # Set up proper timeseries now
+        ws_trans = empty(prev_years+num_years)
+        ws_trans[:prev_years] = ws_trans_tmp[:]
+        rs_trans = empty(prev_years+num_years)
+        rs_trans[:prev_years] = rs_trans_tmp[:]
+    else:
+        prev_years = 0
+        ws_trans = empty(num_years)
+        rs_trans = empty(num_years)
 
     print 'Building mesh'
     elements = fesom_grid(mesh_path, circumpolar=True, cross_180=True)
@@ -281,15 +311,13 @@ def timeseries_subpolar_gyres (mesh_path, output_path, start_year, end_year, log
     strf_rs1 = cumsum(int_udz_reg_rs1*rs_dy1, axis=1)*1e-6
     strf_rs2 = cumsum(int_udz_reg_rs2*rs_dy2, axis=1)*1e-6
     # Build timeseries
-    ws_trans = empty(num_years)
-    rs_trans = empty(num_years)
     for year in range(num_years):
         # Find most negative value    
-        ws_trans[year] = -1*amin(strf_ws[year,:])
-        rs_trans[year] = -1*min(amin(strf_rs1[year,:]), amin(strf_rs2[year,:]))
+        ws_trans[prev_years+year] = -1*amin(strf_ws[year,:])
+        rs_trans[prev_years+year] = -1*min(amin(strf_rs1[year,:]), amin(strf_rs2[year,:]))
 
     # Make time axis
-    time = range(start_year, end_year+1)
+    time = range(start_year-prev_years, end_year+1)
 
     print 'Plotting'
     # Weddell Sea
@@ -297,7 +325,7 @@ def timeseries_subpolar_gyres (mesh_path, output_path, start_year, end_year, log
     plot(time, ws_trans)
     xlabel('year')
     ylabel('Sv')
-    xlim([start_year, end_year])
+    xlim([start_year-prev_years, end_year])
     title('Weddell Sea Gyre transport')
     grid(True)
     fig.savefig(fig_dir + 'weddell_gyre.png')
@@ -306,7 +334,7 @@ def timeseries_subpolar_gyres (mesh_path, output_path, start_year, end_year, log
     plot(time, rs_trans)
     xlabel('year')
     ylabel('Sv')
-    xlim([start_year, end_year])
+    xlim([start_year-prev_years, end_year])
     title('Ross Sea Gyre transport')
     grid(True)
     fig.savefig(fig_dir + 'ross_gyre.png')
@@ -314,10 +342,10 @@ def timeseries_subpolar_gyres (mesh_path, output_path, start_year, end_year, log
     print 'Saving results to log file'
     f = open(log_file, 'w')
     f.write('Weddell Sea Gyre transport (Sv)\n')
-    for t in range(num_years):
+    for t in range(prev_years+num_years):
         f.write(str(ws_trans[t]) + '\n')
     f.write('Ross Sea Gyre transport (Sv)\n')
-    for t in range(num_years):
+    for t in range(prev_years+num_years):
         f.write(str(rs_trans[t]) + '\n')
     f.close()
 

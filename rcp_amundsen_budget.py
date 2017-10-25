@@ -6,9 +6,9 @@ from fesom_grid import *
 def rcp_amundsen_budget ():
 
     # File paths
-    mesh_path = '/short/y99/kaa561/FESOM/mesh/high_res/'
+    mesh_path = '/short/y99/kaa561/FESOM/mesh/meshB/'
     directory_beg = '/short/y99/kaa561/FESOM/highres_spinup/'
-    directories = ['/short/y99/kaa561/FESOM/rcp45_M_highres/output/', '/short/y99/kaa561/FESOM/rcp45_A_highres/output/', '/short/y99/kaa561/FESOM/rcp85_M_highres/output/', '/short/y99/kaa561/FESOM/rcp85_A_highres/output/']
+    directories = ['/short/y99/kaa561/FESOM/rcp45_M/', '/short/y99/kaa561/FESOM/rcp45_A/', '/short/y99/kaa561/FESOM/rcp85_M/', '/short/y99/kaa561/FESOM/rcp85_A/']
     o_file_beg = 'avg.forcing.diag.1996.2005.nc'
     o_file_end = 'avg.forcing.diag.2091.2100.nc'
     i_file_beg = 'avg.ice.diag.1996.2005.nc'
@@ -97,103 +97,144 @@ def rcp_amundsen_budget ():
     time = arange(num_time)*days_per_output
 
     print 'Plotting'
-    # One plot with absolute budget
-    fig = figure(figsize=(18,7))
+    fig = figure(figsize=(18,8))
     gs = GridSpec(1,3)
-    gs.update(left=0.05, right=0.95, bottom=0.2, top=0.88)
-    # Total freshwater flux
+    gs.update(left=0.05, right=0.95, bottom=0.15, top=0.83, wspace=0.07)
+    # Net freshwater flux, 1996-2005
     ax = subplot(gs[0,0])
     # Start with a horizontal line at zero
     ax.plot(time, zeros(size(time)), color=(0.6, 0.6, 0.6), linewidth=2)
-    # One line for 1996-2005
     ax.plot(time, wnet_beg*1e8, color=beg_colour, linewidth=1.5)
-    # One line for each RCP
-    for expt in range(num_expts):
-        ax.plot(time, wnet_end[expt,:]*1e8, color=rcp_colours[expt], linewidth=1.5)
-    # Configure plot
     xlim([time[0], time[-1]])
-    ylim([-20, 12])
+    ylim([-14, 14])
     grid(True)
-    xlabel('day of year', fontsize=14)
-    ylabel(r'10$^{-8} $m/s', fontsize=14)
-    title('Net freshwater flux', fontsize=18)
-    # Precipitation minus evaporation
+    xlabel('day of year', fontsize=18)
+    ylabel(r'10$^{-8} $m/s', fontsize=18)
+    title('a) Net freshwater flux\n1996-2005 climatology', fontsize=20)
+    # RCP anomalies in net freshwater flux
     ax = subplot(gs[0,1])
     ax.plot(time, zeros(size(time)), color=(0.6, 0.6, 0.6), linewidth=2)
-    ax.plot(time, pminuse_beg*1e8, color=beg_colour, linewidth=1.5)
-    for expt in range(num_expts):
-        ax.plot(time, pminuse_end[expt,:]*1e8, color=rcp_colours[expt], linewidth=1.5)
-    xlim([time[0], time[-1]])
-    ylim([-20, 12])
-    grid(True)
-    xlabel('day of year', fontsize=14)
-    ylabel(r'10$^{-8} $m/s', fontsize=14)
-    title('Precipitation minus evaporation', fontsize=18)
-    # Sea ice to ocean freshwater flux
-    ax = subplot(gs[0,2])
-    ax.plot(time, zeros(size(time)), color=(0.6, 0.6, 0.6), linewidth=2)
-    ax.plot(time, ice2ocn_beg*1e8, color=beg_colour, label=beg_title, linewidth=1.5)
-    for expt in range(num_expts):
-        ax.plot(time, ice2ocn_end[expt,:]*1e8, color=rcp_colours[expt], label=rcp_titles[expt], linewidth=1.5)
-    xlim([time[0], time[-1]])
-    ylim([-20, 12])
-    grid(True)
-    xlabel('day of year', fontsize=14)
-    ylabel(r'10$^{-8} $m/s', fontsize=14)
-    title('Sea ice to ocean freshwater flux', fontsize=18)
-    # Main title
-    suptitle('Amundsen Sea, 2091-2100 climatologies', fontsize=24)
-    # Add a legend at the bottom
-    ax.legend(bbox_to_anchor=(-0.1, -0.1), ncol=3, fontsize=14)
-    fig.show()
-    fig.savefig('amundsen_budget.png')
-
-    # One plot with anomalies in budget
-    fig = figure(figsize=(18,7))
-    gs = GridSpec(1,3)
-    gs.update(left=0.05, right=0.95, bottom=0.2, top=0.88)
-    # Total freshwater flux
-    ax = subplot(gs[0,0])
-    # Start with a horizontal line at zero
-    ax.plot(time, zeros(size(time)), color=(0.6, 0.6, 0.6), linewidth=2)
-    # One line for each RCP
     for expt in range(num_expts):
         ax.plot(time, (wnet_end[expt,:]-wnet_beg)*1e8, color=rcp_colours[expt], linewidth=1.5)
-    # Configure plot
     xlim([time[0], time[-1]])
-    ylim([-8, 17])
+    ylim([-14, 14])
     grid(True)
-    xlabel('day of year', fontsize=14)
-    ylabel(r'10$^{-8} $m/s', fontsize=14)
-    title('Net freshwater flux', fontsize=18)
-    # Precipitation minus evaporation
-    ax = subplot(gs[0,1])
-    ax.plot(time, zeros(size(time)), color=(0.6, 0.6, 0.6), linewidth=2)
-    for expt in range(num_expts):
-        ax.plot(time, (pminuse_end[expt,:]-pminuse_beg)*1e8, color=rcp_colours[expt], linewidth=1.5)
-    xlim([time[0], time[-1]])
-    ylim([-8, 17])
-    grid(True)
-    xlabel('day of year', fontsize=14)
-    ylabel(r'10$^{-8} $m/s', fontsize=14)
-    title('Precipitation minus evaporation', fontsize=18)
-    # Sea ice to ocean freshwater flux
+    xlabel('day of year', fontsize=18)
+    title('b) Net freshwater flux\n2091-2100 minus 1996-2005', fontsize=20)
+    # RCP anomalies in sea ice to ocean freshwater flux
     ax = subplot(gs[0,2])
     ax.plot(time, zeros(size(time)), color=(0.6, 0.6, 0.6), linewidth=2)
     for expt in range(num_expts):
         ax.plot(time, (ice2ocn_end[expt,:]-ice2ocn_beg)*1e8, color=rcp_colours[expt], label=rcp_titles[expt], linewidth=1.5)
     xlim([time[0], time[-1]])
-    ylim([-8, 17])
+    ylim([-14, 14])
     grid(True)
-    xlabel('day of year', fontsize=14)
-    ylabel(r'10$^{-8} $m/s', fontsize=14)
-    title('Sea ice to ocean freshwater flux', fontsize=18)
+    xlabel('day of year', fontsize=18)
+    title('c) Sea ice to ocean freshwater flux\n2091-2100 minus 1996-2005', fontsize=20)
     # Main title
-    suptitle('Amundsen Sea, 2091-2100 minus 1996-2005', fontsize=24)
+    suptitle('Amundsen Sea', fontsize=30)
     # Add a legend at the bottom
-    ax.legend(bbox_to_anchor=(-0.3, -0.1), ncol=2, fontsize=14)
+    ax.legend(bbox_to_anchor=(0.8, -0.1), ncol=4, fontsize=16)
     fig.show()
-    fig.savefig('amundsen_budget_anom.png')
+    fig.savefig('amundsen_budget.png')        
+
+    # One plot with absolute budget
+    #fig = figure(figsize=(18,7))
+    #gs = GridSpec(1,3)
+    #gs.update(left=0.05, right=0.95, bottom=0.2, top=0.88)
+    # Total freshwater flux
+    #ax = subplot(gs[0,0])
+    # Start with a horizontal line at zero
+    #ax.plot(time, zeros(size(time)), color=(0.6, 0.6, 0.6), linewidth=2)
+    # One line for 1996-2005
+    #ax.plot(time, wnet_beg*1e8, color=beg_colour, linewidth=1.5)
+    # One line for each RCP
+    #for expt in range(num_expts):
+        #ax.plot(time, wnet_end[expt,:]*1e8, color=rcp_colours[expt], linewidth=1.5)
+    # Configure plot
+    #xlim([time[0], time[-1]])
+    #ylim([-16, 15])
+    #grid(True)
+    #xlabel('day of year', fontsize=14)
+    #ylabel(r'10$^{-8} $m/s', fontsize=14)
+    #title('Net freshwater flux', fontsize=18)
+    # Precipitation minus evaporation
+    #ax = subplot(gs[0,1])
+    #ax.plot(time, zeros(size(time)), color=(0.6, 0.6, 0.6), linewidth=2)
+    #ax.plot(time, pminuse_beg*1e8, color=beg_colour, linewidth=1.5)
+    #for expt in range(num_expts):
+        #ax.plot(time, pminuse_end[expt,:]*1e8, color=rcp_colours[expt], linewidth=1.5)
+    #xlim([time[0], time[-1]])
+    #ylim([-16, 15])
+    #grid(True)
+    #xlabel('day of year', fontsize=14)
+    #ylabel(r'10$^{-8} $m/s', fontsize=14)
+    #title('Precipitation minus evaporation', fontsize=18)
+    # Sea ice to ocean freshwater flux
+    #ax = subplot(gs[0,2])
+    #ax.plot(time, zeros(size(time)), color=(0.6, 0.6, 0.6), linewidth=2)
+    #ax.plot(time, ice2ocn_beg*1e8, color=beg_colour, label=beg_title, linewidth=1.5)
+    #for expt in range(num_expts):
+        #ax.plot(time, ice2ocn_end[expt,:]*1e8, color=rcp_colours[expt], label=rcp_titles[expt], linewidth=1.5)
+    #xlim([time[0], time[-1]])
+    #ylim([-16, 15])
+    #grid(True)
+    #xlabel('day of year', fontsize=14)
+    #ylabel(r'10$^{-8} $m/s', fontsize=14)
+    #title('Sea ice to ocean freshwater flux', fontsize=18)
+    # Main title
+    #suptitle('Amundsen Sea, 2091-2100 climatologies', fontsize=24)
+    # Add a legend at the bottom
+    #ax.legend(bbox_to_anchor=(-0.1, -0.1), ncol=3, fontsize=14)
+    #fig.show()
+    #fig.savefig('amundsen_budget.png')
+
+    # One plot with anomalies in budget
+    #fig = figure(figsize=(18,7))
+    #gs = GridSpec(1,3)
+    #gs.update(left=0.05, right=0.95, bottom=0.2, top=0.88)
+    # Total freshwater flux
+    #ax = subplot(gs[0,0])
+    # Start with a horizontal line at zero
+    #ax.plot(time, zeros(size(time)), color=(0.6, 0.6, 0.6), linewidth=2)
+    # One line for each RCP
+    #for expt in range(num_expts):
+        #ax.plot(time, (wnet_end[expt,:]-wnet_beg)*1e8, color=rcp_colours[expt], linewidth=1.5)
+    # Configure plot
+    #xlim([time[0], time[-1]])
+    #ylim([-10, 14])
+    #grid(True)
+    #xlabel('day of year', fontsize=14)
+    #ylabel(r'10$^{-8} $m/s', fontsize=14)
+    #title('Net freshwater flux', fontsize=18)
+    # Precipitation minus evaporation
+    #ax = subplot(gs[0,1])
+    #ax.plot(time, zeros(size(time)), color=(0.6, 0.6, 0.6), linewidth=2)
+    #for expt in range(num_expts):
+        #ax.plot(time, (pminuse_end[expt,:]-pminuse_beg)*1e8, color=rcp_colours[expt], linewidth=1.5)
+    #xlim([time[0], time[-1]])
+    #ylim([-10, 14])
+    #grid(True)
+    #xlabel('day of year', fontsize=14)
+    #ylabel(r'10$^{-8} $m/s', fontsize=14)
+    #title('Precipitation minus evaporation', fontsize=18)
+    # Sea ice to ocean freshwater flux
+    #ax = subplot(gs[0,2])
+    #ax.plot(time, zeros(size(time)), color=(0.6, 0.6, 0.6), linewidth=2)
+    #for expt in range(num_expts):
+        #ax.plot(time, (ice2ocn_end[expt,:]-ice2ocn_beg)*1e8, color=rcp_colours[expt], label=rcp_titles[expt], linewidth=1.5)
+    #xlim([time[0], time[-1]])
+    #ylim([-10, 14])
+    #grid(True)
+    #xlabel('day of year', fontsize=14)
+    #ylabel(r'10$^{-8} $m/s', fontsize=14)
+    #title('Sea ice to ocean freshwater flux', fontsize=18)
+    # Main title
+    #suptitle('Amundsen Sea, 2091-2100 minus 1996-2005', fontsize=24)
+    # Add a legend at the bottom
+    #ax.legend(bbox_to_anchor=(-0.3, -0.1), ncol=2, fontsize=14)
+    #fig.show()
+    #fig.savefig('amundsen_budget_anom.png')
 
 
 # Command-line interface
