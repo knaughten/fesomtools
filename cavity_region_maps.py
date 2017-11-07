@@ -58,6 +58,100 @@ def get_min_max (data_beg, data_diff, x_min, x_max, y_min, y_max, cavity=True):
     return var_min, var_max, diff_max
 
 
+# Interpolate bathymetry to a regular grid in the given region so that we can
+# contour isobaths later.
+# Input:
+# lon_min, lon_max = bounds on longitude for regular grid (-180 to 180)
+# lat_min, lat_max = bounds on latitude (-90 to 90)
+# Output:
+# x_reg, y_reg = polar coordinates of regular grid for plotting
+# bathy_reg = bathymetry interpolated to the regular grid
+def interpolate_bathy (lon_min, lon_max, lat_min, lat_max):
+
+    # Size of regular grid
+    num_lon = 500
+    num_lat = 500
+
+    # Set up regular grid
+    # Start with boundaries
+    lon_reg_edges = linspace(lon_min, lon_max, num_lon+1)
+    lat_reg_edges = linspace(lat_min, lat_max, num_lat+1)
+    # Now get centres
+    lon_reg = 0.5*(lon_reg_edges[:-1] + lon_reg_edges[1:])
+    lat_reg = 0.5*(lat_reg_edges[:-1] + lat_reg_edges[1:])
+    # Make 2D versions
+    lon_reg_2d, lat_reg_2d = meshgrid(lon_reg, lat_reg)
+    # Calculate polar coordinates transformation for plotting
+    x_reg = -(lat_reg_2d+90)*cos(lon_reg_2d*deg2rad+pi/2)
+    y_reg = (lat_reg_2d+90)*sin(lon_reg_2d*deg2rad+pi/2)
+    # Set up array for bathymetry on this regular grid
+    bathy_reg = zeros([num_lat, num_lon])
+
+    # For each element, check if a point on the regular lat-lon grid lies
+    # within. If so, do barycentric interpolation to that point, of bottom
+    # node depths (i.e. bathymetry).
+    for elm in elements:
+        # Ignore ice shelf cavities
+        if not elm.cavity:
+            # Check if we are within domain of regular grid
+            if amax(elm.lon) > lon_min and amin(elm.lon) < lon_max and amax(elm.lat) > lat_min and amin(elm.lat) < lat_max:
+                # Find largest regular longitude value west of Element
+                tmp = nonzero(lon_reg > amin(elm.lon))[0]
+                if len(tmp) == 0:
+                    # Element crosses the western boundary
+                    iW = 0
+                else:
+                    iW = tmp[0] - 1
+                # Find smallest regular longitude value east of Element
+                tmp = nonzero(lon_reg > amax(elm.lon))[0]
+                if len(tmp) == 0:
+                    # Element crosses the eastern boundary
+                    iE = num_lon
+                else:
+                    iE = tmp[0]
+                # Find largest regular latitude value south of Element
+                tmp = nonzero(lat_reg > amin(elm.lat))[0]
+                if len(tmp) == 0:
+                    # Element crosses the southern boundary
+                    jS = 0
+                else:
+                    jS = tmp[0] - 1
+                # Find smallest regular latitude value north of Element
+                tmp = nonzero(lat_reg > amax(elm.lat))[0]
+                if len(tmp) == 0:
+                    # Element crosses the northern boundary
+                    jN = num_lat
+                else:
+                    jN = tmp[0]
+                for i in range(iW+1,iE):
+                    for j in range(jS+1,jN):
+                        # There is a chance that the regular gridpoint at (i,j)
+                        # lies within this element
+                        lon0 = lon_reg[i]
+                        lat0 = lat_reg[j]
+                        if in_triangle(elm, lon0, lat0):
+                            # Yes it does
+                            # Get area of entire triangle
+                            area = triangle_area(elm.lon, elm.lat)
+                            # Get area of each sub-triangle formed by
+                            # (lon0, lat0)
+                            area0 = triangle_area([lon0, elm.lon[1], elm.lon[2]], [lat0, elm.lat[1], elm.lat[2]])
+                            area1 = triangle_area([lon0, elm.lon[0], elm.lon[2]], [lat0, elm.lat[0], elm.lat[2]])
+                            area2 = triangle_area([lon0, elm.lon[0], elm.lon[1]], [lat0, elm.lat[0], elm.lat[1]])
+                            # Find fractional area of each
+                            cff = [area0/area, area1/area, area2/area]
+                            # Find bottom depth of each node
+                            bathy_vals = []
+                            for n in range(3):
+                                bathy_vals.append(elm.nodes[n].find_bottom().depth)
+                            # Barycentric interpolation to lon0, lat0
+                            bathy_reg[j,i] = sum(array(cff)*array(bathy_vals))
+    # Mask out points which are identically zero (land and ice shelves)
+    bathy_reg = ma.masked_where(bathy_reg==0, bathy_reg)
+
+    return x_reg, y_reg, bathy_reg
+
+
 # Create a 2D vector field for vertically averaged velocity in FESOM for the
 # given region at the beginning of the simulation. Average velocity over
 # horizontal bins (in x and y) for easy plotting.
@@ -133,11 +227,19 @@ def make_vectors (x_min, x_max, y_min, y_max, num_bins_x, num_bins_y):
 # y0 = y-coordinate of model titles for the entire plot, assuming melt rate is
 #      always at the top (i.e. letter='a'). Play around between 1.15 and 1.35.
 # set_diff_max = optional float to use as maximum for anomaly colour scale
-def plot_melt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, change_points, letter, y0, set_diff_max=None):
+# lon_plot = optional list of longitudes to overlay as dotted lines on the
+#            first panel (-180 to 180)
+# lat_lines = optional list of latitudes to overlay (-90 to 90)
+def plot_melt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, change_points, letter, y0, set_diff_max=None, lon_lines=None, lat_lines=None):
 
     # Set up a grey square to fill the background with land
     x_reg, y_reg = meshgrid(linspace(x_min, x_max, num=100), linspace(y_min, y_max, num=100))
     land_square = zeros(shape(x_reg))
+    # Also get longitude and latitude values on this regular x-y grid,
+    # by inverting the polar coordinate transformation
+    lat_xyreg = sqrt(x_reg**2 + y_reg**2) - 90
+    lon_xyreg = (arctan2(y_reg, -1*x_reg) - pi/2)/deg2rad
+
     # Find bounds on melt in this region
     var_min, var_max, diff_max = get_min_max(melt_beg, melt_diff, x_min, x_max, y_min, y_max)
     if set_diff_max is not None:
@@ -178,6 +280,10 @@ def plot_melt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, change_points, 
     overlay = PatchCollection(mask_patches, facecolor=(1,1,1))
     overlay.set_edgecolor('face')
     ax.add_collection(overlay)
+    # Overlay longitudes
+    contour(x_reg, y_reg, lon_xyreg, lon_lines, colors='black', linestyles='dotted')
+    # Overlay latitudes
+    contour(x_reg, y_reg, lat_xyreg, lat_lines, colors='black', linestyles='dotted')
     xlim([x_min, x_max])
     ylim([y_min, y_max])
     ax.set_xticks([])
@@ -206,9 +312,9 @@ def plot_melt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, change_points, 
         ax.set_xticks([])
         ax.set_yticks([])
         text(0.5, y0, expt_names[expt], fontsize=18, horizontalalignment='center', transform=ax.transAxes)        
-        if expt == middle_expt:
+        if expt == num_expts-1:
             # Add subtitle for anomalies
-            title(str(end_years[0])+'-'+str(end_years[1])+' anomalies', fontsize=18)            
+            title(str(end_years[0])+'-'+str(end_years[1])+' anomalies', loc='right', fontsize=18)            
         if expt == num_expts-1:
             # Colourbar on the right
             if set_diff_max is None:
@@ -228,7 +334,9 @@ def plot_melt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, change_points, 
 #                    absolute melt, one for anomalies)
 # letter = 'a', 'b', 'c', etc. to add before the bottom water temp title, for
 #          use in a figure showing multiple variables
-def plot_bwtemp (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, letter):
+# bathy_contour = optional float containing single isobath to contour (positive,
+#                 in metres; make sure you call interpolate_bathy first)
+def plot_bwtemp (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, letter, bathy_contour=None):
 
     # Set up a grey square to fill the background with land
     x_reg, y_reg = meshgrid(linspace(x_min, x_max, num=100), linspace(y_min, y_max, num=100))
@@ -249,6 +357,9 @@ def plot_bwtemp (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, letter):
     # Add ice shelf front contour lines
     contours = LineCollection(contour_lines, edgecolor='black', linewidth=1)
     ax.add_collection(contours)
+    if bathy_contour is not None:
+        # Overlay dashed contour on regular grid
+        contour(x_reg, y_reg, bathy_reg, levels=[bathy_contour], colors=('black'), linestyles=('dashed'))
     xlim([x_min, x_max])
     ylim([y_min, y_max])
     ax.set_xticks([])
@@ -269,6 +380,8 @@ def plot_bwtemp (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, letter):
         ax.add_collection(img)
         contours = LineCollection(contour_lines, edgecolor='black', linewidth=1)
         ax.add_collection(contours)
+        if bathy_contour is not None:
+            contour(x_reg, y_reg, bathy_reg, levels=[bathy_contour], colors=('black'), linestyles=('dashed'))
         xlim([x_min, x_max])
         ylim([y_min, y_max])
         ax.set_xticks([])
@@ -289,7 +402,9 @@ def plot_bwtemp (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, letter):
 #                    absolute melt, one for anomalies)
 # letter = 'a', 'b', 'c', etc. to add before the bottom water salt title, for
 #          use in a figure showing multiple variables
-def plot_bwsalt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, letter):
+# bathy_contour = optional float containing single isobath to contour (positive,
+#                 in metres; make sure you call interpolate_bathy first)
+def plot_bwsalt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, letter, bathy_contour=None):
 
     # Set up a grey square to fill the background with land
     x_reg, y_reg = meshgrid(linspace(x_min, x_max, num=100), linspace(y_min, y_max, num=100))
@@ -310,6 +425,9 @@ def plot_bwsalt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, letter):
     # Add ice shelf front contour lines
     contours = LineCollection(contour_lines, edgecolor='black', linewidth=1)
     ax.add_collection(contours)
+    if bathy_contour is not None:
+        # Overlay dashed contour on regular grid
+        contour(x_reg, y_reg, bathy_reg, levels=[bathy_contour], colors=('black'), linestyles=('dashed'))
     xlim([x_min, x_max])
     ylim([y_min, y_max])
     ax.set_xticks([])
@@ -330,6 +448,8 @@ def plot_bwsalt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, letter):
         ax.add_collection(img)
         contours = LineCollection(contour_lines, edgecolor='black', linewidth=1)
         ax.add_collection(contours)
+        if bathy_contour is not None:
+            contour(x_reg, y_reg, bathy_reg, levels=[bathy_contour], colors=('black'), linestyles=('dashed'))
         xlim([x_min, x_max])
         ylim([y_min, y_max])
         ax.set_xticks([])
@@ -610,7 +730,6 @@ ice_file_end = 'seasonal_climatology_ice_2091_2100.nc'
 # Titles for plotting
 expt_names = ['RCP 4.5 M', 'RCP 4.5 A', 'RCP 8.5 M', 'RCP 8.5 A', 'CONTROL']
 num_expts = len(directories)
-middle_expt = (num_expts+1)/2 - 1
 # Start and end years for each period
 beg_years = [1996, 2005]
 end_years = [2091, 2100]
@@ -738,9 +857,9 @@ for expt in range(num_expts):
 # Save number of 2D nodes for later
 n2d = size(node_melt_diff)
 
-print 'Calculating surface and bottom temperature'
+print 'Calculating bottom water temperature' #surface and bottom temperature'
 bwtemp_beg = zeros(num_elm)
-sst_beg = zeros(num_elm)
+#sst_beg = zeros(num_elm)
 # Read full 3D field to start
 id = Dataset(directory_beg + oce_file_beg, 'r')
 node_temp_beg = id.variables['temp'][0,:]
@@ -749,10 +868,10 @@ id.close()
 i = 0
 for elm in elements:
     bwtemp_beg[i] = mean([node_temp_beg[elm.nodes[0].find_bottom().id], node_temp_beg[elm.nodes[1].find_bottom().id], node_temp_beg[elm.nodes[2].find_bottom().id]])
-    sst_beg[i] = mean([node_temp_beg[elm.nodes[0].id], node_temp_beg[elm.nodes[1].id], node_temp_beg[elm.nodes[2].id]])
+    #sst_beg[i] = mean([node_temp_beg[elm.nodes[0].id], node_temp_beg[elm.nodes[1].id], node_temp_beg[elm.nodes[2].id]])
     i += 1
 bwtemp_diff = zeros([num_expts, num_elm])
-sst_diff = zeros([num_expts, num_elm])
+#sst_diff = zeros([num_expts, num_elm])
 for expt in range(num_expts):
     id = Dataset(directories[expt] + oce_file_end, 'r')
     node_temp_end = id.variables['temp'][0,:]
@@ -761,12 +880,12 @@ for expt in range(num_expts):
     i = 0
     for elm in elements:
         bwtemp_diff[expt,i] = mean([node_temp_diff[elm.nodes[0].find_bottom().id], node_temp_diff[elm.nodes[1].find_bottom().id], node_temp_diff[elm.nodes[2].find_bottom().id]])
-        sst_diff[expt,i] = mean([node_temp_diff[elm.nodes[0].id], node_temp_diff[elm.nodes[1].id], node_temp_diff[elm.nodes[2].id]])
+        #sst_diff[expt,i] = mean([node_temp_diff[elm.nodes[0].id], node_temp_diff[elm.nodes[1].id], node_temp_diff[elm.nodes[2].id]])
         i += 1
 
-print 'Calculating surface and bottom salinity'
+print 'Calculating bottom water salinity' #surface and bottom salinity'
 bwsalt_beg = zeros(num_elm)
-sss_beg = zeros(num_elm)
+#sss_beg = zeros(num_elm)
 # Read full 3D field to start
 id = Dataset(directory_beg + oce_file_beg, 'r')
 node_salt_beg = id.variables['salt'][0,:]
@@ -775,10 +894,10 @@ id.close()
 i = 0
 for elm in elements:
     bwsalt_beg[i] = mean([node_salt_beg[elm.nodes[0].find_bottom().id], node_salt_beg[elm.nodes[1].find_bottom().id], node_salt_beg[elm.nodes[2].find_bottom().id]])
-    sss_beg[i] = mean([node_salt_beg[elm.nodes[0].id], node_salt_beg[elm.nodes[1].id], node_salt_beg[elm.nodes[2].id]])
+    #sss_beg[i] = mean([node_salt_beg[elm.nodes[0].id], node_salt_beg[elm.nodes[1].id], node_salt_beg[elm.nodes[2].id]])
     i += 1
 bwsalt_diff = zeros([num_expts, num_elm])
-sss_diff = zeros([num_expts, num_elm])
+#sss_diff = zeros([num_expts, num_elm])
 for expt in range(num_expts):
     id = Dataset(directories[expt] + oce_file_end, 'r')
     node_salt_end = id.variables['salt'][0,:]
@@ -787,7 +906,7 @@ for expt in range(num_expts):
     i = 0
     for elm in elements:
         bwsalt_diff[expt,i] = mean([node_salt_diff[elm.nodes[0].find_bottom().id], node_salt_diff[elm.nodes[1].find_bottom().id], node_salt_diff[elm.nodes[2].find_bottom().id]])
-        sss_diff[expt,i] = mean([node_salt_diff[elm.nodes[0].id], node_salt_diff[elm.nodes[1].id], node_salt_diff[elm.nodes[2].id]])
+        #sss_diff[expt,i] = mean([node_salt_diff[elm.nodes[0].id], node_salt_diff[elm.nodes[1].id], node_salt_diff[elm.nodes[2].id]])
         i += 1
 
 '''print 'Calculating sea ice concentration'
@@ -815,7 +934,7 @@ for expt in range(num_expts):
     for elm in elements:
         if not elm.cavity:
             aice_diff[expt,i] = mean([node_aice_diff[elm.nodes[0].id], node_aice_diff[elm.nodes[1].id], node_aice_diff[elm.nodes[2].id]])
-            i += 1'''
+            i += 1
 
 print 'Calculating vertically averaged velocity'
 velavg_beg = zeros([num_elm])
@@ -885,11 +1004,43 @@ for expt in range(num_expts):
     i = 0
     for elm in elements:
         velavg_diff[expt,i] = mean([node_speed_diff[elm.nodes[0].id], node_speed_diff[elm.nodes[1].id], node_speed_diff[elm.nodes[2].id]])
-        i += 1
+        i += 1'''
 
 
 # **************** USER MODIFIED SECTION ****************
-# Filchner-Ronne
+
+# Amundsen Sea
+x_min_tmp = -17.5
+x_max_tmp = -10.5
+y_min_tmp = -11.25
+y_max_tmp = -2.25
+fig = figure(figsize=(15,12))
+fig.patch.set_facecolor('white')
+# Melt rate
+gs_a = GridSpec(1,6)
+gs_a.update(left=0.08, right=0.92, bottom=0.63, top=0.9, wspace=0.05)
+cbaxes_left = fig.add_axes([0.02, 0.65, 0.02, 0.22])
+cbaxes_right = fig.add_axes([0.93, 0.65, 0.02, 0.22])
+plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, cbaxes_right, [1, 3, 5], 'a', 1.2, set_diff_max=18, lon_lines=[-130, -110], lat_lines=[-75])
+# Bottom water temperature
+x_reg, y_reg, bathy_reg = interpolate_bathy(-140, -90, -76, -70)
+gs_b = GridSpec(1,6)
+gs_b.update(left=0.08, right=0.92, bottom=0.33, top=0.6, wspace=0.05)
+cbaxes_left = fig.add_axes([0.02, 0.35, 0.02, 0.22])
+cbaxes_right = fig.add_axes([0.93, 0.35, 0.02, 0.22])
+plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b', bathy_contour=1500)
+# Bottom water salinity
+gs_c = GridSpec(1,6)
+gs_c.update(left=0.08, right=0.92, bottom=0.03, top=0.3, wspace=0.05)
+cbaxes_left = fig.add_axes([0.02, 0.05, 0.02, 0.22])
+cbaxes_right = fig.add_axes([0.93, 0.05, 0.02, 0.22])
+plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c', bathy_contour=1500)
+suptitle('Amundsen Sea', fontsize=30)
+fig.show()
+fig.savefig('amundsen.png')
+
+# Old plots that looked at everything
+'''# Filchner-Ronne
 x_min_tmp = -15
 x_max_tmp = -4.5
 y_min_tmp = 1
@@ -1196,4 +1347,4 @@ plot_velavg(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxe
 #plot_aice(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_d, cbaxes_left, cbaxes_right, 'd')
 suptitle('Larsen Ice Shelves', fontsize=30)
 fig.show()
-fig.savefig('larsen.png')
+fig.savefig('larsen.png')'''

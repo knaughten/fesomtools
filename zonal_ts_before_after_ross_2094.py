@@ -6,41 +6,28 @@ from matplotlib.collections import PatchCollection
 from fesom_grid import *
 from fesom_sidegrid import *
 
-def zonal_ts_before_after (lon0, lat_min, lat_max, rcp, model, save=False, fig_name=None, season=None):
+def zonal_ts_before_after_ross_2094 ():
 
     # File paths
     mesh_path = '/short/y99/kaa561/FESOM/mesh/meshB/'
-    if season is not None:
-        file_beg = '/short/y99/kaa561/FESOM/highres_spinup/seasonal_climatology_oce_1996_2005.nc'
-        file_end = '/short/y99/kaa561/FESOM/highres_spinup/seasonal_climatology_oce_2091_2100.nc'
-    else:
-        file_beg = '/short/y99/kaa561/FESOM/highres_spinup/annual_avg.oce.mean.1996.2005.nc'
-        file_end = '/short/y99/kaa561/FESOM/rcp'+rcp+'_'+model+'/annual_avg.oce.mean.2091.2100.nc'
-    # Figure out what to write on the title about longitude
-    if lon0 < 0:
-        lon_string = str(int(round(-lon0)))+r'$^{\circ}$W'
-    else:
-        lon_string = str(int(round(lon0)))+r'$^{\circ}$E'
-    season_names = ['DJF', 'MAM', 'JJA', 'SON']
-    if season is not None:
-        season_string = ', ' + season_names[season]
-    else:
-        season_string = ''
+    file_beg = '/short/y99/kaa561/FESOM/highres_spinup/annual_avg.oce.mean.1996.2005.nc'
+    file_end = '/short/y99/kaa561/FESOM/rcp85_A/output/MK44005.2094.oce.mean.nc'
+    lon0 = -159
+    lat_min = -85
+    lat_max = -73
 
     print 'Building FESOM mesh'
     elm2D = fesom_grid(mesh_path)
     print 'Reading temperature and salinity data'
-    if season is not None:
-        t = season
-    else:
-        t = 0
     id = Dataset(file_beg, 'r')
-    temp_nodes_beg = id.variables['temp'][t,:]
-    salt_nodes_beg = id.variables['salt'][t,:]
+    temp_nodes_beg = id.variables['temp'][0,:]
+    salt_nodes_beg = id.variables['salt'][0,:]
     id.close()
+    # Annually average 2094
     id = Dataset(file_end, 'r')
-    temp_nodes_end = id.variables['temp'][t,:]
-    salt_nodes_end = id.variables['salt'][t,:]
+    temp_nodes_end = mean(id.variables['temp'][:,:], axis=0)
+    salt_nodes_end = mean(id.variables['salt'][:,:], axis=0)
+    id.close()
 
     print 'Interpolating to ' + str(lon0)
     # Build arrays of SideElements making up zonal slices
@@ -114,7 +101,7 @@ def zonal_ts_before_after (lon0, lat_min, lat_max, rcp, model, save=False, fig_n
     ax.add_collection(img)
     xlim([lat_min, lat_max])
     ylim([depth_min, 0])
-    title(r'Temperature ($^{\circ}$C), 2091-2100', fontsize=24)
+    title(r'Temperature ($^{\circ}$C), 2094', fontsize=24)
     ax.set_xticklabels([])
     ax.set_yticklabels([])
     # Add a colorbar on the right
@@ -145,7 +132,7 @@ def zonal_ts_before_after (lon0, lat_min, lat_max, rcp, model, save=False, fig_n
     ax.add_collection(img)
     xlim([lat_min, lat_max])
     ylim([depth_min, 0])
-    title('Salinity (psu), 2091-2100', fontsize=24)
+    title('Salinity (psu), 2094', fontsize=24)
     xlabel('Latitude', fontsize=18)
     ax.set_yticklabels([])
     # Add a colorbar on the right
@@ -153,40 +140,13 @@ def zonal_ts_before_after (lon0, lat_min, lat_max, rcp, model, save=False, fig_n
     cbar = colorbar(img, cax=cbaxes, extend='both')
     cbar.ax.tick_params(labelsize=16)
     # Main title
-    suptitle('RCP ' + rcp[0] + '.' + rcp[1] + ' ' + model + ', ' + lon_string + season_string, fontsize=28)
+    suptitle(r'RCP 8.5 A, 159$^{\circ}$W', fontsize=28)
 
-    if save:
-        fig.savefig(fig_name)
-    else:
-        fig.show()
+    fig.show()
+    fig.savefig('159W_rcp85_A_2094.png')
 
 
 # Command-line interface
 if __name__ == "__main__":
 
-    lon0 = float(raw_input('Longitude to plot (-180 to 180): '))
-    lat_min = float(raw_input('Minimum latitude to plot (-90 to 90): '))
-    lat_max = float(raw_input('Maximum latitude to plot (-90 to 90): '))
-    key = int(raw_input('RCP 4.5 (4) or 8.5 (8)? '))
-    if key == 4:
-        rcp = '45'
-    elif key == 8:
-        rcp = '85'
-    key = int(raw_input('Multi-model mean (1) or ACCESS 1.0 (2)? '))
-    if key == 1:
-        model = 'M'
-    elif key == 2:
-        model = 'A'
-    action = raw_input("Annual averages (a) or specific season (s)? ")
-    if action == 'a':
-        season = None
-    elif action == 's':
-        season = int(raw_input("DJF (1), MAM (2), JJA (3), or SON (4)? "))-1
-    action = raw_input("Save figure (s) or display on screen (d)? ")
-    if action == 's':
-        save = True
-        fig_name = raw_input('Filename for figure: ')
-    elif action == 'd':
-        save = False
-        fig_name = None
-    zonal_ts_before_after (lon0, lat_min, lat_max, rcp, model, save, fig_name, season)
+    zonal_ts_before_after_ross_2094()
