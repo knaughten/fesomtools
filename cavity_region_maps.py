@@ -8,8 +8,16 @@ from matplotlib.colors import LinearSegmentedColormap
 from patches import *
 from unrotate_vector import *
 from unrotate_grid import *
+from in_triangle import *
 
 # This script needs python 2.7.6
+
+# Truncate colourmap function from https://stackoverflow.com/questions/40929467/how-to-use-and-plot-only-a-part-of-a-colorbar-in-matplotlib
+def truncate_colormap(cmap, minval=0.0, maxval=1.0, n=-1):
+    if n== -1:
+        n = cmap.N
+    new_cmap = LinearSegmentedColormap.from_list('trunc({name},{a:.2f},{b:.2f})'.format(name=cmap.name, a=minval, b=maxval), cmap(linspace(minval, maxval, n)))
+    return new_cmap
 
 # For the given variable over the given region, find the min and max values
 # at the beginning of the simulation, as well as the max absolute value of the
@@ -25,8 +33,8 @@ from unrotate_grid import *
 #          cavities (default True)
 # Output:
 # var_min, var_max = min and max data values in this region across data_beg
-# diff_max = maximum absolute value of data_diff in this region for all
-#            scenarios
+# diff_min, diff_max = min and max values of data_diff in this region for all
+#                      scenarios
 def get_min_max (data_beg, data_diff, x_min, x_max, y_min, y_max, cavity=True):
 
     # Start with min and max of beginning
@@ -44,18 +52,21 @@ def get_min_max (data_beg, data_diff, x_min, x_max, y_min, y_max, cavity=True):
                 if data_beg[i] > var_max:
                     var_max = data_beg[i]
             i += 1
-    # Now find max absolute difference across all scenarios
+    # Now find min and max difference across all scenarios
+    diff_min = 0
     diff_max = 0
     for expt in range(num_expts):
         i = 0
         for elm in elements:
             if (not cavity) or (cavity and elm.cavity):
                 if any(elm.x >= x_min) and any(elm.x <= x_max) and any(elm.y >= y_min) and any(elm.y <= y_max):
-                    if abs(data_diff[expt,i]) > diff_max:
-                        diff_max = abs(data_diff[expt,i])
+                    if data_diff[expt,i] < diff_min:
+                        diff_min = data_diff[expt,i]
+                    if data_diff[expt,i] > diff_max:
+                        diff_max = data_diff[expt,i]
                 i += 1
 
-    return var_min, var_max, diff_max
+    return var_min, var_max, diff_min, diff_max
 
 
 # Interpolate bathymetry to a regular grid in the given region so that we can
@@ -64,7 +75,7 @@ def get_min_max (data_beg, data_diff, x_min, x_max, y_min, y_max, cavity=True):
 # lon_min, lon_max = bounds on longitude for regular grid (-180 to 180)
 # lat_min, lat_max = bounds on latitude (-90 to 90)
 # Output:
-# x_reg, y_reg = polar coordinates of regular grid for plotting
+# x_lonlat_reg, y_lonlat_reg = polar coordinates of regular grid for plotting
 # bathy_reg = bathymetry interpolated to the regular grid
 def interpolate_bathy (lon_min, lon_max, lat_min, lat_max):
 
@@ -82,8 +93,8 @@ def interpolate_bathy (lon_min, lon_max, lat_min, lat_max):
     # Make 2D versions
     lon_reg_2d, lat_reg_2d = meshgrid(lon_reg, lat_reg)
     # Calculate polar coordinates transformation for plotting
-    x_reg = -(lat_reg_2d+90)*cos(lon_reg_2d*deg2rad+pi/2)
-    y_reg = (lat_reg_2d+90)*sin(lon_reg_2d*deg2rad+pi/2)
+    x_lonlat_reg = -(lat_reg_2d+90)*cos(lon_reg_2d*deg2rad+pi/2)
+    y_lonlat_reg = (lat_reg_2d+90)*sin(lon_reg_2d*deg2rad+pi/2)
     # Set up array for bathymetry on this regular grid
     bathy_reg = zeros([num_lat, num_lon])
 
@@ -149,7 +160,7 @@ def interpolate_bathy (lon_min, lon_max, lat_min, lat_max):
     # Mask out points which are identically zero (land and ice shelves)
     bathy_reg = ma.masked_where(bathy_reg==0, bathy_reg)
 
-    return x_reg, y_reg, bathy_reg
+    return x_lonlat_reg, y_lonlat_reg, bathy_reg
 
 
 # Create a 2D vector field for vertically averaged velocity in FESOM for the
@@ -216,6 +227,7 @@ def make_vectors (x_min, x_max, y_min, y_max, num_bins_x, num_bins_y):
 # gs = GridSpec object of size 1x3 to plot in
 # cbaxes1, cbaxes2 = Axes objects for location of colourbars (one for
 #                    absolute melt, one for anomalies)
+# ticks1, ticks2 = lists of corresponding values for colourbar ticks
 # change_points = list of size 3 containing values where the colourmap should
 #                 transition (1) from yellow to orange, (2) from orange to red,
 #                 (3) from red to magenta. Should not include the minimum value,
@@ -230,7 +242,7 @@ def make_vectors (x_min, x_max, y_min, y_max, num_bins_x, num_bins_y):
 # lon_plot = optional list of longitudes to overlay as dotted lines on the
 #            first panel (-180 to 180)
 # lat_lines = optional list of latitudes to overlay (-90 to 90)
-def plot_melt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, change_points, letter, y0, set_diff_max=None, lon_lines=None, lat_lines=None):
+def plot_melt (x_min, x_max, y_min, y_max, gs, cbaxes1, ticks1, cbaxes2, ticks2, change_points, letter, y0, set_diff_max=None, lon_lines=None, lat_lines=None):
 
     # Set up a grey square to fill the background with land
     x_reg, y_reg = meshgrid(linspace(x_min, x_max, num=100), linspace(y_min, y_max, num=100))
@@ -241,7 +253,8 @@ def plot_melt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, change_points, 
     lon_xyreg = (arctan2(y_reg, -1*x_reg) - pi/2)/deg2rad
 
     # Find bounds on melt in this region
-    var_min, var_max, diff_max = get_min_max(melt_beg, melt_diff, x_min, x_max, y_min, y_max)
+    var_min, var_max, diff_min, diff_max = get_min_max(melt_beg, melt_diff, x_min, x_max, y_min, y_max)
+    print 'Bounds on melt rate: ' + str(var_min) + ' ' + str(var_max) + ' ' + str(diff_min) + ' ' + str(diff_max)
     if set_diff_max is not None:
         diff_max = set_diff_max
     # Special colour map for absolute melt
@@ -265,6 +278,13 @@ def plot_melt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, change_points, 
         for i in range(size(cmap_vals)):
             cmap_list.append((cmap_vals_norm[i], cmap_colors[i]))
         mf_cmap = LinearSegmentedColormap.from_list('melt_freeze', cmap_list)
+    # Truncate difference colourmap; make sure we plot 0 though
+    diff_bound = max(abs(diff_min), abs(diff_max))
+    diff_min = min(diff_min, 0)
+    diff_max = max(diff_max, 0)
+    min_colour = (diff_min + diff_bound)/(2*diff_bound)
+    max_colour = (diff_max + diff_bound)/(2*diff_bound)
+    diff_cmap = truncate_colormap(get_cmap('RdBu_r'), min_colour, max_colour)
 
     # Plot absolute melt at the beginning of the simulation
     ax = subplot(gs[0,0], aspect='equal')
@@ -293,16 +313,16 @@ def plot_melt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, change_points, 
     # Add variable title
     title(letter + ') Ice shelf melt rate (m/y)', loc='left', fontsize=20)
     # Colourbar on the left
-    cbar = colorbar(img, cax=cbaxes1)    
+    cbar = colorbar(img, cax=cbaxes1, ticks=ticks1)    
 
     # Plot anomalies for each experiment
     for expt in range(num_expts):
         ax = subplot(gs[0,expt+1], aspect='equal')
         contourf(x_reg, y_reg, land_square, 1, colors=(('0.6', '0.6', '0.6')))
-        img = PatchCollection(patches, cmap='RdBu_r')
+        img = PatchCollection(patches, cmap=diff_cmap)
         img.set_array(array(melt_diff[expt,:]))
         img.set_edgecolor('face')
-        img.set_clim(vmin=-diff_max, vmax=diff_max)
+        img.set_clim(vmin=diff_min, vmax=diff_max)
         ax.add_collection(img)
         overlay = PatchCollection(mask_patches, facecolor=(1,1,1))
         overlay.set_edgecolor('face')
@@ -318,9 +338,9 @@ def plot_melt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, change_points, 
         if expt == num_expts-1:
             # Colourbar on the right
             if set_diff_max is None:
-                cbar = colorbar(img, cax=cbaxes2)
+                cbar = colorbar(img, cax=cbaxes2, ticks=ticks2)
             else:
-                cbar = colorbar(img, cax=cbaxes2, extend='both')
+                cbar = colorbar(img, cax=cbaxes2, extend='max', ticks=ticks2)
 
 
 # Plot bottom water temperature in the given axes: absolute temperature for the 
@@ -332,17 +352,26 @@ def plot_melt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, change_points, 
 # gs = GridSpec object of size 1x3 to plot in
 # cbaxes1, cbaxes2 = Axes objects for location of colourbars (one for
 #                    absolute melt, one for anomalies)
+# ticks1, ticks2 = lists of corresponding values for colourbar ticks
 # letter = 'a', 'b', 'c', etc. to add before the bottom water temp title, for
 #          use in a figure showing multiple variables
 # bathy_contour = optional float containing single isobath to contour (positive,
 #                 in metres; make sure you call interpolate_bathy first)
-def plot_bwtemp (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, letter, bathy_contour=None):
+def plot_bwtemp (x_min, x_max, y_min, y_max, gs, cbaxes1, ticks1, cbaxes2, ticks2, letter, bathy_contour=None):
 
     # Set up a grey square to fill the background with land
     x_reg, y_reg = meshgrid(linspace(x_min, x_max, num=100), linspace(y_min, y_max, num=100))
     land_square = zeros(shape(x_reg))
     # Find bounds on temperature in this region
-    var_min, var_max, diff_max = get_min_max(bwtemp_beg, bwtemp_diff, x_min, x_max, y_min, y_max, cavity=False)
+    var_min, var_max, diff_min, diff_max = get_min_max(bwtemp_beg, bwtemp_diff, x_min, x_max, y_min, y_max, cavity=False)
+    print 'Bounds on bottom water temp: ' + str(var_min) + ' ' + str(var_max) + ' ' + str(diff_min) + ' ' + str(diff_max)
+    # Truncate difference colourmap; make sure we plot 0 though
+    diff_bound = max(abs(diff_min), abs(diff_max))
+    diff_min = min(diff_min, 0)
+    diff_max = max(diff_max, 0)
+    min_colour = (diff_min + diff_bound)/(2*diff_bound)
+    max_colour = (diff_max + diff_bound)/(2*diff_bound)
+    diff_cmap = truncate_colormap(get_cmap('RdBu_r'), min_colour, max_colour)
 
     # Plot absolute temperature at the beginning of the simulation
     ax = subplot(gs[0,0], aspect='equal')
@@ -359,7 +388,7 @@ def plot_bwtemp (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, letter, bathy
     ax.add_collection(contours)
     if bathy_contour is not None:
         # Overlay dashed contour on regular grid
-        contour(x_reg, y_reg, bathy_reg, levels=[bathy_contour], colors=('black'), linestyles=('dashed'))
+        contour(x_lonlat_reg, y_lonlat_reg, bathy_reg, levels=[bathy_contour], colors=('black'), linestyles=('dashed'))
     xlim([x_min, x_max])
     ylim([y_min, y_max])
     ax.set_xticks([])
@@ -367,28 +396,28 @@ def plot_bwtemp (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, letter, bathy
     # Add variable title
     title(letter + r') Bottom water temperature ($^{\circ}$C)', loc='left', fontsize=20)
     # Colourbar on the left
-    cbar = colorbar(img, cax=cbaxes1)    
+    cbar = colorbar(img, cax=cbaxes1, ticks=ticks1)    
 
     # Plot anomalies for each experiment
     for expt in range(num_expts):
         ax = subplot(gs[0,expt+1], aspect='equal')
         contourf(x_reg, y_reg, land_square, 1, colors=(('0.6', '0.6', '0.6')))
-        img = PatchCollection(patches_all, cmap='RdBu_r')
+        img = PatchCollection(patches_all, cmap=diff_cmap)
         img.set_array(array(bwtemp_diff[expt,:]))
         img.set_edgecolor('face')
-        img.set_clim(vmin=-diff_max, vmax=diff_max)
+        img.set_clim(vmin=diff_min, vmax=diff_max)
         ax.add_collection(img)
         contours = LineCollection(contour_lines, edgecolor='black', linewidth=1)
         ax.add_collection(contours)
         if bathy_contour is not None:
-            contour(x_reg, y_reg, bathy_reg, levels=[bathy_contour], colors=('black'), linestyles=('dashed'))
+            contour(x_lonlat_reg, y_lonlat_reg, bathy_reg, levels=[bathy_contour], colors=('black'), linestyles=('dashed'))
         xlim([x_min, x_max])
         ylim([y_min, y_max])
         ax.set_xticks([])
         ax.set_yticks([])            
         if expt == num_expts-1:
             # Colourbar on the right
-            cbar = colorbar(img, cax=cbaxes2)
+            cbar = colorbar(img, cax=cbaxes2, ticks=ticks2)
 
 
 # Plot bottom water salinity in the given axes: absolute salinity for the 
@@ -400,17 +429,26 @@ def plot_bwtemp (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, letter, bathy
 # gs = GridSpec object of size 1x3 to plot in
 # cbaxes1, cbaxes2 = Axes objects for location of colourbars (one for
 #                    absolute melt, one for anomalies)
+# ticks1, ticks2 = lists of corresponding values for colourbar ticks
 # letter = 'a', 'b', 'c', etc. to add before the bottom water salt title, for
 #          use in a figure showing multiple variables
 # bathy_contour = optional float containing single isobath to contour (positive,
 #                 in metres; make sure you call interpolate_bathy first)
-def plot_bwsalt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, letter, bathy_contour=None):
+def plot_bwsalt (x_min, x_max, y_min, y_max, gs, cbaxes1, ticks1, cbaxes2, ticks2, letter, bathy_contour=None):
 
     # Set up a grey square to fill the background with land
     x_reg, y_reg = meshgrid(linspace(x_min, x_max, num=100), linspace(y_min, y_max, num=100))
     land_square = zeros(shape(x_reg))
     # Find bounds on salinity in this region
-    var_min, var_max, diff_max = get_min_max(bwsalt_beg, bwsalt_diff, x_min, x_max, y_min, y_max, cavity=False)
+    var_min, var_max, diff_min, diff_max = get_min_max(bwsalt_beg, bwsalt_diff, x_min, x_max, y_min, y_max, cavity=False)
+    print 'Bounds on bottom water salt: ' + str(var_min) + ' ' + str(var_max) + ' ' + str(diff_min) + ' ' + str(diff_max)
+    # Truncate difference colourmap; make sure we plot 0 though
+    diff_bound = max(abs(diff_min), abs(diff_max))
+    diff_min = min(diff_min, 0)
+    diff_max = max(diff_max, 0)
+    min_colour = (diff_min + diff_bound)/(2*diff_bound)
+    max_colour = (diff_max + diff_bound)/(2*diff_bound)
+    diff_cmap = truncate_colormap(get_cmap('RdBu_r'), min_colour, max_colour)
 
     # Plot absolute salinity at the beginning of the simulation
     ax = subplot(gs[0,0], aspect='equal')
@@ -427,7 +465,7 @@ def plot_bwsalt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, letter, bathy
     ax.add_collection(contours)
     if bathy_contour is not None:
         # Overlay dashed contour on regular grid
-        contour(x_reg, y_reg, bathy_reg, levels=[bathy_contour], colors=('black'), linestyles=('dashed'))
+        contour(x_lonlat_reg, y_lonlat_reg, bathy_reg, levels=[bathy_contour], colors=('black'), linestyles=('dashed'))
     xlim([x_min, x_max])
     ylim([y_min, y_max])
     ax.set_xticks([])
@@ -435,31 +473,31 @@ def plot_bwsalt (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, letter, bathy
     # Add variable title
     title(letter + ') Bottom water salinity (psu)', loc='left', fontsize=20)
     # Colourbar on the left
-    cbar = colorbar(img, cax=cbaxes1)    
+    cbar = colorbar(img, cax=cbaxes1, ticks=ticks1)    
 
     # Plot anomalies for each experiment
     for expt in range(num_expts):
         ax = subplot(gs[0,expt+1], aspect='equal')
         contourf(x_reg, y_reg, land_square, 1, colors=(('0.6', '0.6', '0.6')))
-        img = PatchCollection(patches_all, cmap='RdBu_r')
+        img = PatchCollection(patches_all, cmap=diff_cmap)
         img.set_array(array(bwsalt_diff[expt,:]))
         img.set_edgecolor('face')
-        img.set_clim(vmin=-diff_max, vmax=diff_max)
+        img.set_clim(vmin=diff_min, vmax=diff_max)
         ax.add_collection(img)
         contours = LineCollection(contour_lines, edgecolor='black', linewidth=1)
         ax.add_collection(contours)
         if bathy_contour is not None:
-            contour(x_reg, y_reg, bathy_reg, levels=[bathy_contour], colors=('black'), linestyles=('dashed'))
+            contour(x_lonlat_reg, y_lonlat_reg, bathy_reg, levels=[bathy_contour], colors=('black'), linestyles=('dashed'))
         xlim([x_min, x_max])
         ylim([y_min, y_max])
         ax.set_xticks([])
         ax.set_yticks([])            
         if expt == num_expts-1:
             # Colourbar on the right
-            cbar = colorbar(img, cax=cbaxes2)
+            cbar = colorbar(img, cax=cbaxes2, ticks=ticks2)
 
 
-# Plot surface temperature in the given axes: absolute temperature for the 
+'''# Plot surface temperature in the given axes: absolute temperature for the 
 # beginning of the simulation, followed by anomalies at the end of each
 # experiment.
 # Input:
@@ -712,7 +750,7 @@ def plot_velavg (x_min, x_max, y_min, y_max, gs, cbaxes1, cbaxes2, x_centres, y_
         ax.set_yticks([])            
         if expt == num_expts-1:
             # Colourbar on the right
-            cbar = colorbar(img, cax=cbaxes2)
+            cbar = colorbar(img, cax=cbaxes2)'''
 
 
 #***********MAIN PROCESSING***********
@@ -1014,27 +1052,33 @@ x_min_tmp = -17.5
 x_max_tmp = -10.5
 y_min_tmp = -11.25
 y_max_tmp = -2.25
-fig = figure(figsize=(15,12))
+fig = figure(figsize=(15,10.5))
 fig.patch.set_facecolor('white')
 # Melt rate
 gs_a = GridSpec(1,6)
-gs_a.update(left=0.08, right=0.92, bottom=0.63, top=0.9, wspace=0.05)
-cbaxes_left = fig.add_axes([0.02, 0.65, 0.02, 0.22])
-cbaxes_right = fig.add_axes([0.93, 0.65, 0.02, 0.22])
-plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, cbaxes_right, [1, 3, 5], 'a', 1.2, set_diff_max=18, lon_lines=[-130, -110], lat_lines=[-75])
+gs_a.update(left=0.08, right=0.92, bottom=0.62, top=0.89, wspace=0.05)
+cbaxes_left = fig.add_axes([0.02, 0.67, 0.02, 0.18])
+ticks_left = arange(0, 6+2, 2)
+cbaxes_right = fig.add_axes([0.93, 0.67, 0.02, 0.18])
+ticks_right = arange(0, 18+6, 6)
+plot_melt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_a, cbaxes_left, ticks_left, cbaxes_right, ticks_right, [1, 2, 4], 'a', 1.15, set_diff_max=18, lon_lines=[-120, -104], lat_lines=[-75])
 # Bottom water temperature
-x_reg, y_reg, bathy_reg = interpolate_bathy(-140, -90, -76, -70)
+x_lonlat_reg, y_lonlat_reg, bathy_reg = interpolate_bathy(-140, -90, -76, -70)
 gs_b = GridSpec(1,6)
-gs_b.update(left=0.08, right=0.92, bottom=0.33, top=0.6, wspace=0.05)
-cbaxes_left = fig.add_axes([0.02, 0.35, 0.02, 0.22])
-cbaxes_right = fig.add_axes([0.93, 0.35, 0.02, 0.22])
-plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, cbaxes_right, 'b', bathy_contour=1500)
+gs_b.update(left=0.08, right=0.92, bottom=0.32, top=0.59, wspace=0.05)
+cbaxes_left = fig.add_axes([0.02, 0.37, 0.02, 0.18])
+ticks_left = arange(-1.6, 0.4+0.5, 0.5)
+cbaxes_right = fig.add_axes([0.93, 0.37, 0.02, 0.18])
+ticks_right = arange(0, 1.8+0.6, 0.6)
+plot_bwtemp(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_b, cbaxes_left, ticks_left, cbaxes_right, ticks_right, 'b', bathy_contour=1500)
 # Bottom water salinity
 gs_c = GridSpec(1,6)
-gs_c.update(left=0.08, right=0.92, bottom=0.03, top=0.3, wspace=0.05)
-cbaxes_left = fig.add_axes([0.02, 0.05, 0.02, 0.22])
-cbaxes_right = fig.add_axes([0.93, 0.05, 0.02, 0.22])
-plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, cbaxes_right, 'c', bathy_contour=1500)
+gs_c.update(left=0.08, right=0.92, bottom=0.02, top=0.29, wspace=0.05)
+cbaxes_left = fig.add_axes([0.02, 0.07, 0.02, 0.18])
+ticks_left = arange(34.1, 34.7+0.2, 0.2)
+cbaxes_right = fig.add_axes([0.93, 0.07, 0.02, 0.18])
+ticks_right = arange(-0.3, 0.15+0.15, 0.15)
+plot_bwsalt(x_min_tmp, x_max_tmp, y_min_tmp, y_max_tmp, gs_c, cbaxes_left, ticks_left, cbaxes_right, ticks_right, 'c', bathy_contour=1500)
 suptitle('Amundsen Sea', fontsize=30)
 fig.show()
 fig.savefig('amundsen.png')

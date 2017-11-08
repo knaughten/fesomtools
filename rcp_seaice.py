@@ -1,6 +1,8 @@
 from netCDF4 import Dataset
 from numpy import *
 from matplotlib.collections import PatchCollection
+from matplotlib.cm import *
+from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.pyplot import *
 from patches import *
 from monthly_avg import *
@@ -53,6 +55,11 @@ def rcp_seaice ():
                 aice_diff[expt,i] = mean(array([aice_nodes_diff[expt,elm.nodes[0].id], aice_nodes_diff[expt,elm.nodes[1].id], aice_nodes_diff[expt,elm.nodes[2].id]]))
             i += 1
 
+    # Truncate difference colourmap
+    min_colour = 0
+    max_colour = (amax(aice_diff)+1)/2.0
+    diff_cmap = truncate_colormap(get_cmap('RdBu_r'), min_colour, max_colour)
+
     print 'Plotting'
     fig = figure(figsize=(10,8))
     gs = GridSpec(2,3)
@@ -76,9 +83,9 @@ def rcp_seaice ():
     # Loop over the rest of the experiments
     for expt in range(num_expts):
         ax = subplot(gs[j_plot[expt],i_plot[expt]], aspect='equal')
-        img = PatchCollection(patches, cmap='RdBu_r')
+        img = PatchCollection(patches, cmap=diff_cmap)
         img.set_array(aice_diff[expt,:])
-        img.set_clim(vmin=-1, vmax=1)
+        img.set_clim(vmin=-1, vmax=amax(aice_diff))
         img.set_edgecolor('face')
         ax.add_collection(img)
         xlim([x_min, x_max])
@@ -98,6 +105,14 @@ def rcp_seaice ():
     suptitle('September sea ice concentration', fontsize=28)
     fig.show()
     fig.savefig('rcp_seaice.png')
+
+
+# Truncate colourmap function from https://stackoverflow.com/questions/40929467/how-to-use-and-plot-only-a-part-of-a-colorbar-in-matplotlib
+def truncate_colormap(cmap, minval=0.0, maxval=1.0, n=-1):
+    if n== -1:
+        n = cmap.N
+    new_cmap = LinearSegmentedColormap.from_list('trunc({name},{a:.2f},{b:.2f})'.format(name=cmap.name, a=minval, b=maxval), cmap(linspace(minval, maxval, n)))
+    return new_cmap
 
 
 # Command-line interface
