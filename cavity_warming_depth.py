@@ -2,6 +2,7 @@ from numpy import *
 from netCDF4 import Dataset
 from matplotlib.collections import PatchCollection, LineCollection
 from matplotlib.pyplot import *
+from matplotlib.colors import *
 from patches import *
 
 def cavity_warming_depth (rcp, model):
@@ -16,6 +17,10 @@ def cavity_warming_depth (rcp, model):
     monthly_file_end = 'monthly_climatology_temp_2091_2100.nc'
     # Bound on plot
     lat_max = -64+90
+    if model == 'M':
+        model_title = 'MMM'
+    elif model == 'A':
+        model_title = 'ACCESS'
 
     print 'Building mesh'
     # Mask open ocean
@@ -156,11 +161,16 @@ def cavity_warming_depth (rcp, model):
     fractional_depth = ma.masked_where(isnan(fractional_depth), fractional_depth)
     seasonality = ma.masked_where(isnan(seasonality), seasonality)
 
+    # Make a nonlinear colour scale for warming
+    max_warming_plot = 1.65
+    bounds = linspace(0, max_warming_plot**(1.0/2), num=100)**2
+    norm = BoundaryNorm(boundaries=bounds, ncolors=256)
+
     print 'Plotting'
     fig = figure(figsize=(8,14))
     fig.patch.set_facecolor('white')
     gs = GridSpec(3,1)
-    gs.update(left=0, right=1, bottom=0, top=0.9, hspace=0)    
+    gs.update(left=0, right=1, bottom=0, top=0.9, hspace=0.07)    
     # Maximum warming
     ax = subplot(gs[0,0], aspect='equal')
     # Start with grey square background for land
@@ -169,9 +179,9 @@ def cavity_warming_depth (rcp, model):
     cooling = PatchCollection(cooling_patches, facecolor=(1,1,1))
     cooling.set_edgecolor('face')
     ax.add_collection(cooling)
-    img = PatchCollection(patches, cmap='jet')
+    img = PatchCollection(patches, cmap='jet', norm=norm)
     img.set_array(max_warming)
-    img.set_clim(vmin=0, vmax=1.5)
+    img.set_clim(vmin=0, vmax=max_warming_plot)
     img.set_edgecolor('face')
     ax.add_collection(img)
     # Mask out the open ocean in white
@@ -207,7 +217,7 @@ def cavity_warming_depth (rcp, model):
     xlim([-lat_max, lat_max])
     ylim([-lat_max, lat_max])
     axis('off')
-    title('b) Fractional depth of maximum warming', fontsize=22)
+    title('b) Fractional depth below ice shelf base\nof maximum warming', fontsize=22)
     cbaxes_b = fig.add_axes([0.8, 0.37, 0.03, 0.16])
     cbar = colorbar(img, cax=cbaxes_b, ticks=arange(0, 1+0.25, 0.25))
     cbar.ax.tick_params(labelsize=14)
@@ -234,7 +244,7 @@ def cavity_warming_depth (rcp, model):
     cbaxes_c = fig.add_axes([0.8, 0.07, 0.03, 0.16])
     cbar = colorbar(img, cax=cbaxes_c, extend='max', ticks=arange(0, 3+1, 1))
     cbar.ax.tick_params(labelsize=14)
-    suptitle('RCP ' + rcp[0] + '.' + rcp[1] + ' ' + model + ', 2091-2100 minus 1996-2005', fontsize=26)
+    suptitle('RCP ' + rcp[0] + '.' + rcp[1] + ' ' + model_title + ', 2091-2100 minus 1996-2005', fontsize=24)
     fig.show()
     fig.savefig('warming_depth_rcp'+rcp+'_'+model+'.png')
 

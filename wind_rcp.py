@@ -21,6 +21,7 @@ def wind_rcp ():
         id = Dataset(directory + files[expt], 'r')
         uwind = mean(id.variables['u10'][-12:,:,:], axis=0)
         uwind_avg[expt,:] = mean(uwind, axis=1)
+        id.close()
 
     fig, ax = subplots(figsize=(10,6))
     for expt in range(num_expts):
@@ -35,6 +36,7 @@ def wind_rcp ():
     ax.set_position([box.x0, box.y0, box.width*0.8, box.height])
     # Make legend
     ax.legend(loc='center left', bbox_to_anchor=(1,0.5))
+    fig.show()
     fig.savefig('wind_rcp.png')
 
 

@@ -1,5 +1,8 @@
 from numpy import *
 
+# WARNING: An earlier version of this script said sea ice volume was in
+# million km^3. This is not true, it's thousand km^3.
+
 # For the logfiles from timeseries_dpt.py, timeseries_seaice.py,
 # timeseries_seaice_extent.py, timeseries_massloss.py,
 # timeseries_massloss_sectors.py, and timeseries_amundsen.py, append the third
@@ -36,11 +39,11 @@ def timeseries_concat (spinup_path, rcp_path):
     dpt = dpt[skipyears*peryear:(skipyears+numyears)*peryear]
     num_time_spinup = len(dpt)
     # Read logfile for RCP simulation and append these values to existing array
-    f = open(rcp_path + 'dpt.log', 'r')
+    '''f = open(rcp_path + 'dpt.log', 'r')
     f.readline()
     for line in f:
         dpt.append(float(line))
-    f.close()
+    f.close()'''
     num_time = len(dpt)
     # Write a new logfile for the RCP simulation
     f = open(rcp_path + 'dpt.log', 'w')
@@ -64,7 +67,7 @@ def timeseries_concat (spinup_path, rcp_path):
     f.close()
     seaice_area = seaice_area[skipyears*peryear:(skipyears+numyears)*peryear]
     seaice_volume = seaice_volume[skipyears*peryear:(skipyears+numyears)*peryear]
-    f = open(rcp_path + 'seaice.log', 'r')
+    '''f = open(rcp_path + 'seaice.log', 'r')
     f.readline()
     for line in f:
         try:
@@ -73,12 +76,12 @@ def timeseries_concat (spinup_path, rcp_path):
             break
     for line in f:
         seaice_volume.append(float(line))
-    f.close()
+    f.close()'''
     f = open(rcp_path + 'seaice.log', 'w')
     f.write('Total Sea Ice Area (million km^2):\n')
     for elm in seaice_area:
         f.write(str(elm) + '\n')
-    f.write('Total Sea Ice Volume (million km^3):\n')
+    f.write('Total Sea Ice Volume (thousand km^3):\n')
     for elm in seaice_volume:
         f.write(str(elm) + '\n')
     f.close()
@@ -116,7 +119,7 @@ def timeseries_concat (spinup_path, rcp_path):
         massloss_tmp = massloss_tmp[skipyears*peryear:(skipyears+numyears)*peryear]
         massloss[index, 0:num_time_spinup] = massloss_tmp
     f.close()
-    f = open(rcp_path + 'massloss.log', 'r')
+    '''f = open(rcp_path + 'massloss.log', 'r')
     f.readline()
     for index in range(len(names)):
         massloss_tmp = []
@@ -126,7 +129,7 @@ def timeseries_concat (spinup_path, rcp_path):
             except(ValueError):
                 break
         massloss[index, num_time_spinup:] = massloss_tmp
-    f.close()
+    f.close()'''
     f = open(rcp_path + 'massloss.log', 'w')
     for index in range(len(names)):
         f.write(names[index] + ' Basal Mass Loss\n')
@@ -148,7 +151,7 @@ def timeseries_concat (spinup_path, rcp_path):
         massloss_tmp = massloss_tmp[skipyears*peryear:(skipyears+numyears)*peryear]
         massloss_sectors[index, 0:num_time_spinup] = massloss_tmp
     f.close()
-    f = open(rcp_path + 'massloss_sectors.log', 'r')
+    '''f = open(rcp_path + 'massloss_sectors.log', 'r')
     f.readline()
     for index in range(len(sector_names)):
         massloss_tmp = []
@@ -158,7 +161,7 @@ def timeseries_concat (spinup_path, rcp_path):
             except(ValueError):
                 break
         massloss_sectors[index, num_time_spinup:] = massloss_tmp
-    f.close()
+    f.close()'''
     f = open(rcp_path + 'massloss_sectors.log', 'w')
     for index in range(len(sector_names)):
         f.write(names[index] + ' Basal Mass Loss (Gt/y)\n')

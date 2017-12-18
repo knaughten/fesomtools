@@ -4,6 +4,10 @@ from matplotlib.pyplot import *
 from os.path import *
 from fesom_grid import *
 
+
+# WARNING: An older version of this script said the output sea ice volume
+# was in million km^3. This is not true, it's thousand km^3!
+
 # Calculate and plot timeseries of total sea ice area and volume during a
 # FESOM simulation.
 # Takes 8 GB memory on raijin for Kaitlin's low_res mesh.
@@ -69,7 +73,7 @@ def timeseries_seaice (mesh_path, ice_file, log_file, fig_dir=''):
     for t in range(num_time):
         # Integrate area and convert to million km^2
         total_area.append(sum(aice_elm[t,:]*area_elm)*1e-12)
-        # Integrate volume and convert to million km^3
+        # Integrate volume and convert to thousand km^3
         total_volume.append(sum(aice_elm[t,:]*hice_elm[t,:]*area_elm)*1e-12)
 
     # Calculate time values
@@ -87,7 +91,7 @@ def timeseries_seaice (mesh_path, ice_file, log_file, fig_dir=''):
     clf()
     plot(time, total_volume)
     xlabel('Years')
-    ylabel(r'Total Sea Ice Volume (million km$^3$)')
+    ylabel(r'Total Sea Ice Volume (thousand km$^3$)')
     grid(True)
     savefig(fig_dir + 'seaice_volume.png')
 
@@ -96,7 +100,7 @@ def timeseries_seaice (mesh_path, ice_file, log_file, fig_dir=''):
     f.write('Total Sea Ice Area (million km^2):\n')
     for elm in total_area:
         f.write(str(elm) + '\n')
-    f.write('Total Sea Ice Volume (million km^3):\n')
+    f.write('Total Sea Ice Volume (thousand km^3):\n')
     for elm in total_volume:
         f.write(str(elm) + '\n')
     f.close()

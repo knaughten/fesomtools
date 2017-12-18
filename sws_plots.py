@@ -10,11 +10,11 @@ from unrotate_vector import *
 def sws_plots ():
 
     # File paths
-    mesh_path = '/short/y99/kaa561/FESOM/mesh/high_res/'
+    mesh_path = '/short/y99/kaa561/FESOM/mesh/meshB/'
     oce_file_beg = '/short/y99/kaa561/FESOM/highres_spinup/annual_avg.oce.mean.1996.2005.nc'
-    oce_file_end = '/short/y99/kaa561/FESOM/rcp85_M_highres/output/annual_avg.oce.mean.2091.2100.nc'
-    ice_file_beg = '/short/y99/kaa561/FESOM/highres_spinup/seasonal_climatology.ice.diag.1996.2005.nc'
-    ice_file_end = '/short/y99/kaa561/FESOM/rcp85_M_highres/output/seasonal_climatology.ice.diag.2091.2100.nc'
+    oce_file_end = '/short/y99/kaa561/FESOM/rcp85_A/annual_avg.oce.mean.2091.2100.nc'
+    ice_file_beg = '/short/y99/kaa561/FESOM/highres_spinup/seasonal_climatology_ice_diag_1996_2005.nc'
+    ice_file_end = '/short/y99/kaa561/FESOM/rcp85_A/seasonal_climatology_ice_diag_2091_2100.nc'
     # Bounds on plot (in polar coordinate transformation)
     x_min = -22
     x_max = -4
@@ -266,7 +266,7 @@ def sws_plots ():
     suptitle(r'Sea ice thermodynamic growth rate (10$^{-7}$ m/s), 2091-2100 minus 1996-2005', fontsize=24)
     subplots_adjust(wspace=0.025)
     fig.show()
-    fig.savefig('sws_thdgr_diff.png')        
+    fig.savefig('sws_thdgr_diff.png')       
 
     print 'Processing vertically averaged velocity'
     # Need to read some more of the grid    

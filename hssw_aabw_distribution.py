@@ -12,7 +12,7 @@ def hssw_aabw_distribution ():
     file_beg = 'annual_avg.oce.mean.1996.2005.nc'
     file_end = 'annual_avg.oce.mean.2091.2100.nc'
     # Titles for plotting
-    expt_names = ['RCP 4.5 M', 'RCP 4.5 A', 'RCP 8.5 M', 'RCP 8.5 A', 'CONTROL']
+    expt_names = ['RCP 4.5 MMM', 'RCP 4.5 ACCESS', 'RCP 8.5 MMM', 'RCP 8.5 ACCESS', 'CONTROL']
     num_expts = len(directories)
     # Mesh parameters
     circumpolar = False
@@ -33,13 +33,13 @@ def hssw_aabw_distribution ():
     aabw_temp_bounds = [-1, 2.5]
     # More readable labels
     hssw_salt_ticks = arange(34.3, 35+0.1, 0.1)
-    hssw_salt_labels = ['', '34.4', '', '34.6', '', '34.8', '', '35']
+    hssw_salt_labels = ['', '', '34.5', '', '', '', '', '35']
     hssw_temp_ticks = arange(-2.25, -1.25+0.25, 0.25)
     hssw_temp_labels = ['', '-2', '', '-1.5', '']
     aabw_salt_ticks = arange(34.55, 34.8+0.05, 0.05)
-    aabw_salt_labels = ['', '34.6', '', '34.7', '', '34.8']
+    aabw_salt_labels = ['', '34.6', '', '34.7', '', '']
     aabw_temp_ticks = arange(-1, 2.5+0.5, 0.5)
-    aabw_temp_labels = ['-1', '', '0', '', '1', '', '2', '']
+    aabw_temp_labels = ['', '', '0', '', '1', '', '2', '']
 
     print 'Setting up bins'
     # Calculate boundaries of temperature bins
@@ -140,17 +140,17 @@ def hssw_aabw_distribution ():
         ax.set_xticklabels(hssw_salt_labels)
         ax.set_yticks(hssw_temp_ticks)
         ax.set_yticklabels(hssw_temp_labels)
-        ax.tick_params(axis='x', labelsize=14)
-        ax.tick_params(axis='y', labelsize=14)
+        ax.tick_params(axis='x', labelsize=18)
+        ax.tick_params(axis='y', labelsize=18)
         # Labels and titles
         if expt == 0:
-            xlabel('Salinity (psu)', fontsize=16)
-            ylabel(r'Temperature ($^{\circ}$C)', fontsize=16)
-            title('1996-2005', fontsize=19)
+            xlabel('Salinity (psu)', fontsize=20)
+            ylabel(r'Temperature ($^{\circ}$C)', fontsize=20)
+            title('1996-2005', fontsize=22)
         elif expt == 1:
-            title(expt_names[expt-1] + ' (2091-2100)', fontsize=19)
+            title('(2091-2100)\n' + expt_names[expt-1], fontsize=22)
         else:
-            title(expt_names[expt-1], fontsize=19)
+            title(expt_names[expt-1], fontsize=22)
         # HSSW title
         if expt == 2:
             text(34.83, hssw_temp_bounds[1]+0.2, 'a) HSSW', ha='left', fontsize=30)
@@ -167,24 +167,24 @@ def hssw_aabw_distribution ():
         ax.set_xticklabels(aabw_salt_labels)
         ax.set_yticks(aabw_temp_ticks)
         ax.set_yticklabels(aabw_temp_labels)
-        ax.tick_params(axis='x', labelsize=14)
-        ax.tick_params(axis='y', labelsize=14)
+        ax.tick_params(axis='x', labelsize=18)
+        ax.tick_params(axis='y', labelsize=18)
         if expt == 0:
-            xlabel('Salinity (psu)', fontsize=16)
-            ylabel(r'Temperature ($^{\circ}$C)', fontsize=16)
-            title('1996-2005', fontsize=19)
+            xlabel('Salinity (psu)', fontsize=20)
+            ylabel(r'Temperature ($^{\circ}$C)', fontsize=20)
+            title('1996-2005', fontsize=22)
         elif expt == 1:
-            title(expt_names[expt-1] + ' (2091-2100)', fontsize=19)
+            title('(2091-2100)\n' + expt_names[expt-1], fontsize=22)
         else:
-            title(expt_names[expt-1], fontsize=19)
+            title(expt_names[expt-1], fontsize=22)
         # AABW title
         if expt == 2:
             text(34.71, aabw_temp_bounds[1]+0.4, 'b) AABW', ha='left', fontsize=30)
         # Horizontal colourbar at the bottom
         if expt == num_expts:
             cbaxes = fig.add_axes([0.35, 0.06, 0.3, 0.02])
-            cbar = colorbar(img, cax=cbaxes, orientation='horizontal')
-            cbar.ax.tick_params(labelsize=14)
+            cbar = colorbar(img, cax=cbaxes, orientation='horizontal', ticks=arange(18, 30+2, 2))
+            cbar.ax.tick_params(labelsize=18)
             text(0.5, 0.01, 'log of volume', fontsize=20, transform=fig.transFigure, ha='center')
     # Main title
     suptitle(r'Water masses south of 65$^{\circ}$S', fontsize=30)

@@ -16,7 +16,7 @@ def rcp_seaice ():
     file_beg = 'avg.ice.mean.1996.2005.nc'
     file_end = 'avg.ice.mean.2091.2100.nc'
     # Titles for plotting
-    expt_names = ['RCP 4.5 M', 'RCP 4.5 A', 'RCP 8.5 M', 'RCP 8.5 A', 'CONTROL']
+    expt_names = ['RCP 4.5 MMM', 'RCP 4.5 ACCESS', 'RCP 8.5 MMM', 'RCP 8.5 ACCESS', 'CONTROL']
     num_expts = len(directories)
     # FESOM plotting parameters
     circumpolar = True

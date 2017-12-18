@@ -15,7 +15,7 @@ def rcp_map_circles (key=1):
     file_beg = 'annual_avg.forcing.diag.1996.2005.nc'
     file_end = 'annual_avg.forcing.diag.2091.2100.nc'
     # Titles for plotting
-    expt_names = ['RCP 4.5 M', 'RCP 4.5 A', 'RCP 8.5 M', 'RCP 8.5 A']
+    expt_names = ['RCP 4.5 MMM', 'RCP 4.5 ACCESS', 'RCP 8.5 MMM', 'RCP 8.5 ACCESS']
     letters = ['a)', 'b)', 'c)', 'd)']
     num_expts = len(directories)
     # Northern boundary for plot: 60S

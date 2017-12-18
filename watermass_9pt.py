@@ -22,6 +22,11 @@ def watermass_9pt (control, rcp, model, fig_name):
     wm_names = ['ISW', 'HSSW', 'LSSW', 'AASW', 'MCDW', 'CDW']
     num_watermasses = len(wm_names)
     wm_colours = ['cyan', 'black', 'blue', 'green', 'magenta', 'red']
+    # Title for model
+    if model == 'M':
+        model_title = 'MMM'
+    elif model == 'A':
+        model_title = 'ACCESS'
 
     num_years_control = end_year_control - start_year_control + 1
     num_years_rcp = end_year_rcp - start_year_rcp + 1
@@ -101,9 +106,9 @@ def watermass_9pt (control, rcp, model, fig_name):
             ylabel('% volume', fontsize=14)
         title(sector_names[sector], fontsize=17)
     if control:
-        suptitle('Water masses in ice shelf cavities: CONTROL', fontsize=24)
+        suptitle('Water mass proportions in ice shelf cavities: CONTROL', fontsize=24)
     else:
-        suptitle('Water masses in ice shelf cavities: RCP ' + rcp[0] + '.' + rcp[1] + ' ' + model, fontsize=24)
+        suptitle('Water mass proportions in ice shelf cavities: RCP ' + rcp[0] + '.' + rcp[1] + ' ' + model_title, fontsize=24)
     subplots_adjust(wspace=0.1, hspace=0.2)
     # Add legend at bottom
     ax.legend(bbox_to_anchor=(0.85,-0.2), ncol=6, fontsize=14)
