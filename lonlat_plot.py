@@ -289,7 +289,7 @@ def lonlat_plot (mesh_path, file_path, var_name, depth_key, depth, depth_bounds,
                         integral += mean(array(values_tmp))*area*mean(array(dz_tmp))  
 
                     # Now integrate from last_nodes to deep_bound by linearly
-                    # interpolating each node to shallow_bound, unless we hit
+                    # interpolating each node to deep_bound, unless we hit
                     # the seafloor earlier
                     if last_nodes is not None:
                         values_tmp = []

@@ -21,7 +21,7 @@ def timeseries_watermass_meltpotential (mesh_path, output_path, start_year, end_
     file_head = output_path + 'MK44005.'
     file_tail = '.oce.mean.nc'
     num_years = end_year - start_year + 1
-    # Specific heat of seawater (J/K/m^3)
+    # Specific heat of seawater (J/K/kg)
     cpw = 4180
     # Coefficients for in-situ freezing point calculation
     a = -0.0575  # Salinity dependence (K/psu)

@@ -1,5 +1,6 @@
 from numpy import *
 from scipy.stats import linregress
+from matplotlib.pyplot import *
 
 def trends ():
 
@@ -148,7 +149,7 @@ def trends ():
     ws_trans = ws_trans/ws_trans_baseline*100
     rs_trans = rs_trans/rs_trans_baseline*100
 
-    # Calculate and print trends, including p-values
+    '''# Calculate and print trends, including p-values
     print 'Trends in basal mass loss:\n'
     for sector in range(num_sectors):
         print '  ' + sector_names[sector] + ':'
@@ -177,7 +178,34 @@ def trends ():
         slope, intercept, r_value, p_value, std_err = linregress(time, rs_trans[expt,:])
         print '    ' + rcp_titles[expt] + ': ' + str(slope*10) + ' %/decade, p=' + str(p_value)
     slope, intercept, r_value, p_value, std_err = linregress(time, rs_trans[-1,:])
-    print '    ' + control_title + ': ' + str(slope*10) + ' %/decade, p=' + str(p_value)
+    print '    ' + control_title + ': ' + str(slope*10) + ' %/decade, p=' + str(p_value)'''
+
+    print 'r-squared values for mass loss: '
+    r2_min = 1
+    r2_max = 0
+    r2_sum = 0
+    r2_num = 0
+    for sector in range(num_sectors-1):
+        print '  ' + sector_names[sector] + ':'
+        for expt in range(num_rcps):
+            slope, intercept, r_value, p_value, std_err = linregress(time, massloss[expt,sector,:])
+            r2_linear = r_value**2
+            if p_value < 0.05:
+                r2_min = min(r2_min, r2_linear)
+                r2_max = max(r2_max, r2_linear)
+                r2_sum += r2_linear
+                r2_num += 1
+            '''# Now quadratic fit (a bit more work)
+            y = massloss[expt,sector,:]
+            coeffs = polyfit(time, y, 2)
+            p = poly1d(coeffs)
+            yhat = p(time)
+            ybar = mean(y)
+            ssreg = sum((yhat-ybar)**2)
+            sstot = sum((y-ybar)**2)
+            r2_quadratic = ssreg/sstot'''
+    print 'r-squared values from ' + str(r2_min) + ' to ' + str(r2_max) + ', mean of ' + str(r2_sum/r2_num)
+    
 
 
 # Command-line interface

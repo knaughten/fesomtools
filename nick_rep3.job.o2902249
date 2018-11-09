@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "interpolate_nick_rcp.py", line 109, in interpolate_nick_rcp
+    id.variables['melt'][:,:,:] = melt_reg
+  File "netCDF4.pyx", line 2821, in netCDF4.Variable.__setitem__ (netCDF4.c:35204)
+  File "/projects/access/apps/pythonlib/netCDF4/1.0.4/lib/python2.7/site-packages/netCDF4_utils.py", line 205, in _StartCountStride
+    raise ValueError("slicing expression exceeds the number of dimensions of the variable")
+ValueError: slicing expression exceeds the number of dimensions of the variable
+
+======================================================================================
+                  Resource Usage on 2018-01-12 09:18:45:
+   Job Id:             2902249.r-man2
+   Project:            y99
+   Exit Status:        1
+   Service Units:      2.84
+   NCPUs Requested:    1                      NCPUs Used: 1               
+                                           CPU Time Used: 00:21:07                                   
+   Memory Requested:   32.0GB                Memory Used: 6.72GB          
+   Walltime requested: 10:00:00            Walltime Used: 00:56:47        
+   JobFS requested:    100.0MB                JobFS used: 0B              
+======================================================================================

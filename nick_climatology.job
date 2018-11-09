@@ -1,0 +1,9 @@
+#!/bin/bash
+#PBS -P y99
+#PBS -q express
+#PBS -l walltime=2:00:00,ncpus=1,mem=32gb
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+
+python -c "from interpolate_nick_climatology import *; interpolate_nick_climatology('../FESOM/highres_spinup/rep3/wnet_mean.nc', '../FESOM/highres_spinup/rep3/temp_mean.nc', '../nick_interpolation/melt_temp_1992_2005_climatology.nc')"

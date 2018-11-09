@@ -71,7 +71,7 @@ def timeseries_annual (dpt_log, seaice_log, massloss_log, massloss_depth_log, re
         dpt_avg.append(mean(array(dpt[peryear*year:peryear*(year+1)])))
     # Make time array
     time = arange(num_years)+start_year
-    # Plot
+    '''# Plot
     clf()
     plot(time, dpt_avg)
     xlabel('Years')
@@ -80,7 +80,7 @@ def timeseries_annual (dpt_log, seaice_log, massloss_log, massloss_depth_log, re
     grid(True)
     savefig('drakepsgtrans_avg.png')
 
-    '''# Sea ice area and volume
+    # Sea ice area and volume
     seaice_area = []
     seaice_volume = []
     # Read log file
@@ -122,7 +122,7 @@ def timeseries_annual (dpt_log, seaice_log, massloss_log, massloss_depth_log, re
     ylabel(r'Annual min and max sea ice volume (million km$^3$)')
     xlim([time[0], time[-1]])
     grid(True)
-    savefig('seaice_volume_minmax.png')
+    savefig('seaice_volume_minmax.png')'''
 
     # Mass loss
     massloss = empty([len(names), num_output])
@@ -201,7 +201,7 @@ def timeseries_annual (dpt_log, seaice_log, massloss_log, massloss_depth_log, re
         title(names[index])
         fig.savefig(fig_heads[index] + '_avg.png')
 
-    # Mass loss by depth class
+    '''# Mass loss by depth class
     massloss_depth = empty([num_classes, num_output])
     # Read logfile
     f = open(massloss_depth_log, 'r')

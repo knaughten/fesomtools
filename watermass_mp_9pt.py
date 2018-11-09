@@ -19,6 +19,7 @@ def watermass_mp_9pt (rcp, model, fig_name):
     wm_names = ['ISW', 'HSSW', 'LSSW', 'AASW', 'MCDW', 'CDW']
     num_watermasses = len(wm_names)
     wm_colours = ['cyan', 'black', 'blue', 'green', 'magenta', 'red']
+    wm_linestyles = ['-', '-', '--', '-', '--', '-']
     # Title for model
     if model == 'M':
         model_title = 'MMM'
@@ -86,7 +87,7 @@ def watermass_mp_9pt (rcp, model, fig_name):
     for sector in range(num_sectors):
         ax = fig.add_subplot(3,3,sector+1)
         for wm_key in range(num_watermasses):
-            plot(time, mp_watermass_percent[wm_key, sector, :], color=wm_colours[wm_key], label=wm_names[wm_key], linewidth=2)        
+            plot(time, mp_watermass_percent[wm_key, sector, :], color=wm_colours[wm_key], label=wm_names[wm_key], linewidth=2, linestyle=wm_linestyles[wm_key])
         xlim([start_year_control, end_year_rcp])
         ylim([0, 165])
         grid(True)
@@ -98,10 +99,10 @@ def watermass_mp_9pt (rcp, model, fig_name):
         if sector % 3 != 0:
             ax.set_yticklabels([])
         if sector == 3:
-            ylabel('% of initial total melt potential in cavity', fontsize=20)
+            ylabel('% of initial heat content in cavity', fontsize=20)
         title(sector_names[sector], fontsize=17)
-    suptitle('Melt potential of water masses in ice shelf cavities: RCP ' + rcp[0] + '.' + rcp[1] + ' ' + model_title, fontsize=24)
-    subplots_adjust(wspace=0.1, hspace=0.2)
+    suptitle('Heat content (above freezing point)\nof water masses in ice shelf cavities: RCP ' + rcp[0] + '.' + rcp[1] + ' ' + model_title, fontsize=24)
+    subplots_adjust(wspace=0.1, hspace=0.2, top=0.87)
     # Add legend at bottom
     ax.legend(bbox_to_anchor=(0.85,-0.2), ncol=6, fontsize=14)
     fig.show()

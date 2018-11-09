@@ -56,7 +56,7 @@ class Node:
         # z is less than the ice shelf draft
         # Return NaNs for everything
         break
-      elif node_below.below is None:
+      elif node_below is None:
         # We've reached the seafloor
         # Return NaNs for everything
         break
