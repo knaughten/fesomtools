@@ -30,7 +30,6 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
     double_var = False
     mask_outside_cavity = False
     factor = 1
-    vmax = None
     if var == 'bottom_temp':
         file_tail = '.oce.mean.nc'
         var_in = 'temp'
@@ -88,7 +87,6 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
         var_in = 'area'
         title = 'Sea ice concentration'
         units = 'fraction'
-        vmax = 1
     elif var == 'seaice_thick':
         file_tail = '.ice.mean.nc'
         var_in = 'hice'
@@ -193,10 +191,6 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
         if double_var and var.endswith('speed') or var.endswith('stress'):
             # Get magnitude of vector
             data = np.sqrt(data1**2 + data2**2)
-        data *= factor
-        if mask_outside_cavity:
-            # Multiply by cavity flag (1 in cavity, 0 outside)
-            data *= cavity
         if var == 'mixed_layer_depth':
             # Calculate density of each node
             density = unesco(data1, data2, np.zeros(data1.shape))
@@ -233,6 +227,10 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
                 bottom_id = nodes[i].find_bottom().id
                 data_bottom[:,i] = data[:,bottom_id]
             data = data_bottom
+        if mask_outside_cavity:
+            # Multiply by cavity flag (1 in cavity, 0 outside)
+            data *= cavity
+        data *= factor
 
         # Interpolate to regular grid
         data_reg = np.zeros([num_time, num_lat, num_lon])
@@ -289,9 +287,10 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
                         # Barycentric interpolation to lon0, lat0
                         data_reg[:,j,i] = np.sum(cff[None,:]*data_tmp, axis=1)
                         valid_mask[j,i] = 1
-        if vmax is not None:
-            # Enforce upper bound (truncation errors can cause this)
-            data_reg[data_reg > vmax] = vmax
+                        # Make sure it doesn't go outside the bounds given by the 3 nodes, at each timestep (truncation errors can cause this)
+                        for t in range(num_time):
+                            data_reg[t,j,i] = max(data_reg[t,j,i], np.amin(data_tmp[t,:]))
+                            data_reg[t,j,i] = min(data_reg[t,j,i], np.amax(data_tmp[t,:]))
         # Mask out anywhere that had nothing to interpolate to
         valid_mask = np.tile(valid_mask, [num_time,1,1])
         data_reg = np.ma.masked_where(valid_mask==0, data_reg)
@@ -308,10 +307,10 @@ def process_all_intercomparison (base_dir='../FESOM/', out_file_dir='../FESOM/da
     output_dir = base_dir+'intercomparison_highres/output/'
     mesh_path = base_dir+'mesh/meshB/'
     start_year = 1997
-    end_year = 2016
+    end_year = 1997 #2016
 
-    for var in ['bottom_temp', 'sfc_temp', 'bottom_salt', 'sfc_salt', 'bottom_speed', 'sfc_speed', 'ssh', 'ismr', 'seaice_conc', 'seaice_thick', 'seaice_growth', 'sfc_stress', 'mixed_layer_depth']:
+    for var in ['bottom_salt', 'mixed_layer_depth'] #['bottom_temp', 'sfc_temp', 'bottom_salt', 'sfc_salt', 'bottom_speed', 'sfc_speed', 'ssh', 'ismr', 'seaice_conc', 'seaice_thick', 'seaice_growth', 'sfc_stress', 'mixed_layer_depth']:
         print 'Processing variable ' + var
-        process_var(var, output_dir, mesh_path, start_year, end_year, out_file_dir+var+'.nc')
+        process_var(var, output_dir, mesh_path, start_year, end_year, out_file_dir+var+'_test.nc')
 
     
