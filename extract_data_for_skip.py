@@ -236,6 +236,7 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
 
         # Interpolate to regular grid
         data_reg = np.zeros([num_time, num_lat, num_lon])
+        valid_mask = np.zeros([num_lat, num_lon])
         # For each element, check if a point on the regular lat-lon grid lies within. If so, do barycentric interpolation to that point.
         for elm in elements:
             # Check if we are within domain of regular grid
@@ -287,11 +288,13 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
                             data_tmp[:,n] = data[:,elm.nodes[n].id]
                         # Barycentric interpolation to lon0, lat0
                         data_reg[:,j,i] = np.sum(cff[None,:]*data_tmp, axis=1)
-        # Mask where it's exactly zero
-        data_reg = np.ma.masked_where(data_reg==0, data_reg)
+                        valid_mask[j,i] = 1
         if vmax is not None:
             # Enforce upper bound (truncation errors can cause this)
             data_reg[data_reg > vmax] = vmax
+        # Mask out anywhere that had nothing to interpolate to
+        valid_mask = np.tile(valid_mask, [num_time,1,1])
+        data_reg = np.ma.masked_where(valid_mask==0, data_reg)
         # Append to output file
         id_out.variables[var][t_start:,:] = data_reg
         t_start += num_time
