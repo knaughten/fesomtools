@@ -30,6 +30,7 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
     double_var = False
     mask_outside_cavity = False
     factor = 1
+    vmax = None
     if var == 'bottom_temp':
         file_tail = '.oce.mean.nc'
         var_in = 'temp'
@@ -87,6 +88,7 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
         var_in = 'area'
         title = 'Sea ice concentration'
         units = 'fraction'
+        vmax = 1
     elif var == 'seaice_thick':
         file_tail = '.ice.mean.nc'
         var_in = 'hice'
@@ -277,16 +279,19 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
                         # Get area of each sub-triangle formed by (lon0, lat0)
                         area0 = triangle_area([lon0, elm.lon[1], elm.lon[2]], [lat0, elm.lat[1], elm.lat[2]])
                         area1 = triangle_area([lon0, elm.lon[0], elm.lon[2]], [lat0, elm.lat[0], elm.lat[2]])
-                        area2 = triangle_area([lon0, elm.lon[0], elm.lon[1]], [lon0, elm.lat[0], elm.lat[1]])
+                        area2 = triangle_area([lon0, elm.lon[0], elm.lon[1]], [lat0, elm.lat[0], elm.lat[1]])
                         # Find fractional area of each
                         cff = np.array([area0/area, area1/area, area2/area])
                         data_tmp = np.zeros([num_time,3])
                         for n in range(3):
                             data_tmp[:,n] = data[:,elm.nodes[n].id]
                         # Barycentric interpolation to lon0, lat0
-                        data_reg[:,j,i] = np.sum(cff[None,:]*data_tmp)
+                        data_reg[:,j,i] = np.sum(cff[None,:]*data_tmp, axis=1)
         # Mask where it's exactly zero
         data_reg = np.ma.masked_where(data_reg==0, data_reg)
+        if vmax is not None:
+            # Enforce upper bound (truncation errors can cause this)
+            data_reg[data_reg > vmax] = vmax
         # Append to output file
         id_out.variables[var][t_start:,:] = data_reg
         t_start += num_time
