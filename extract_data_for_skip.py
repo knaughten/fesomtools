@@ -294,7 +294,7 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
 
 
 # Process all variables for the intercomparison high-res simulation
-def process_all_intercomparison (base_dir='./', out_file_dir='data_for_skip/intercomparison/'):
+def process_all_intercomparison (base_dir='../FESOM/', out_file_dir='data_for_skip/intercomparison/'):
 
     output_dir = base_dir+'intercomparison_highres/output/'
     mesh_path = base_dir+'mesh/meshB/'
