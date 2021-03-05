@@ -148,7 +148,7 @@ class Element:
 #             global integrals). Default True.
 # Output:
 # elements = array of Element objects
-def fesom_grid (mesh_path, circumpolar=False, cross_180=True):
+def fesom_grid (mesh_path, circumpolar=False, cross_180=True, return_nodes=False):
 
   # Northern boundary of circumpolar Antarctic domain
   nbdry = -30
@@ -277,6 +277,9 @@ def fesom_grid (mesh_path, circumpolar=False, cross_180=True):
         elements.append(elm_rep)
   file.close()
 
-  return elements
+  if return_nodes:
+    return nodes, elements
+  else:
+    return elements
 
   
