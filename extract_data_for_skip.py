@@ -307,9 +307,9 @@ def process_all_intercomparison (base_dir='../FESOM/', out_file_dir='../FESOM/da
     output_dir = base_dir+'intercomparison_highres/output/'
     mesh_path = base_dir+'mesh/meshB/'
     start_year = 1997
-    end_year = 1997 #2016
+    end_year = 2016
 
-    for var in ['bottom_salt', 'mixed_layer_depth']: #['bottom_temp', 'sfc_temp', 'bottom_salt', 'sfc_salt', 'bottom_speed', 'sfc_speed', 'ssh', 'ismr', 'seaice_conc', 'seaice_thick', 'seaice_growth', 'sfc_stress', 'mixed_layer_depth']:
+    for var in ['bottom_temp', 'sfc_temp', 'bottom_salt', 'sfc_salt', 'bottom_speed', 'sfc_speed', 'ssh', 'ismr', 'seaice_conc', 'seaice_thick', 'seaice_growth', 'sfc_stress', 'mixed_layer_depth']:
         print 'Processing variable ' + var
         process_var(var, output_dir, mesh_path, start_year, end_year, out_file_dir+var+'_test.nc')
 
