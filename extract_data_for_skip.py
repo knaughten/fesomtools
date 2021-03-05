@@ -158,6 +158,7 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
     id_out.variables['lon'].long_name = 'longitude'
     id_out.variables['lon'].units = 'degrees'
     id_out.variables['lon'][:] = lon_reg
+    id_out.createDimension('lat', num_lat)
     id_out.createVariable('lat', 'f8', ('lat'))
     id_out.variables['lat'].long_name = 'latitude'
     id_out.variables['lat'].units = 'degrees'
@@ -168,13 +169,13 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
 
     t_start = 0
     for year in range(start_year, end_year+1):
-        print 'Processing ' + year
-        
+        print 'Processing ' + str(year)
+
         # Set time axis
-        time = nc.num2date([datetime.date(year, 1, 1)], time_units, calendar)
+        time = [nc.date2num(datetime.datetime(year, 1, 1), time_units, calendar=calendar)]
         for t in range(num_time - 1):
             time.append(time[-1] + dt*sec_per_day)
-        id_out.variables['time'][t_start:] = time
+        id_out.variables['time'][t_start:] = np.array(time)
         
         # Read data
         id_in = nc.Dataset(output_dir+file_head+str(year)+file_tail, 'r')
@@ -272,7 +273,7 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
                     lat0 = lat_reg[j]
                     if in_triangle(elm, lon0, lat0):
                         # Get area of entire triangle
-                        area = triangle_area(elm.lon, elm.at)
+                        area = triangle_area(elm.lon, elm.lat)
                         # Get area of each sub-triangle formed by (lon0, lat0)
                         area0 = triangle_area([lon0, elm.lon[1], elm.lon[2]], [lat0, elm.lat[1], elm.lat[2]])
                         area1 = triangle_area([lon0, elm.lon[0], elm.lon[2]], [lat0, elm.lat[0], elm.lat[2]])
@@ -294,7 +295,7 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
 
 
 # Process all variables for the intercomparison high-res simulation
-def process_all_intercomparison (base_dir='../FESOM/', out_file_dir='data_for_skip/intercomparison/'):
+def process_all_intercomparison (base_dir='../FESOM/', out_file_dir='../FESOM/data_for_skip/intercomparison/'):
 
     output_dir = base_dir+'intercomparison_highres/output/'
     mesh_path = base_dir+'mesh/meshB/'
