@@ -304,7 +304,6 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head
         # Write to output file
         print '...writing result'
         id_out.variables[var][:] = data_reg
-        t_start += num_time
         id_out.close()
 
 
