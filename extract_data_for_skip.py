@@ -178,8 +178,9 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head
         id_out.variables['time'][:] = np.array(time)
         
         # Read data
-        print '...reading model output'
-        id_in = nc.Dataset(output_dir+file_head+str(year)+file_tail, 'r')
+        in_file = output_dir+file_head+str(year)+file_tail
+        print '...reading '+in_file
+        id_in = nc.Dataset(in_file, 'r')
         if double_var:
             # Two variables to read
             data1 = id_in.variables[var_in_1][:]
