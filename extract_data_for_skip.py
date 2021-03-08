@@ -10,7 +10,7 @@ from triangle_area import *
 
 
 # Read, process, and interpolate a given variable, and save to output file
-def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
+def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head):
 
     file_head = 'MK44005.'
     [xmin, xmax, ymin, ymax] = [40, 180, -80, -40]
@@ -147,37 +147,38 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
     num_lon = lon_reg.size
     num_lat = lat_reg.size
 
-    print 'Setting up '+out_file
-    id_out = nc.Dataset(out_file, 'w')
-    id_out.createDimension('time', None)
-    id_out.createVariable('time', 'f8', ('time'))
-    id_out.variables['time'].units = time_units
-    id_out.variables['time'].calendar = calendar
-    id_out.createDimension('lon', num_lon)
-    id_out.createVariable('lon', 'f8', ('lon'))
-    id_out.variables['lon'].long_name = 'longitude'
-    id_out.variables['lon'].units = 'degrees'
-    id_out.variables['lon'][:] = lon_reg
-    id_out.createDimension('lat', num_lat)
-    id_out.createVariable('lat', 'f8', ('lat'))
-    id_out.variables['lat'].long_name = 'latitude'
-    id_out.variables['lat'].units = 'degrees'
-    id_out.variables['lat'][:] = lat_reg
-    id_out.createVariable(var, 'f8', ('time', 'lat', 'lon'))
-    id_out.variables[var].long_name = title
-    id_out.variables[var].units = units
-
-    t_start = 0
     for year in range(start_year, end_year+1):
         print 'Processing ' + str(year)
+        out_file = out_file_head+'_'+str(year)+'.nc'
+
+        print '...setting up '+out_file
+        id_out = nc.Dataset(out_file, 'w')
+        id_out.createDimension('time', None)
+        id_out.createVariable('time', 'f8', ('time'))
+        id_out.variables['time'].units = time_units
+        id_out.variables['time'].calendar = calendar
+        id_out.createDimension('lon', num_lon)
+        id_out.createVariable('lon', 'f8', ('lon'))
+        id_out.variables['lon'].long_name = 'longitude'
+        id_out.variables['lon'].units = 'degrees'
+        id_out.variables['lon'][:] = lon_reg
+        id_out.createDimension('lat', num_lat)
+        id_out.createVariable('lat', 'f8', ('lat'))
+        id_out.variables['lat'].long_name = 'latitude'
+        id_out.variables['lat'].units = 'degrees'
+        id_out.variables['lat'][:] = lat_reg
+        id_out.createVariable(var, 'f8', ('time', 'lat', 'lon'))
+        id_out.variables[var].long_name = title
+        id_out.variables[var].units = units
 
         # Set time axis
         time = [nc.date2num(datetime.datetime(year, 1, 1), time_units, calendar=calendar)]
         for t in range(num_time - 1):
             time.append(time[-1] + dt*sec_per_day)
-        id_out.variables['time'][t_start:] = np.array(time)
+        id_out.variables['time'][:] = np.array(time)
         
         # Read data
+        print '...reading model output'
         id_in = nc.Dataset(output_dir+file_head+str(year)+file_tail, 'r')
         if double_var:
             # Two variables to read
@@ -190,13 +191,16 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
         # Process data as needed
         if double_var and var.endswith('speed') or var.endswith('stress'):
             # Get magnitude of vector
+            print '...calculating magnitude'
             data = np.sqrt(data1**2 + data2**2)
         if var == 'mixed_layer_depth':
+            print '...calculating density'
             # Calculate density of each node
             density = unesco(data1, data2, np.zeros(data1.shape))
             # Set up array for mixed layer depth
             data = np.zeros([num_time, n2d])
             # Loop over timesteps (I know this is gross)
+            print '...calculating mixed layer depth'
             for t in range(num_time):
                 # Loop over surface nodes
                 for i in range(n2d):
@@ -218,9 +222,11 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
                         depth_tmp = curr_node.depth
                         curr_node = curr_node.below
         if depth == 'surface':
+            print '...selecting surface'
             # Select only the surface nodes
             data = data[:,:n2d]
         elif depth == 'bottom':
+            print '...selecting bottom'
             # Select the bottom of each water column
             data_bottom = np.zeros([num_time, n2d])
             for i in range(n2d):
@@ -232,6 +238,7 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
             data *= cavity
         data *= factor
 
+        print '...interpolating to regular grid'
         # Interpolate to regular grid
         data_reg = np.zeros([num_time, num_lat, num_lon])
         valid_mask = np.zeros([num_lat, num_lon])
@@ -294,11 +301,11 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file):
         # Mask out anywhere that had nothing to interpolate to
         valid_mask = np.tile(valid_mask, [num_time,1,1])
         data_reg = np.ma.masked_where(valid_mask==0, data_reg)
-        # Append to output file
-        id_out.variables[var][t_start:,:] = data_reg
+        # Write to output file
+        print '...writing result'
+        id_out.variables[var][:] = data_reg
         t_start += num_time
-
-    id_out.close()
+        id_out.close()
 
 
 # Process all variables for the intercomparison high-res simulation
