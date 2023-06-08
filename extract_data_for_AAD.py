@@ -1,4 +1,4 @@
-### Extract the variables Skip needs for the AAD project, interpolated to a regular grid
+### Extract the variables needed for the AAD project, interpolated to a regular grid
 
 import numpy as np
 import netCDF4 as nc
@@ -7,10 +7,11 @@ from fesom_grid import *
 from unesco import *
 from in_triangle import *
 from triangle_area import *
+from monthly_avg import *
 
 
 # Read, process, and interpolate a given variable, and save to output file
-def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head):
+def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head, month=None):
 
     file_head = 'MK44005.'
     [xmin, xmax, ymin, ymax] = [40, 180, -80, -40]
@@ -147,6 +148,16 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head
     num_lon = lon_reg.size
     num_lat = lat_reg.size
 
+    # Inner function to read a variable and process time as needed
+    def read_single_var (file_path, var_name):
+        if month is None:
+            id_in = nc.Dataset(in_file, 'r')
+            data = id_in.variables[var_name][:]
+            id_in.close()
+        else:
+            data = monthly_avg(file_path, var_name, month)
+        return data    
+
     for year in range(start_year, end_year+1):
         print 'Processing ' + str(year)
         out_file = out_file_head+'_'+str(year)+'.nc'
@@ -175,19 +186,19 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head
         time = [nc.date2num(datetime.datetime(year, 1, 1), time_units, calendar=calendar)]
         for t in range(num_time - 1):
             time.append(time[-1] + dt*sec_per_day)
+        if month is not None:
+            time = time[month::12]
         id_out.variables['time'][:] = np.array(time)
         
         # Read data
         in_file = output_dir+file_head+str(year)+file_tail
         print '...reading '+in_file
-        id_in = nc.Dataset(in_file, 'r')
         if double_var:
             # Two variables to read
-            data1 = id_in.variables[var_in_1][:]
-            data2 = id_in.variables[var_in_2][:]
+            data1 = read_single_var(in_file, var_in_1)
+            data2 = read_single_var(in_file, var_in_2)
         else:
-            data = id_in.variables[var_in][:]
-        id_in.close()
+            data = read_single_var(in_file, var_in)
         
         # Process data as needed
         if double_var and var.endswith('speed') or var.endswith('stress'):
@@ -308,7 +319,7 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head
         id_out.close()
 
 
-# Process all variables for the intercomparison high-res simulation
+# Process all variables for the intercomparison high-res simulation. This was run on blizzard (CCRC).
 def process_all_intercomparison (base_dir='../FESOM/', out_file_dir='../FESOM/data_for_skip/intercomparison/'):
 
     output_dir = base_dir+'intercomparison_highres/output/'
@@ -320,4 +331,25 @@ def process_all_intercomparison (base_dir='../FESOM/', out_file_dir='../FESOM/da
         print 'Processing variable ' + var
         process_var(var, output_dir, mesh_path, start_year, end_year, out_file_dir+var)
 
+
+# Process variables for the future projections, RCP 4.5 and RCP 8.5 MMM, April averages only, 2006-2100. This was run on JASMIN after the FESOM output was moved there from blizzard.
+# NOTE: have to do module unload jaspy; module load jaspy/2.7 to get python2 on JASMIN. Otherwise have to convert fesomtools to python3!
+def process_all_future (base_dir='/gws/nopw/j04/bas_pog/kaight/PhD/'):
+
+    expt_names = ['RCP4.5_MMM', 'RCP8.5_MMM']
+    expt_dirs = [base_dir+'future_projections/'+expt+'/' for expt in expt_names]
+    num_expt = len(expt_names)
+    mesh_path = base_dir + 'FESOM_mesh/high_res/'
+    output_file_dir = base_dir + 'future_projections/interp_for_joel/'
+    start_year = 2006
+    end_year = 2100
+    month = 3  # April, 0-indexed
+
+    for n in range(num_expt):
+        for var in ['sfc_temp', 'bottom_temp', 'sfc_salt', 'bottom_salt', 'sfc_speed', 'bottom_speed', 'ssh', 'mixed_layer_depth']:
+            print 'Processing variable '+var+' for experiment '+expt_names[n]
+            process_var(var, expt_dirs[n], mesh_path, start_year, end_year, output_file_dir+expt_names[n]+'/'+var)
+
+    
+    
     
