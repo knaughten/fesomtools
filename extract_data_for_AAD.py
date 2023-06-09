@@ -11,7 +11,7 @@ from monthly_avg import *
 
 
 # Read, process, and interpolate a given variable, and save to output file
-def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head, month=None):
+def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head, month=None, nodes=None, elements=None):
 
     file_head = 'MK44005.'
     [xmin, xmax, ymin, ymax] = [40, 180, -80, -40]
@@ -115,7 +115,8 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head
         units = 'm'
 
     print 'Building FESOM mesh'
-    nodes, elements = fesom_grid(mesh_path, return_nodes=True)
+    if nodes is None or elements is None:
+        nodes, elements = fesom_grid(mesh_path, return_nodes=True)
     # Count the number of 2D nodes
     f = open(mesh_path+'nod2d.out', 'r')
     n2d = int(f.readline())
@@ -156,6 +157,8 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head
             id_in.close()
         else:
             data = monthly_avg(file_path, var_name, month)
+            # Add a dummy time dimension
+            data = np.expand_dims(data, 0)
         return data    
 
     for year in range(start_year, end_year+1):
@@ -346,10 +349,13 @@ def process_all_future (base_dir='/gws/nopw/j04/bas_pog/kaight/PhD/'):
     end_year = 2100
     month = 3  # April, 0-indexed
 
+    print 'Building FESOM mesh'
+    nodes, elements = fesom_grid(mesh_path, return_nodes=True)
+
     for n in range(num_expt):
         for var in ['sfc_temp', 'bottom_temp', 'sfc_salt', 'bottom_salt', 'sfc_speed', 'bottom_speed', 'ssh', 'mixed_layer_depth']:
             print 'Processing variable '+var+' for experiment '+expt_names[n]
-            process_var(var, expt_dirs[n], mesh_path, start_year, end_year, output_file_dir+expt_names[n]+'/'+var)
+            process_var(var, expt_dirs[n], mesh_path, start_year, end_year, output_file_dir+expt_names[n]+'/'+var, month=month, nodes=nodes, elements=elements)
 
     
     
