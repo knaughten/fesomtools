@@ -183,11 +183,12 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head
         id_out.variables[var].units = units
 
         # Set time axis
-        time = [nc.date2num(datetime.datetime(year, 1, 1), time_units, calendar=calendar)]
-        for t in range(num_time - 1):
-            time.append(time[-1] + dt*sec_per_day)
-        if month is not None:
-            time = time[month::12]
+        if month is None:
+            time = [nc.date2num(datetime.datetime(year, 1, 1), time_units, calendar=calendar)]
+            for t in range(num_time - 1):
+                time.append(time[-1] + dt*sec_per_day)
+        else:
+            time = [nc.date2num(datetime.datetime(year, month+1, 1), time_units, calendar=calendar)] 
         id_out.variables['time'][:] = np.array(time)
         
         # Read data
