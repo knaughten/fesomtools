@@ -349,7 +349,7 @@ def process_all_future (base_dir='/gws/nopw/j04/bas_pog/kaight/PhD/'):
     mesh_path = base_dir + 'FESOM_mesh/high_res/'
     output_file_dir = base_dir + 'future_projections/interp_for_joel/'
     start_year = 2006
-    end_year = 2006 #2100
+    end_year = 2100
     month = 3  # April, 0-indexed
 
     print 'Building FESOM mesh'
@@ -358,7 +358,7 @@ def process_all_future (base_dir='/gws/nopw/j04/bas_pog/kaight/PhD/'):
     for n in range(num_expt):
         for var in ['sfc_temp', 'bottom_temp', 'sfc_salt', 'bottom_salt', 'sfc_speed', 'bottom_speed', 'ssh', 'mixed_layer_depth']:
             print 'Processing variable '+var+' for experiment '+expt_names[n]
-            process_var(var, expt_dirs[n], mesh_path, start_year, end_year, output_file_dir+expt_names[n]+'/test/'+var, month=month, nodes=nodes, elements=elements)
+            process_var(var, expt_dirs[n], mesh_path, start_year, end_year, output_file_dir+expt_names[n]+'/'+var, month=month, nodes=nodes, elements=elements)
 
     
     
