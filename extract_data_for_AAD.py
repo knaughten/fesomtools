@@ -18,7 +18,10 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head
     res = 1/8.
     dt = 5  # days
     days_per_year = 365
-    num_time = days_per_year/dt
+    if month is None:
+        num_time = days_per_year/dt
+    else:
+        num_time = 1  # Just one month per year
     sec_per_day = 24*60*60
     mps_to_mpy = days_per_year*sec_per_day
     deg2rad = np.pi/180.
