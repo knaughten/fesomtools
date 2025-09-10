@@ -222,7 +222,7 @@ def fesom_grid (mesh_path, circumpolar=False, cross_180=True, return_nodes=False
     elif tmp == 0:
       cavity.append(False)
     else:
-      print 'Problem'
+      print('Problem')
   file.close()
 
   # Read coast flag
@@ -238,7 +238,7 @@ def fesom_grid (mesh_path, circumpolar=False, cross_180=True, return_nodes=False
     elif coast_tmp == 0:
       coast.append(False)
     else:
-      print 'Problem'
+      print('Problem')
   file.close()
 
   # Read 2D elements (triangles of 3 connecting nodes)

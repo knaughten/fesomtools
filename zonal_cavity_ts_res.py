@@ -30,10 +30,10 @@ def zonal_cavity_ts_res ():
     lat_max = [-72, -66.13, -70, -75.5, -72.3, -74.4, -74.67, -74, -73.5, -75.3, -76.41, -67, -66.5, -64.83, -66.25, -68.5, -68.7, -69.9, -69.33, -69.83, -69.33, -72.9, -77]
     num_shelves = len(shelf_names)
 
-    print 'Building FESOM mesh'
+    print('Building FESOM mesh')
     elm2D_low = fesom_grid(mesh_path_low)
     elm2D_high = fesom_grid(mesh_path_high)
-    print 'Reading temperature and salinity data'
+    print('Reading temperature and salinity data')
     id = Dataset(output_path_low + file_name, 'r')
     temp_nodes_low = id.variables['temp'][0,:]
     salt_nodes_low = id.variables['salt'][0,:]
@@ -45,7 +45,7 @@ def zonal_cavity_ts_res ():
 
     # Loop over ice shelves
     for index in range(num_shelves):
-        print 'Processing ' + shelf_names[index]
+        print('Processing ' + shelf_names[index])
         # Figure out what to write on the title about longitude
         if lon0[index] < 0:
             lon_string = ' ('+str(-lon0[index])+r'$^{\circ}$W)'

@@ -22,7 +22,7 @@ def ross_circulation ():
     num_bins_x = 30
     num_bins_y = 30
 
-    print 'Building mesh'
+    print('Building mesh')
     # Mask open ocean
     elements, mask_patches = make_patches(mesh_path, circumpolar=True, mask_cavities=True)
     # Unmask ice shelves
@@ -40,7 +40,7 @@ def ross_circulation ():
         elif tmp == 0:
             node_cavity.append(False)
         else:
-            print 'Problem'
+            print('Problem')
     f.close()
     # Save the number of 2D nodes
     n2d = len(node_cavity)
@@ -89,7 +89,7 @@ def ross_circulation ():
     num_elm = len(elements)
     num_ice_elm = num_elm - num_cavity_elm
 
-    print 'Calculating vertically averaged velocity'
+    print('Calculating vertically averaged velocity')
     velavg_beg = zeros([num_cavity_elm])
     velavg_end = zeros([num_cavity_elm])
     # Read full 3D fields for both u and v
@@ -163,7 +163,7 @@ def ross_circulation ():
                     var_max = velavg_end[i]
             i += 1
 
-    print 'Making vectors for overlay'
+    print('Making vectors for overlay')
     # Set up bins (edges)
     x_bins = linspace(x_min, x_max, num=num_bins_x+1)
     y_bins = linspace(y_min, y_max, num=num_bins_y+1)
@@ -211,7 +211,7 @@ def ross_circulation ():
     ubin_end[flag] = ubin_end[flag]/num_pts[flag]
     vbin_end[flag] = vbin_end[flag]/num_pts[flag]
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(18,9))
     fig.patch.set_facecolor('white')
     # Set up a grey square to fill the background with land

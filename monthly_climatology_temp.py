@@ -21,7 +21,7 @@ def monthly_climatology_temp (directory, start_year, end_year, out_file):
     ndays = zeros(12)
     # Loop over years
     for year in range(start_year, end_year+1):
-        print '...' + str(year)
+        print('...' + str(year))
         id = Dataset(directory + expt_name + '.' + str(year) + '.oce.mean.nc', 'r')
         # January: indices 1-6 (1-based) and 1/5 of index 7
         monthly_temp[0,:] += sum(id.variables['temp'][0:6,:]*5, axis=0) + id.variables['temp'][6,:]
@@ -51,7 +51,7 @@ def monthly_climatology_temp (directory, start_year, end_year, out_file):
     for month in range(12):
         monthly_temp[month,:] = monthly_temp[month,:]/(ndays_month[month]*num_years)
     # Write to file
-    print 'Writing ' + out_file
+    print('Writing ' + out_file)
     id = Dataset(out_file, 'w')
     id.createDimension('nodes_3d', n3d)
     id.createDimension('T', None)
@@ -67,8 +67,8 @@ def monthly_climatology_temp (directory, start_year, end_year, out_file):
 # Command-line interface
 if __name__ == "__main__":
 
-    directory = raw_input("Path to FESOM output directory: ")
-    start_year = int(raw_input("First year to process: "))
-    end_year = int(raw_input("Last year to process: "))
-    out_file = raw_input("Path to desired output climatology file: ")
+    directory = input("Path to FESOM output directory: ")
+    start_year = int(input("First year to process: "))
+    end_year = int(input("Last year to process: "))
+    out_file = input("Path to desired output climatology file: ")
     monthly_climatology_temp(directory, start_year, end_year, out_file)

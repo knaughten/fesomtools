@@ -77,8 +77,8 @@ def watermass_ohc_9pt (rcp, model, fig_name):
         for sector in range(num_sectors):
             ohc_watermass_percent[wm_key,sector,:] = (ohc_watermass[wm_key,sector,:] - ohc_watermass_beg[wm_key,sector])/ohc_total_beg[sector]*100
 
-    print amin(ohc_watermass_percent)
-    print amax(ohc_watermass_percent)
+    print(amin(ohc_watermass_percent))
+    print(amax(ohc_watermass_percent))
 
     # Set up plot
     fig = figure(figsize=(12,10))
@@ -111,13 +111,13 @@ def watermass_ohc_9pt (rcp, model, fig_name):
 if __name__ == "__main__":
 
     control = False
-    key = int(raw_input('RCP 4.5 (4) or 8.5 (8)? '))
+    key = int(input('RCP 4.5 (4) or 8.5 (8)? '))
     if key == 4:
         rcp = '45'
     elif key == 8:
         rcp = '85'
-    model = raw_input('Multi-model mean (M) or ACCESS 1.0 (A)? ')
-    fig_name = raw_input('Filename for figure: ')
+    model = input('Multi-model mean (M) or ACCESS 1.0 (A)? ')
+    fig_name = input('Filename for figure: ')
     watermass_ohc_9pt(rcp, model, fig_name)
         
     

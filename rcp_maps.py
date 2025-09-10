@@ -84,7 +84,7 @@ def rcp_maps (var):
         abs_cmap = 'PiYG_r'
         abs_extend = 'both'
 
-    print 'Building mesh'
+    print('Building mesh')
     elements, patches = make_patches(mesh_path, circumpolar, mask_cavities)
     num_patches = len(patches)
     if var == 'mld':
@@ -112,7 +112,7 @@ def rcp_maps (var):
         f.close()
         node_depth = array(node_depth)
 
-    print 'Processing 1996-2005'
+    print('Processing 1996-2005')
     id = Dataset(directory_beg + file_beg, 'r')
     if var in ['bwtemp', 'sst']:
         # bwtemp is annually averaged, sst is DJF. Either way, index 0.
@@ -158,7 +158,7 @@ def rcp_maps (var):
     # Now set up arrays for anomalies
     var_nodes_diff = zeros([num_expts, len(var_nodes_beg)])
     for expt in range(num_expts):
-        print 'Processing ' + expt_names[expt]
+        print('Processing ' + expt_names[expt])
         id = Dataset(directories[expt] + file_end, 'r')
         if var in ['bwtemp', 'sst']:
             var_nodes_diff[expt,:] = id.variables['temp'][0,:] - var_nodes_beg
@@ -192,7 +192,7 @@ def rcp_maps (var):
             var_nodes_diff[expt,:] = var_nodes_end[:] - var_nodes_beg
         id.close()
 
-    print 'Calculating element-averages'
+    print('Calculating element-averages')
     var_beg = zeros(num_patches)
     var_diff = zeros([num_expts, num_patches])
     i = 0
@@ -210,7 +210,7 @@ def rcp_maps (var):
             var_diff[:,i] = (var_nodes_diff[:,elm.nodes[0].id] + var_nodes_diff[:,elm.nodes[1].id] + var_nodes_diff[:,elm.nodes[2].id])/3.0
         i += 1
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(24,5))
     gs = GridSpec(1, num_expts+1)
     gs.update(left=0.07, right=0.93, bottom=0.05, top=0.85, wspace=0.02)
@@ -271,7 +271,7 @@ def rcp_maps (var):
 # Command-line interface
 if __name__ == "__main__":
 
-    key = int(raw_input("Bottom water temperature (1), bottom water salinity (2), surface velocity (3), DJF sea surface temperature (4), DJF sea ice concentration (5), JJA mixed layer depth (6), or sea ice growth rate (7)? "))
+    key = int(input("Bottom water temperature (1), bottom water salinity (2), surface velocity (3), DJF sea surface temperature (4), DJF sea ice concentration (5), JJA mixed layer depth (6), or sea ice growth rate (7)? "))
     if key == 1:
         var = 'bwtemp'
     elif key == 2:
@@ -287,7 +287,7 @@ if __name__ == "__main__":
     elif key == 7:
         var = 'thdgr'
     else:
-        print 'Invalid response'
+        print('Invalid response')
         exit
     rcp_maps(var)
 

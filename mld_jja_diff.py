@@ -32,10 +32,10 @@ def mld_jja_diff (mesh_path, file_path_beg, file_path_end, save=False, fig_name=
     lat_max = -30+90
     font_sizes = [30, 24, 20]
 
-    print 'Building grid'
+    print('Building grid')
     elements, patches = make_patches(mesh_path, circumpolar, mask_cavities)
 
-    print 'Reading data'
+    print('Reading data')
     # First 10 years
     # Read temperature and salinity at each node, seasonally averaged over JJA
     tmp = seasonal_avg(file_path_beg, file_path_beg, 'temp')
@@ -48,12 +48,12 @@ def mld_jja_diff (mesh_path, file_path_beg, file_path_end, save=False, fig_name=
     tmp = seasonal_avg(file_path_beg, file_path_end, 'salt')
     salt_end = tmp[2,:]
     # Calculate potential density (depth 0)
-    print 'Calculating density'
+    print('Calculating density')
     density_beg = unesco(temp_beg, salt_beg, zeros(shape(temp_beg)))
     density_end = unesco(temp_end, salt_end, zeros(shape(temp_end)))
 
     # Calculate mixed layer depth at each element
-    print 'Calculating mixed layer depth'
+    print('Calculating mixed layer depth')
     # First 10 years
     mld_beg = []
     for elm in elements:
@@ -123,7 +123,7 @@ def mld_jja_diff (mesh_path, file_path_beg, file_path_end, save=False, fig_name=
     else:
         bound = amax(array(mld_change))
 
-    print 'Plotting'
+    print('Plotting')
     # Set up plot
     fig = figure(figsize=(16,12))
     ax = fig.add_subplot(1,1,1, aspect='equal')
@@ -160,18 +160,18 @@ def mld_jja_diff (mesh_path, file_path_beg, file_path_end, save=False, fig_name=
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    file_path_beg = raw_input("Path to FESOM oce.mean.nc file with climatology for first 10 years of RCP: ")
-    file_path_end = raw_input("Path to FESOM oce.mean.nc file with climatology for last 10 years of RCP: ")
-    get_bound = raw_input("Set upper bound on colour scale (y/n)? ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    file_path_beg = input("Path to FESOM oce.mean.nc file with climatology for first 10 years of RCP: ")
+    file_path_end = input("Path to FESOM oce.mean.nc file with climatology for last 10 years of RCP: ")
+    get_bound = input("Set upper bound on colour scale (y/n)? ")
     if get_bound == 'y':
-        limit = float(raw_input("Enter upper bound (positive, in metres): "))
+        limit = float(input("Enter upper bound (positive, in metres): "))
     elif get_bound == 'n':
         limit = None
-    action = raw_input("Save figure (s) or display in window (d)? ")
+    action = input("Save figure (s) or display in window (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input("File name for figure: ")
+        fig_name = input("File name for figure: ")
     elif action == 'd':
         save = False
         fig_name = None

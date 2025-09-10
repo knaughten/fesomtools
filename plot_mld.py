@@ -42,17 +42,17 @@ def plot_mld (elements, patches, file_path, tstep, circumpolar, save=False, fig_
     font_sizes = [30, 24, 20]
 
     # Read temperature and salinity at each node
-    print 'Reading data'
+    print('Reading data')
     id = Dataset(file_path, 'r')
     temp = id.variables['temp'][tstep-1,:]
     salt = id.variables['salt'][tstep-1,:]
     id.close()
     # Calculate potential density (depth 0)
-    print 'Calculating density'
+    print('Calculating density')
     density = unesco(temp, salt, zeros(shape(temp)))
 
     # Build an array of mixed layer depth corresponding to each 2D Element
-    print 'Calculating mixed layer depth'
+    print('Calculating mixed layer depth')
     values = []
     for elm in elements:
         if (mask_cavities and not elm.cavity) or (not mask_cavities):
@@ -91,7 +91,7 @@ def plot_mld (elements, patches, file_path, tstep, circumpolar, save=False, fig_
     else:
         var_max = amax(array(values))
 
-    print 'Plotting'
+    print('Plotting')
     # Set up plot
     if circumpolar:
         fig = figure(figsize=(16,12))
@@ -144,65 +144,65 @@ if __name__ == "__main__":
 
     mask_cavities=True
 
-    mesh_path = raw_input("Path to mesh directory: ")
-    file_path = raw_input("Path to FESOM output oce.mean.nc file: ")
-    tstep = int(raw_input("Time index to plot (starting at 1): "))
-    domain = raw_input("Global (g) or circumpolar (c)? ")
+    mesh_path = input("Path to mesh directory: ")
+    file_path = input("Path to FESOM output oce.mean.nc file: ")
+    tstep = int(input("Time index to plot (starting at 1): "))
+    domain = input("Global (g) or circumpolar (c)? ")
     if domain == 'c':
         circumpolar = True
     elif domain == 'g':
         circumpolar = False
-    get_bound = raw_input("Set upper bound on colour scale (y/n)? ")
+    get_bound = input("Set upper bound on colour scale (y/n)? ")
     if get_bound == 'y':
-        limit = float(raw_input("Enter upper bound (positive, in metres): "))
+        limit = float(input("Enter upper bound (positive, in metres): "))
     elif get_bound == 'n':
         limit = None
-    action = raw_input("Save figure (s) or display in window (d)? ")
+    action = input("Save figure (s) or display in window (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input("File name for figure: ")
+        fig_name = input("File name for figure: ")
     elif action == 'd':
         save = False
         fig_name = None
-    print "Building grid"
+    print("Building grid")
     elements, patches = make_patches(mesh_path, circumpolar, mask_cavities)
     plot_mld(elements, patches, file_path, tstep, circumpolar, save, fig_name, limit)
 
     # Repeat until user wants to exit
     while True:
-        repeat = raw_input("Make another plot (y/n)? ")
+        repeat = input("Make another plot (y/n)? ")
         if repeat == 'y':
             new_grid = False
             while True:
-                changes = raw_input("Enter another parameter to change: (1) mesh path, (2) file path, (3) time index, (4) global/circumpolar, (5) colour bound, (6) save/display; or enter to continue: ")
+                changes = input("Enter another parameter to change: (1) mesh path, (2) file path, (3) time index, (4) global/circumpolar, (5) colour bound, (6) save/display; or enter to continue: ")
                 if len(changes) == 0:
                     # No more changes to parameters
                     break
                 else:
                     if int(changes) == 1:
                         new_grid = True
-                        mesh_path = raw_input("Path to mesh directory: ")
+                        mesh_path = input("Path to mesh directory: ")
                         # New mesh implies new data file
-                        file_path = raw_input("Path to FESOM output oce.mean.nc file: ")
+                        file_path = input("Path to FESOM output oce.mean.nc file: ")
                     elif int(changes) == 2:
-                        file_path = raw_input("Path to FESOM output oce.mean.nc file: ")
+                        file_path = input("Path to FESOM output oce.mean.nc file: ")
                     elif int(changes) == 3:
-                        tstep = int(raw_input("Time index to plot (starting at 1): "))
+                        tstep = int(input("Time index to plot (starting at 1): "))
                     elif int(changes) == 4:
                         new_grid = True
                         circumpolar = not circumpolar
                     elif int(changes) == 5:
-                        get_bound = raw_input("Set upper bound on colour scale (y/n)? ")
+                        get_bound = input("Set upper bound on colour scale (y/n)? ")
                         if get_bound == 'y':
-                            limit = float(raw_input("Enter upper bound (positive, in metres): "))
+                            limit = float(input("Enter upper bound (positive, in metres): "))
                         else:
                             limit = None
                     elif int(changes) == 6:
                         save = not save
             if save:
-                fig_name = raw_input("File name for figure: ")
+                fig_name = input("File name for figure: ")
             if new_grid:
-                print "Building grid"
+                print("Building grid")
                 elements, patches = make_patches(mesh_path, circumpolar, mask_cavities)
             plot_mld (elements, patches, file_path, tstep, circumpolar, save, fig_name, limit)
         else:

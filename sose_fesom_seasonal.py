@@ -41,7 +41,7 @@ def sose_fesom_seasonal (elements, file_path1, file_path2, var_name, lon0, depth
         var_max = 34.8
         var_ticks = 0.2
     else:
-        print 'Unknown variable ' + var_name
+        print('Unknown variable ' + var_name)
         return
 
     # Choose what to write on the title about the variable
@@ -55,7 +55,7 @@ def sose_fesom_seasonal (elements, file_path1, file_path2, var_name, lon0, depth
     else:
         lon_string = ' at ' + str(int(round(lon0))) + r'$^{\circ}$E'
 
-    print 'Processing SOSE data'
+    print('Processing SOSE data')
     # Read grid and 3D data (already seasonally averaged)
     id = Dataset(sose_file, 'r')
     lon_sose = id.variables['longitude'][0,:]
@@ -67,7 +67,7 @@ def sose_fesom_seasonal (elements, file_path1, file_path2, var_name, lon0, depth
     var_sose = ma.empty([4, size(z_sose), size(lat_sose,0)])
     var_sose[:,:,:] = 0.0
     for season in range(4):
-        print 'Calculating zonal slices for ' + season_names[season]
+        print('Calculating zonal slices for ' + season_names[season])
         var_sose[season,:,:] = interp_lon_sose(var_3d_sose[season,:,:,:], lon_sose, lon0)
 
     # Get seasonal averages of the FESOM output
@@ -83,7 +83,7 @@ def sose_fesom_seasonal (elements, file_path1, file_path2, var_name, lon0, depth
     fig = figure(figsize=(20,9))
     for season in range(4):
         # FESOM
-        print 'Calculating zonal slices for ' + season_names[season]
+        print('Calculating zonal slices for ' + season_names[season])
         patches, values, tmp = side_patches(elements, lat_max, lon0, fesom_data[season,:])
         ax = fig.add_subplot(2, 4, season+1)
         img = PatchCollection(patches, cmap=jet)
@@ -163,20 +163,20 @@ def interp_lon_sose (data_3d, lon, lon0):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    file_path1 = raw_input("Path to output oce.mean.nc containing one year of 5-day averages (December will be used): ")
-    file_path2 = raw_input("Path to the following oce.mean.nc containing 5-day averages for the next year (January through November will be used): ")
-    var_key = raw_input("Temperature (t) or salinity (s)? ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    file_path1 = input("Path to output oce.mean.nc containing one year of 5-day averages (December will be used): ")
+    file_path2 = input("Path to the following oce.mean.nc containing 5-day averages for the next year (January through November will be used): ")
+    var_key = input("Temperature (t) or salinity (s)? ")
     if var_key == 't':
         var_name = 'temp'
     elif var_key == 's':
         var_name = 'salt'
-    lon0 = float(raw_input("Enter longitude (-180 to 180): "))
-    depth_min = -1*float(raw_input("Deepest depth to plot (positive, metres): "))
-    action = raw_input("Save figure (s) or display on screen (d)? ")
+    lon0 = float(input("Enter longitude (-180 to 180): "))
+    depth_min = -1*float(input("Deepest depth to plot (positive, metres): "))
+    action = input("Save figure (s) or display on screen (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input("File name for figure: ")
+        fig_name = input("File name for figure: ")
     elif action == 'd':
         save = False
         fig_name = None
@@ -187,19 +187,19 @@ if __name__ == "__main__":
 
     # Repeat until the user wants to exit
     while True:
-        repeat = raw_input("Make another plot (y/n)? ")
+        repeat = input("Make another plot (y/n)? ")
         if repeat == 'y':
             while True:
                 # Ask for changes to the input parameters; repeat until the user is finished
-                changes = raw_input("Enter a parameter to change: (1) file paths, (2) temperature/salinity, (3) longitude, (4) deepest depth, (5) save/display; or enter to continue: ")
+                changes = input("Enter a parameter to change: (1) file paths, (2) temperature/salinity, (3) longitude, (4) deepest depth, (5) save/display; or enter to continue: ")
                 if len(changes) == 0:
                     # No more changes to parameters
                     break
                 else:
                     if int(changes) == 1:
                         # New file paths
-                        file_path1 = raw_input("Path to one year of 5-day averages for sea ice variables (December will be used): ")
-                        file_path2 = raw_input("Path to the following year of 5-day averages for sea ice variables (January through November will be used): ")
+                        file_path1 = input("Path to one year of 5-day averages for sea ice variables (December will be used): ")
+                        file_path2 = input("Path to the following year of 5-day averages for sea ice variables (January through November will be used): ")
                     elif int(changes) == 2:
                         # Switch from temperature to salinity or vice versa
                         if var_name == 'temp':
@@ -208,16 +208,16 @@ if __name__ == "__main__":
                             var_name = 'temp'
                     elif int(changes) == 3:
                         # New longitude
-                        lon0 = float(raw_input("Enter longitude (-180 to 180): "))
+                        lon0 = float(input("Enter longitude (-180 to 180): "))
                     elif int(changes) == 4:
                         # New depth bound
-                        depth_min = -1*float(raw_input("Deepest depth to plot (positive, metres): "))
+                        depth_min = -1*float(input("Deepest depth to plot (positive, metres): "))
                     elif int(changes) == 5:
                         # Change from save to display, or vice versa
                         save = not save
             if save:
                 # Get file name for figure
-                fig_name = raw_input("File name for figure: ")
+                fig_name = input("File name for figure: ")
             # Make the plot
             sose_fesom_seasonal (elements, file_path1, file_path2, var_name, lon0, depth_min, save, fig_name)
         else:

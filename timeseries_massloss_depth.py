@@ -35,7 +35,7 @@ def timeseries_massloss_depth (mesh_path, diag_file, log_file, fig_dir=''):
     tmp_massloss = []
     # Check if the log file exists
     if exists(log_file):
-        print 'Reading previously calculated values'
+        print('Reading previously calculated values')
         f = open(log_file, 'r')
         # Skip the first line (header)
         f.readline()
@@ -65,10 +65,10 @@ def timeseries_massloss_depth (mesh_path, diag_file, log_file, fig_dir=''):
     else:
         start_t = 0
 
-    print 'Building grid'
+    print('Building grid')
     elements = fesom_grid(mesh_path, circumpolar, cross_180)
 
-    print 'Reading data'
+    print('Reading data')
     id = Dataset(diag_file, 'r')
     num_time = id.variables['time'].shape[0]
     # Set up array of mass loss values
@@ -80,7 +80,7 @@ def timeseries_massloss_depth (mesh_path, diag_file, log_file, fig_dir=''):
     ismr = id.variables['wnet'][:,:]*365.25*24*60*60
     id.close()
 
-    print 'Setting up arrays'
+    print('Setting up arrays')
     # Melt rate timeseries at each element
     ismr_elm = zeros([num_time, len(elements)])
     # Area of each element
@@ -106,7 +106,7 @@ def timeseries_massloss_depth (mesh_path, diag_file, log_file, fig_dir=''):
                     found = True
                     class_flag[n,i] = 1
             if not found:
-                print "Couldn't find a depth class for ice shelf draft " + str(draft)
+                print("Couldn't find a depth class for ice shelf draft " + str(draft))
                 return
 
     # Calculate conversion factors from mass loss to area-averaged melt rate
@@ -115,7 +115,7 @@ def timeseries_massloss_depth (mesh_path, diag_file, log_file, fig_dir=''):
     for n in range(num_classes):
         # Calculate total ice shelf area in this class
         tmp_area = sum(area_elm*class_flag[n,:])
-        print 'Area of ice shelf draft between '+str(draft_min[n])+' and '+str(draft_max[n])+'m: '+str(tmp_area)+' m^2'
+        print('Area of ice shelf draft between '+str(draft_min[n])+' and '+str(draft_max[n])+'m: '+str(tmp_area)+' m^2')
         factors[n] = 1e12/(rho_ice*tmp_area)
 
     # Build timeseries
@@ -130,7 +130,7 @@ def timeseries_massloss_depth (mesh_path, diag_file, log_file, fig_dir=''):
     # Calculate time values
     time = arange(size(massloss,1))*days_per_output/365. + start_year
 
-    print "Plotting"
+    print("Plotting")
 
     # Start with mass loss
     fig, ax = subplots(figsize=(10,6))
@@ -166,7 +166,7 @@ def timeseries_massloss_depth (mesh_path, diag_file, log_file, fig_dir=''):
     ax.legend(loc='center left', bbox_to_anchor=(1,0.5))
     fig.savefig(fig_dir + 'ismr_depth.png')
 
-    print 'Saving results to log file'
+    print('Saving results to log file')
     f = open(log_file, 'w')
     f.write('Basal Mass Loss for ice shelf drafts <' + str(draft_max[0]) + ' m:\n')
     for t in range(size(time)):
@@ -184,9 +184,9 @@ def timeseries_massloss_depth (mesh_path, diag_file, log_file, fig_dir=''):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    diag_file = raw_input("Path to FESOM forcing.diag.nc output file: ")
-    log_file = raw_input("Path to logfile to save values and/or read previously calculated values: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    diag_file = input("Path to FESOM forcing.diag.nc output file: ")
+    log_file = input("Path to logfile to save values and/or read previously calculated values: ")
 
     timeseries_massloss_depth(mesh_path, diag_file, log_file)
         

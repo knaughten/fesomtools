@@ -127,13 +127,13 @@ def ts_distribution (mesh_path, file_path, tstep, save=False, fig_name=None):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    file_path = raw_input("Path to FESOM oce.mean.nc file: ")
-    tstep = int(raw_input("Time index to plot (starting at 1): "))
-    action = raw_input("Save figure (s) or display in window (d)? ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    file_path = input("Path to FESOM oce.mean.nc file: ")
+    tstep = int(input("Time index to plot (starting at 1): "))
+    action = input("Save figure (s) or display in window (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input("File name for figure: ")
+        fig_name = input("File name for figure: ")
     elif action == 'd':
         save = False
         fig_name = None

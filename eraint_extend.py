@@ -43,12 +43,12 @@ def eraint_extend ():
     # Loop over 6-hourly variables
     for i in range(len(var_names_6h)):
         var = var_names_6h[i]
-        print 'Processing variable ' + var
+        print('Processing variable ' + var)
         # Loop over time of day
         for j in range(4):
             # Construct output filename
             file_name = output_dir + file_heads_6h[i] + file_tails_6h[j]
-            print 'Setting up ' + file_name
+            print('Setting up ' + file_name)
             o_id = Dataset(file_name, 'w')
             o_id.createDimension('longitude', size(lon))
             o_id.createDimension('latitude', size(lat))
@@ -67,7 +67,7 @@ def eraint_extend ():
             t_posn = 0  # Day of simulation
             # Loop over years
             for year in range(year_start, year_end+1):
-                print 'Year ' + str(year)
+                print('Year ' + str(year))
                 # Open input file for this year
                 infile_name = input_dir + infile_head_6h + str(year) + infile_tail
                 id = Dataset(infile_name, 'r')
@@ -88,12 +88,12 @@ def eraint_extend ():
     # Loop over 12-hourly variables
     for i in range(len(var_names_12h)):
         var = var_names_12h[i]
-        print 'Processing variable ' + var
+        print('Processing variable ' + var)
         # Loop over time of day
         for j in range(2):
             # Construct output filename
             file_name = output_dir + file_heads_12h[i] + file_tails_12h[j]
-            print 'Setting up ' + file_name
+            print('Setting up ' + file_name)
             o_id = Dataset(file_name, 'w')
             o_id.createDimension('longitude', size(lon))
             o_id.createDimension('latitude', size(lat))
@@ -112,7 +112,7 @@ def eraint_extend ():
             t_posn = 0  # Day of simulation
             # Loop over years
             for year in range(year_start, year_end+1):
-                print 'Year ' + str(year)
+                print('Year ' + str(year))
                 # Open input file for this year
                 # First figure out which file it's in
                 if var in ['tp', 'sf']:

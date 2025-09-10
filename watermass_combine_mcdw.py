@@ -68,7 +68,7 @@ def watermass_combine_mcdw (log_file):
 # Command-line interface
 if __name__ == "__main__":
 
-    log_file = raw_input("Path to logfile from timeseries_watermass_sectors.py: ")
+    log_file = input("Path to logfile from timeseries_watermass_sectors.py: ")
     watermass_combine_mcdw(log_file)
                 
         

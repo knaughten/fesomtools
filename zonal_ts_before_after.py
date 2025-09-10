@@ -27,9 +27,9 @@ def zonal_ts_before_after (lon0, lat_min, lat_max, rcp, model, save=False, fig_n
     else:
         season_string = ''
 
-    print 'Building FESOM mesh'
+    print('Building FESOM mesh')
     elm2D = fesom_grid(mesh_path)
-    print 'Reading temperature and salinity data'
+    print('Reading temperature and salinity data')
     if season is not None:
         t = season
     else:
@@ -42,7 +42,7 @@ def zonal_ts_before_after (lon0, lat_min, lat_max, rcp, model, save=False, fig_n
     temp_nodes_end = id.variables['temp'][t,:]
     salt_nodes_end = id.variables['salt'][t,:]
 
-    print 'Interpolating to ' + str(lon0)
+    print('Interpolating to ' + str(lon0))
     # Build arrays of SideElements making up zonal slices
     # Start with beginning
     selements_temp_beg = fesom_sidegrid(elm2D, temp_nodes_beg, lon0, lat_max)
@@ -88,7 +88,7 @@ def zonal_ts_before_after (lon0, lat_min, lat_max, rcp, model, save=False, fig_n
     # Round down to nearest 50 metres
     depth_min = floor(depth_min/50)*50
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(16,10))    
     # Temperature
     gs_temp = GridSpec(1,2)
@@ -164,28 +164,28 @@ def zonal_ts_before_after (lon0, lat_min, lat_max, rcp, model, save=False, fig_n
 # Command-line interface
 if __name__ == "__main__":
 
-    lon0 = float(raw_input('Longitude to plot (-180 to 180): '))
-    lat_min = float(raw_input('Minimum latitude to plot (-90 to 90): '))
-    lat_max = float(raw_input('Maximum latitude to plot (-90 to 90): '))
-    key = int(raw_input('RCP 4.5 (4) or 8.5 (8)? '))
+    lon0 = float(input('Longitude to plot (-180 to 180): '))
+    lat_min = float(input('Minimum latitude to plot (-90 to 90): '))
+    lat_max = float(input('Maximum latitude to plot (-90 to 90): '))
+    key = int(input('RCP 4.5 (4) or 8.5 (8)? '))
     if key == 4:
         rcp = '45'
     elif key == 8:
         rcp = '85'
-    key = int(raw_input('Multi-model mean (1) or ACCESS 1.0 (2)? '))
+    key = int(input('Multi-model mean (1) or ACCESS 1.0 (2)? '))
     if key == 1:
         model = 'M'
     elif key == 2:
         model = 'A'
-    action = raw_input("Annual averages (a) or specific season (s)? ")
+    action = input("Annual averages (a) or specific season (s)? ")
     if action == 'a':
         season = None
     elif action == 's':
-        season = int(raw_input("DJF (1), MAM (2), JJA (3), or SON (4)? "))-1
-    action = raw_input("Save figure (s) or display on screen (d)? ")
+        season = int(input("DJF (1), MAM (2), JJA (3), or SON (4)? "))-1
+    action = input("Save figure (s) or display on screen (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input('Filename for figure: ')
+        fig_name = input('Filename for figure: ')
     elif action == 'd':
         save = False
         fig_name = None

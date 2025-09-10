@@ -83,7 +83,7 @@ def moc_lat_density (mesh_path, file_path, save=False, fig_name=None):
     moc = zeros([size(density_reg), size(lat_reg)])
     # Loop over latitude
     for j in range(size(lat_reg)):
-        print 'Processing latitude ' + str(j+1) + ' of ' + str(size(lat_reg))
+        print('Processing latitude ' + str(j+1) + ' of ' + str(size(lat_reg)))
         # Make a flag which is 1 for interfaces south of the current latitude,
         # 0 otherwise
         flag_lat = zeros(shape(lat_all))
@@ -124,12 +124,12 @@ def moc_lat_density (mesh_path, file_path, save=False, fig_name=None):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    file_path = raw_input("Path to FESOM oce.mean.nc file containing one year of data: ")
-    action = raw_input("Save figure (s) or display on screen (d)? ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    file_path = input("Path to FESOM oce.mean.nc file containing one year of data: ")
+    action = input("Save figure (s) or display on screen (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input("Filename for figure: ")
+        fig_name = input("Filename for figure: ")
     elif action == 'd':
         save = False
         fig_name = None

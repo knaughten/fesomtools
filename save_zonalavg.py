@@ -14,15 +14,15 @@ def save_zonalavg (mesh_path, in_file, tstep, out_file):
     num_lat = 100
     num_depth = 50
 
-    print 'Processing temperature'
+    print('Processing temperature')
     lat_vals, depth_vals, temp = fesom_intersectgrid(mesh_path, in_file, 'temp', tstep, -180, 180, lat_min, lat_max, depth_min, depth_max, num_lat, num_depth)
     # Mask the NaNs
     temp = ma.masked_where(isnan(temp), temp)
-    print 'Processing salinity'
+    print('Processing salinity')
     lat_vals, depth_vals, salt = fesom_intersectgrid(mesh_path, in_file, 'salt', tstep, -180, 180, lat_min, lat_max, depth_min, depth_max, num_lat, num_depth)
     salt = ma.masked_where(isnan(salt), salt)
 
-    print 'Writing ' + out_file
+    print('Writing ' + out_file)
     id = Dataset(out_file, 'w')
     id.createDimension('latitude', num_lat)
     id.createDimension('depth', num_depth)
@@ -44,10 +44,10 @@ def save_zonalavg (mesh_path, in_file, tstep, out_file):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    in_file = raw_input("Path to oce.mean file to zonally average: ")
-    tstep = int(raw_input("Time index to zonally average (starting at 1): "))
-    out_file = raw_input("Path to desired output file: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    in_file = input("Path to oce.mean file to zonally average: ")
+    tstep = int(input("Time index to zonally average (starting at 1): "))
+    out_file = input("Path to desired output file: ")
     save_zonalavg (mesh_path, in_file, tstep, out_file)
     
 

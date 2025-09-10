@@ -18,10 +18,10 @@ def massloss_percent_winds ():
     # Number of sectors
     num_sectors = len(sector_names)
 
-    print 'Building mesh'
+    print('Building mesh')
     elements = fesom_grid(mesh_path, circumpolar=True, cross_180=False)
 
-    print 'Reading data'
+    print('Reading data')
     id = Dataset(directory_winds + file_name, 'r')
     ismr_nodes_winds = id.variables['wnet'][0,:]*sec_per_year
     id.close()
@@ -38,7 +38,7 @@ def massloss_percent_winds ():
     ismr_elm_winds = array(ismr_elm_winds)
     ismr_elm_nowinds = array(ismr_elm_nowinds)
 
-    print 'Integrating mass loss'
+    print('Integrating mass loss')
     total_massloss_winds = zeros(num_sectors)
     total_massloss_nowinds = zeros(num_sectors)
     # Loop over elements
@@ -74,7 +74,7 @@ def massloss_percent_winds ():
                 # Larsen Ice Shelves
                 index = 7
             else:
-                print 'No region found for lon=',str(lon),', lat=',str(lat)
+                print('No region found for lon=',str(lon),', lat=',str(lat))
                 break #return
             # Integrate total mass loss in this sector
             total_massloss_winds[index] += ismr_elm_winds[i]*elm.area()*rho_ice*1e-12
@@ -86,12 +86,12 @@ def massloss_percent_winds ():
         massloss_winds = total_massloss_winds[index]
         massloss_nowinds = total_massloss_nowinds[index]
         percent_change = (massloss_nowinds - massloss_winds)/massloss_winds*1e2
-        print sector_names[index] + ': ' + str(percent_change) + '%'
+        print(sector_names[index] + ': ' + str(percent_change) + '%')
     # Total Antarctica
     massloss_winds = sum(total_massloss_winds)
     massloss_nowinds = sum(total_massloss_nowinds)
     percent_change = (massloss_nowinds - massloss_winds)/massloss_winds*1e2
-    print 'Total Antarctica: ' + str(percent_change) + '%'
+    print('Total Antarctica: ' + str(percent_change) + '%')
 
 
 # Command-line interface

@@ -129,13 +129,13 @@ def watermass_temp_9pt (rcp, model, fig_name):
 if __name__ == "__main__":
 
     control = False
-    key = int(raw_input('RCP 4.5 (4) or 8.5 (8)? '))
+    key = int(input('RCP 4.5 (4) or 8.5 (8)? '))
     if key == 4:
         rcp = '45'
     elif key == 8:
         rcp = '85'
-    model = raw_input('Multi-model mean (M) or ACCESS 1.0 (A)? ')
-    fig_name = raw_input('Filename for figure: ')
+    model = input('Multi-model mean (M) or ACCESS 1.0 (A)? ')
+    fig_name = input('Filename for figure: ')
     watermass_temp_9pt(rcp, model, fig_name)
         
     

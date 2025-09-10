@@ -27,10 +27,10 @@ def average_years (directory, file_type, start_year, end_year, out_file):
         # For oce.mean, some variables are 2D and some are 3D
         is_3d = [False, True, True, True, True, True, True]
     else:
-        print 'Invalid file type'
+        print('Invalid file type')
         return
 
-    print 'Setting up file and processing year ' + str(start_year)
+    print('Setting up file and processing year ' + str(start_year))
     # Look at the first variable in the first file to figure out sizes of each
     # dimension
     id_in = Dataset(directory + expt_name + '.' + str(start_year) + '.' + file_type + '.nc', 'r')
@@ -98,7 +98,7 @@ def average_years (directory, file_type, start_year, end_year, out_file):
 
     # Loop over the other years
     for year in range(start_year+1, end_year+1):
-        print 'Processing year ' + str(year)
+        print('Processing year ' + str(year))
         id_in = Dataset(directory + expt_name + '.' + str(year) + '.' + file_type + '.nc', 'r')
         for var_name in vars:
             # Accumulate the data in the output file
@@ -115,9 +115,9 @@ def average_years (directory, file_type, start_year, end_year, out_file):
 # Command-line interface
 if __name__ == "__main__":
 
-    directory = raw_input("Path to model output directory: ")
-    file_type = raw_input("File type (forcing.diag, ice.diag, ice.mean, or oce.mean): ")
-    start_year = int(raw_input("Starting year for averages: "))
-    end_year = int(raw_input("Ending year for averages: "))
-    out_file = raw_input("Path to desired output file: ")
+    directory = input("Path to model output directory: ")
+    file_type = input("File type (forcing.diag, ice.diag, ice.mean, or oce.mean): ")
+    start_year = int(input("Starting year for averages: "))
+    end_year = int(input("Ending year for averages: "))
+    out_file = input("Path to desired output file: ")
     average_years(directory, file_type, start_year, end_year, out_file)

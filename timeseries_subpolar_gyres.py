@@ -32,7 +32,7 @@ def timeseries_subpolar_gyres (mesh_path, output_path, start_year, end_year, log
 
     # Check if the log file exists
     if exists(log_file):
-        print 'Reading previously calculated values'
+        print('Reading previously calculated values')
         f = open(log_file, 'r')
         f.readline()
         ws_trans_tmp = []
@@ -59,7 +59,7 @@ def timeseries_subpolar_gyres (mesh_path, output_path, start_year, end_year, log
         ws_trans = empty(num_years)
         rs_trans = empty(num_years)
 
-    print 'Building mesh'
+    print('Building mesh')
     elements = fesom_grid(mesh_path, circumpolar=True, cross_180=True)
     # Read number of nodes, 2D and 3D
     f = open(mesh_path + 'nod2d.out', 'r')
@@ -139,10 +139,10 @@ def timeseries_subpolar_gyres (mesh_path, output_path, start_year, end_year, log
     rs_dy1 = r*rs_dlat1_2d*deg2rad
     rs_dy2 = r*rs_dlat2_2d*deg2rad
 
-    print 'Reading data'
+    print('Reading data')
     u = empty([num_years, n3d])
     for year in range(start_year, end_year+1):
-        print '...' + str(year)
+        print('...' + str(year))
         # Read horizontal velocity components for this year, annually average
         id = Dataset(file_head + str(year) + file_tail, 'r')
         ur = mean(id.variables['u'][:,:], axis=0)
@@ -153,7 +153,7 @@ def timeseries_subpolar_gyres (mesh_path, output_path, start_year, end_year, log
         # Save in array
         u[year-start_year,:] = u_tmp
 
-    print 'Vertically integrating u*dz'
+    print('Vertically integrating u*dz')
     int_udz = zeros([num_years, n2d])
     # Loop over nodes
     for n in range(n2d):
@@ -170,7 +170,7 @@ def timeseries_subpolar_gyres (mesh_path, output_path, start_year, end_year, log
             for year in range(num_years):
                 int_udz[year,n] += 0.5*(u[year,top_id-1] + u[year,bot_id-1])*dz
 
-    print 'Interpolating to regular grid'
+    print('Interpolating to regular grid')
     int_udz_reg_ws = zeros([num_years, size(ws_dy,0), size(ws_dy,1)])
     int_udz_reg_rs1 = zeros([num_years, size(rs_dy1,0), size(rs_dy1,1)])
     int_udz_reg_rs2 = zeros([num_years, size(rs_dy2,0), size(rs_dy2,1)])
@@ -317,9 +317,9 @@ def timeseries_subpolar_gyres (mesh_path, output_path, start_year, end_year, log
         rs_trans[prev_years+year] = -1*min(amin(strf_rs1[year,:]), amin(strf_rs2[year,:]))
 
     # Make time axis
-    time = range(start_year-prev_years, end_year+1)
+    time = list(range(start_year-prev_years, end_year+1))
 
-    print 'Plotting'
+    print('Plotting')
     # Weddell Sea
     fig = figure()
     plot(time, ws_trans)
@@ -339,7 +339,7 @@ def timeseries_subpolar_gyres (mesh_path, output_path, start_year, end_year, log
     grid(True)
     fig.savefig(fig_dir + 'ross_gyre.png')
 
-    print 'Saving results to log file'
+    print('Saving results to log file')
     f = open(log_file, 'w')
     f.write('Weddell Sea Gyre transport (Sv)\n')
     for t in range(prev_years+num_years):
@@ -353,12 +353,12 @@ def timeseries_subpolar_gyres (mesh_path, output_path, start_year, end_year, log
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    output_path = raw_input("Path to FESOM output directory: ")
-    start_year = int(raw_input("First year to process: "))
-    end_year = int(raw_input("Last year to process: "))
-    log_file = raw_input("Desired path to logfile: ")
-    fig_dir = raw_input("Path to directories to save figures: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    output_path = input("Path to FESOM output directory: ")
+    start_year = int(input("First year to process: "))
+    end_year = int(input("Last year to process: "))
+    log_file = input("Desired path to logfile: ")
+    fig_dir = input("Path to directories to save figures: ")
     timeseries_subpolar_gyres(mesh_path, output_path, start_year, end_year, log_file, fig_dir)
     
             

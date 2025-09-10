@@ -28,7 +28,7 @@ def barotropic_streamfunction_diff ():
     # Degrees to radians coversion factor
     deg2rad = pi/180.0
 
-    print 'Building mesh'
+    print('Building mesh')
     elements = fesom_grid(mesh_path, circumpolar=False, cross_180=True)
     # Read number of 2D nodes
     f = open(mesh_path + 'nod2d.out', 'r')
@@ -82,8 +82,8 @@ def barotropic_streamfunction_diff ():
     dx = r*cos(lat_reg_2d*deg2rad)*dlon_2d*deg2rad
     dy = r*dlat_2d*deg2rad
 
-    print 'Reading data'
-    print '...1996-2005'
+    print('Reading data')
+    print('...1996-2005')
     # Read 3D rotated u and v
     id = Dataset(directory_beg + file_beg, 'r')
     ur = id.variables['u'][0,:]
@@ -107,7 +107,7 @@ def barotropic_streamfunction_diff ():
             int_udz_beg[n] += 0.5*(u[top_id-1] + u[bot_id-1])*dz
     int_udz_end = zeros([num_expts, n2d])
     for expt in range(num_expts):
-        print '...' + expt_names[expt]
+        print('...' + expt_names[expt])
         id = Dataset(directories[expt] + file_end, 'r')
         ur = id.variables['u'][0,:]
         vr = id.variables['v'][0,:]
@@ -122,7 +122,7 @@ def barotropic_streamfunction_diff ():
                 dz = node_depth[bot_id-1] - node_depth[top_id-1]
                 int_udz_end[expt,n] += 0.5*(u[top_id-1] + u[bot_id-1])*dz
 
-    print 'Interpolating to regular grid'
+    print('Interpolating to regular grid')
     int_udz_reg_beg = zeros([num_lat, num_lon])
     int_udz_reg_end = zeros([num_expts, num_lat, num_lon])
     # For each element, check if a point on the regular lat-lon grid lies
@@ -200,8 +200,8 @@ def barotropic_streamfunction_diff ():
         strf_end = ma.masked_where(int_udz_reg_beg==0, strf_end)
         strf_diff[expt,:,:] = strf_end - strf_beg
 
-    print 'Plotting'
-    print '...1996-2005'
+    print('Plotting')
+    print('...1996-2005')
     bound = amax(abs(strf_beg))
     fig = figure(figsize=(10,6))
     ax = fig.add_subplot(1,1,1)
@@ -214,7 +214,7 @@ def barotropic_streamfunction_diff ():
     title('Barotropic streamfunction (Sv), 1996-2005', fontsize=20)
     fig.savefig('strf_beg.png')
     for expt in range(num_expts):
-        print '...' + expt_names[expt]
+        print('...' + expt_names[expt])
         bound = amax(abs(strf_diff[expt,:,:]))
         fig = figure(figsize=(10,6))
         ax = fig.add_subplot(1,1,1)

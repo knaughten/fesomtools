@@ -30,7 +30,7 @@ def sws_plots ():
     # Degrees to radians conversion factor
     deg2rad = pi/180.0
 
-    print 'Building mesh'
+    print('Building mesh')
     elements = fesom_grid(mesh_path, circumpolar)
     # Build one set of plotting patches with all elements, and one with
     # ice shelf cavities masked
@@ -62,7 +62,7 @@ def sws_plots ():
                 # Draw a line between the 2 nodes
                 contour_lines.append([(x_tmp[0], y_tmp[0]), (x_tmp[1], y_tmp[1])])
 
-    print 'Processing bathymetry'
+    print('Processing bathymetry')
     # Calculate bathymetry (depth of bottom node) averaged over 3 nodes making
     # up each element
     bathy = []
@@ -87,7 +87,7 @@ def sws_plots ():
     fig.show()
     fig.savefig('sws_bathy.png')
 
-    print 'Processing bottom water temperature'
+    print('Processing bottom water temperature')
     # Read annually averaged data
     id = Dataset(oce_file_beg, 'r')
     temp_nodes_beg = id.variables['temp'][0,:]
@@ -138,7 +138,7 @@ def sws_plots ():
     fig.show()
     fig.savefig('sws_bwtemp.png')
 
-    print 'Processing bottom water salinity'
+    print('Processing bottom water salinity')
     # Read annually averaged data
     id = Dataset(oce_file_beg, 'r')
     salt_nodes_beg = id.variables['salt'][0,:]
@@ -189,7 +189,7 @@ def sws_plots ():
     fig.show()
     fig.savefig('sws_bwsalt.png')
 
-    print 'Processing sea ice formation'
+    print('Processing sea ice formation')
     # Read seasonally averaged data
     id = Dataset(ice_file_beg, 'r')
     thdgr_nodes_beg = id.variables['thdgr'][:,:]*1e7
@@ -268,7 +268,7 @@ def sws_plots ():
     fig.show()
     fig.savefig('sws_thdgr_diff.png')       
 
-    print 'Processing vertically averaged velocity'
+    print('Processing vertically averaged velocity')
     # Need to read some more of the grid    
     # Read number of 2D nodes
     f  = open(mesh_path + 'nod2d.out', 'r')

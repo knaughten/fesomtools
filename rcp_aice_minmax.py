@@ -28,19 +28,19 @@ def rcp_aice_minmax ():
     y_min = -34.5
     y_max = 38
 
-    print 'Building mesh'
+    print('Building mesh')
     elements, patches = make_patches(mesh_path, circumpolar, mask_cavities)
 
-    print 'Reading data'
+    print('Reading data')
     # Get averages for February and September
-    print '...1996-2005'
+    print('...1996-2005')
     fesom_feb_nodes_beg = monthly_avg(directory_beg + file_beg, 'area', 1)
     fesom_sep_nodes_beg = monthly_avg(directory_beg + file_beg, 'area', 8)
     # Calculate anomalies for the rest of the experiments
     fesom_feb_nodes_diff = empty([num_expts, size(fesom_feb_nodes_beg)])
     fesom_sep_nodes_diff = empty([num_expts, size(fesom_sep_nodes_beg)])
     for expt in range(num_expts):
-        print '...' + expt_names[expt]
+        print('...' + expt_names[expt])
         fesom_feb_nodes_diff[expt,:] = monthly_avg(directories[expt] + file_end, 'area', 1) - fesom_feb_nodes_beg
         fesom_sep_nodes_diff[expt,:] = monthly_avg(directories[expt] + file_end, 'area', 8) - fesom_sep_nodes_beg
     # Find element-averages
@@ -58,7 +58,7 @@ def rcp_aice_minmax ():
                 fesom_sep_diff[expt,i] = mean(array([fesom_sep_nodes_diff[expt,elm.nodes[0].id], fesom_sep_nodes_diff[expt,elm.nodes[1].id], fesom_sep_nodes_diff[expt,elm.nodes[2].id]]))
             i += 1
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(24,8))
     # Feburary
     # 1996-2005

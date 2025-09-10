@@ -29,10 +29,10 @@ def rcp_seaice_formation (rcp, model):
     bound_abs = 20
     bound_anom = 4
 
-    print 'Building mesh'
+    print('Building mesh')
     elements, patches = make_patches(mesh_path, circumpolar, mask_cavities)
 
-    print 'Reading data'
+    print('Reading data')
     # Initial thdgr, convert from m/s to m/y
     id = Dataset(file_beg, 'r')
     thdgr_nodes_beg = id.variables['thdgr'][:,:]*sec_per_year
@@ -42,7 +42,7 @@ def rcp_seaice_formation (rcp, model):
     thdgr_nodes_diff = id.variables['thdgr'][:,:]*sec_per_year - thdgr_nodes_beg
     id.close()
 
-    print 'Calculating element averages'
+    print('Calculating element averages')
     thdgr_beg = zeros([4, len(patches)])
     thdgr_diff = zeros([4, len(patches)])
     i = 0
@@ -58,7 +58,7 @@ def rcp_seaice_formation (rcp, model):
     bounds[50:] = linspace(0, bound_abs**(1.0/2), num=50)**2
     norm = BoundaryNorm(boundaries=bounds, ncolors=256)
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(8,20))
     gs = GridSpec(4,2)
     gs.update(left=0.12, right=0.95, bottom=0.04, top=0.92, wspace=0.025, hspace=0.025)
@@ -107,12 +107,12 @@ def rcp_seaice_formation (rcp, model):
 # Command-line interface
 if __name__ == "__main__":
 
-    key = int(raw_input('RCP 4.5 (4) or 8.5 (8)? '))
+    key = int(input('RCP 4.5 (4) or 8.5 (8)? '))
     if key == 4:
         rcp = '45'
     elif key == 8:
         rcp = '85'
-    key = int(raw_input('Multi-model mean (1) or ACCESS 1.0 (2)? '))
+    key = int(input('Multi-model mean (1) or ACCESS 1.0 (2)? '))
     if key == 1:
         model = 'M'
     elif key == 2:

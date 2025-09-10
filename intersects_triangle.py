@@ -20,7 +20,7 @@ def intersects_triangle (elm, lon0, lat0, lon1, lat1):
     if (f1 > 0 and f2 > 0 and f3 > 0 and f4 > 0 and f5 > 0 and f6 > 0):
         # Segment is completely inside triangle
         # This is a problem
-        print 'You need to choose a larger line segment.'
+        print('You need to choose a larger line segment.')
         exit
     elif (f1 < 0 and f2 < 0) or (f3 < 0 and f4 < 0) or (f5 < 0 and f6 < 0) or (f7 > 0 and f8 > 0):
         return False

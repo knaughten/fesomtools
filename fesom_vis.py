@@ -8,11 +8,11 @@ from zonal_avg_plot import *
 def fesom_vis_lonlat ():
 
     # Get path to mesh directory
-    mesh_path = raw_input("Path to mesh directory: ")    
+    mesh_path = input("Path to mesh directory: ")    
 
     # Get file name and variable name
-    file_path = raw_input("Path to FESOM output file: ")
-    var_name = raw_input("Variable name: ")
+    file_path = input("Path to FESOM output file: ")
+    var_name = input("Variable name: ")
     if var_name == 'wnet' or '.ice.' in file_path:
         # Mask ice shelf cavities for all sea ice variables; mask open ocean for
         # ice shelf melt rate
@@ -21,9 +21,9 @@ def fesom_vis_lonlat ():
         mask_cavities = False
 
     # Get depth information
-    depth_type = raw_input("Single depth (s) or vertical average (v)? ")
+    depth_type = input("Single depth (s) or vertical average (v)? ")
     if depth_type == 's':
-        depth_input = raw_input("Surface nodes (s), bottom nodes (b), or specific depth (d)? ")
+        depth_input = input("Surface nodes (s), bottom nodes (b), or specific depth (d)? ")
         if depth_input == 's':
             depth_key = 0
             depth = NaN
@@ -34,10 +34,10 @@ def fesom_vis_lonlat ():
             depth_bounds = None
         elif depth_input == 'd':
             depth_key = 3
-            depth = float(raw_input("Enter depth (positive, in metres): "))
+            depth = float(input("Enter depth (positive, in metres): "))
             depth_bounds = None
     elif depth_type == 'v':
-        depth_input = raw_input("Vertical average throughout the entire water column (w) or between two specific depths (d)? ")
+        depth_input = input("Vertical average throughout the entire water column (w) or between two specific depths (d)? ")
         if depth_input == 'w':
             depth_key = 2
             depth = NaN
@@ -45,43 +45,43 @@ def fesom_vis_lonlat ():
         elif depth_input == 'd':
             depth_key = 4
             depth = NaN
-            shallow_bound = float(raw_input("Enter shallow depth bound (positive, in metres): "))
-            deep_bound = float(raw_input("Enter deep depth bound (positive, in metres): "))
+            shallow_bound = float(input("Enter shallow depth bound (positive, in metres): "))
+            deep_bound = float(input("Enter deep depth bound (positive, in metres): "))
             depth_bounds = [shallow_bound, deep_bound]
 
     # Get index of time axis in FESOM output file
-    tstep = int(raw_input("Timestep number: "))
+    tstep = int(input("Timestep number: "))
 
     # Current domain options are global or circumpolar Antarctic (to 60S)
-    domain = raw_input("Global (g) or circumpolar (c)? ")
+    domain = input("Global (g) or circumpolar (c)? ")
     if domain == 'c':
         circumpolar = True
     elif domain == 'g':
         circumpolar = False
     else:
-        print "Problem with global/circumpolar choice"
+        print("Problem with global/circumpolar choice")
         exit()
 
     # Get colour bounds if necessary
     set_limits = False
     limits = None
-    get_bounds = raw_input("Set bounds on colour scale (y/n)? ")
+    get_bounds = input("Set bounds on colour scale (y/n)? ")
     if get_bounds == 'y':
         set_limits = True
-        lower_bound = float(raw_input("Lower bound: "))
-        upper_bound = float(raw_input("Upper bound: "))
+        lower_bound = float(input("Lower bound: "))
+        upper_bound = float(input("Upper bound: "))
         limits = [lower_bound, upper_bound]
 
     # Current options are to save figure as a file, or display in window
-    action = raw_input("Save figure (s) or display in window (d)? ")
+    action = input("Save figure (s) or display in window (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input("File name for figure: ")
+        fig_name = input("File name for figure: ")
     elif action == 'd':
         save = False
         fig_name = None
     else:
-        print "Problem with save/display choice"
+        print("Problem with save/display choice")
         exit()
 
     # Build FESOM grid
@@ -92,34 +92,34 @@ def fesom_vis_lonlat ():
 
     # Repeat until the user wants to exit
     while True:
-        repeat = raw_input("Make another plot (y/n)? ")
+        repeat = input("Make another plot (y/n)? ")
         if repeat == 'y':
             new_grid = False
             while True:
                 # Ask for changes to the input parameters; repeat until the user
                 # is finished
-                changes = raw_input("Enter a parameter to change: (1) mesh path, (2) file path, (3) variable name, (4) depth, (5) timestep number, (6) global/circumpolar, (7) colour bounds, (8) save/display; or enter to continue: ")
+                changes = input("Enter a parameter to change: (1) mesh path, (2) file path, (3) variable name, (4) depth, (5) timestep number, (6) global/circumpolar, (7) colour bounds, (8) save/display; or enter to continue: ")
                 if len(changes) == 0:
                     # No more changes to parameters
                     break
                 else:
                     if int(changes) == 1:
                         # New mesh
-                        mesh_path = raw_input("Path to mesh directory: ")
+                        mesh_path = input("Path to mesh directory: ")
                         # We will have to make a new grid
                         new_grid = True
-                        file_path = raw_input("Path to FESOM output file: ")
+                        file_path = input("Path to FESOM output file: ")
                     elif int(changes) == 2:
                         # New FESOM output file
-                        file_path = raw_input("Path to FESOM output file: ")
+                        file_path = input("Path to FESOM output file: ")
                     elif int(changes) == 3:
                         # New variable name
-                        var_name = raw_input("Variable name: ")
+                        var_name = input("Variable name: ")
                     elif int(changes) == 4:
                         # New depth information
-                        depth_type = raw_input("Single depth (s) or vertical average (v)? ")
+                        depth_type = input("Single depth (s) or vertical average (v)? ")
                         if depth_type == 's':
-                            depth_input = raw_input("Surface nodes (s), bottom nodes (b), or specific depth (d)? ")
+                            depth_input = input("Surface nodes (s), bottom nodes (b), or specific depth (d)? ")
                             if depth_input == 's':
                                 depth_key = 0
                                 depth = NaN
@@ -130,10 +130,10 @@ def fesom_vis_lonlat ():
                                 depth_bounds = None
                             elif depth_input == 'd':
                                 depth_key = 3
-                                depth = float(raw_input("Enter depth (positive, in metres): "))
+                                depth = float(input("Enter depth (positive, in metres): "))
                                 depth_bounds = None
                         elif depth_type == 'v':
-                            depth_input = raw_input("Vertical average throughout the entire water column (w) or between two specific depths (d)? ")
+                            depth_input = input("Vertical average throughout the entire water column (w) or between two specific depths (d)? ")
                             if depth_input == 'w':
                                 depth_key = 2
                                 depth = NaN
@@ -141,12 +141,12 @@ def fesom_vis_lonlat ():
                             elif depth_input == 'd':
                                 depth_key = 4
                                 depth = NaN
-                                shallow_bound = float(raw_input("Enter shallow depth bound (positive, in metres): "))
-                                deep_bound = float(raw_input("Enter deep depth bound (positive, in metres): "))
+                                shallow_bound = float(input("Enter shallow depth bound (positive, in metres): "))
+                                deep_bound = float(input("Enter deep depth bound (positive, in metres): "))
                                 depth_bounds = [shallow_bound, deep_bound]
                     elif int(changes) == 5:
                         # New time index
-                        tstep = int(raw_input("Timestep number: "))
+                        tstep = int(input("Timestep number: "))
                     elif int(changes) == 6:
                         # Change from global to circumpolar, or vice versa
                         circumpolar = not circumpolar
@@ -156,17 +156,17 @@ def fesom_vis_lonlat ():
                         # New colour bounds
                         set_limits = False
                         limits = None
-                        get_bounds = raw_input("Set bounds on colour scale (y/n)? ")
+                        get_bounds = input("Set bounds on colour scale (y/n)? ")
                         if get_bounds == 'y':
                             set_limits = True
-                            lower_bound = float(raw_input("Lower bound: "))
-                            upper_bound = float(raw_input("Upper bound: "))
+                            lower_bound = float(input("Lower bound: "))
+                            upper_bound = float(input("Upper bound: "))
                             limits = [lower_bound, upper_bound]
                     elif int(changes) == 8:
                         # Change from display to save, or vice versa
                         save = not save
                     else:
-                        print "Invalid option"
+                        print("Invalid option")
 
                     if var_name == 'wnet' or '.ice.' in file_path:
                         # mask_cavities will be true
@@ -181,7 +181,7 @@ def fesom_vis_lonlat ():
 
             if save:
                 # Get file name for figure
-                fig_name = raw_input("File name for figure: ")
+                fig_name = input("File name for figure: ")
 
             if new_grid:
                 # Build a new grid if necessary
@@ -197,53 +197,53 @@ def fesom_vis_lonlat ():
 def fesom_vis_latdepth ():
 
     # Get path to mesh directory
-    mesh_path = raw_input("Path to mesh directory: ")
+    mesh_path = input("Path to mesh directory: ")
 
     # Get file name and variable name
-    file_path = raw_input("Path to FESOM output file: ")
-    var_name = raw_input("Variable name: ")
+    file_path = input("Path to FESOM output file: ")
+    var_name = input("Variable name: ")
 
     # Get index of time axis in FESOM output file
-    tstep = int(raw_input("Timestep number: "))
+    tstep = int(input("Timestep number: "))
 
-    action = raw_input("Zonal slice (s) or zonal average (a)? ")
+    action = input("Zonal slice (s) or zonal average (a)? ")
     if action == 's':
         avg = False
         # Get longitude for the zonal slice
-        lon0 = float(raw_input("Longitude in degrees (positive east, negative west): "))
+        lon0 = float(input("Longitude in degrees (positive east, negative west): "))
     elif action == 'a':
         avg = True
         # Get longitude bounds for the zonal average
-        lon_min = float(raw_input("Minimum longitude (positive east, negative west): "))
-        lon_max = float(raw_input("Maximum longitude (positive east, negative west): "))
+        lon_min = float(input("Minimum longitude (positive east, negative west): "))
+        lon_max = float(input("Maximum longitude (positive east, negative west): "))
     else:
-        print 'Problem with zonal slice/average choice'
+        print('Problem with zonal slice/average choice')
         exit()
     
 
     # Get cutoff depth and convert to negative
-    depth_min = -1*float(raw_input("Deepest depth to plot (positive, metres): "))
+    depth_min = -1*float(input("Deepest depth to plot (positive, metres): "))
 
     # Get colour bounds if necessary
     set_limits = False
     limits = None
-    get_bounds = raw_input("Set bounds on colour scale (y/n)? ")
+    get_bounds = input("Set bounds on colour scale (y/n)? ")
     if get_bounds == 'y':
         set_limits = True
-        lower_bound = float(raw_input("Lower bound: "))
-        upper_bound = float(raw_input("Upper bound: "))
+        lower_bound = float(input("Lower bound: "))
+        upper_bound = float(input("Upper bound: "))
         limits = [lower_bound, upper_bound]
 
     # Current options are to save figure as a file, or display in window
-    action = raw_input("Save figure (s) or display in window (d)? ")
+    action = input("Save figure (s) or display in window (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input("File name for figure: ")
+        fig_name = input("File name for figure: ")
     elif action == 'd':
         save = False
         fig_name = None
     else:
-        print "Problem with save/display choice"
+        print("Problem with save/display choice")
         exit()
 
     # Make the figure
@@ -254,63 +254,63 @@ def fesom_vis_latdepth ():
 
     # Repeat until the user wants to exit
     while True:
-        repeat = raw_input("Make another plot (y/n)? ")
+        repeat = input("Make another plot (y/n)? ")
         if repeat == 'y':
             while True:
                 # Ask to changes to the input parameters; repeat until the user
                 # is finished
-                changes = raw_input("Enter a parameter to change: (1) mesh path, (2) file path, (3) variable name, (4) timestep, (5) longitude, (6) cutoff depth, (7) colour bounds, (8) save/display; or enter to continue: ")
+                changes = input("Enter a parameter to change: (1) mesh path, (2) file path, (3) variable name, (4) timestep, (5) longitude, (6) cutoff depth, (7) colour bounds, (8) save/display; or enter to continue: ")
                 if len(changes) == 0:
                     # No more changes to parameters
                     break
                 else:
                     if int(changes) == 1:
                         # New mesh
-                        mesh_path = raw_input("Path to mesh directory: ")
+                        mesh_path = input("Path to mesh directory: ")
                     elif int(changes) == 2:
                         # New FESOM output file
-                        file_path = raw_input("Path to FESOM output file: ")
+                        file_path = input("Path to FESOM output file: ")
                     elif int(changes) == 3:
                         # New variable name
-                        var_name = raw_input("Variable name: ")
+                        var_name = input("Variable name: ")
                     elif int(changes) == 4:
                         # New time index 
-                        tstep = int(raw_input("Timestep number: "))
+                        tstep = int(input("Timestep number: "))
                     elif int(changes) == 5:
-                        action = raw_input("Zonal slice (s) or zonal average (a)? ")
+                        action = input("Zonal slice (s) or zonal average (a)? ")
                         if action == 's':
                             avg = False
                             # Get longitude for the zonal slice
-                            lon0 = float(raw_input("Longitude in degrees (positive east, negative west): "))
+                            lon0 = float(input("Longitude in degrees (positive east, negative west): "))
                         elif action == 'a':
                             avg = True
                             # Get longitude bounds for the zonal average
-                            lon_min = float(raw_input("Minimum longitude (positive east, negative west): "))
-                            lon_max = float(raw_input("Maximum longitude (positive east, negative west): "))
+                            lon_min = float(input("Minimum longitude (positive east, negative west): "))
+                            lon_max = float(input("Maximum longitude (positive east, negative west): "))
                         else:
-                            print 'Problem with zonal slice/average choice'
+                            print('Problem with zonal slice/average choice')
                             exit()
                     elif int(changes) == 6:
                         # New cutoff depth
-                        depth_min = -1*float(raw_input("Deepest depth to plot (positive, metres): "))
+                        depth_min = -1*float(input("Deepest depth to plot (positive, metres): "))
                     elif int(changes) == 7:
                         # New colour bounds
                         set_limits = False
                         limits = None
-                        get_bounds = raw_input("Set bounds on colour scale (y/n)? ")
+                        get_bounds = input("Set bounds on colour scale (y/n)? ")
                         if get_bounds == 'y':
                             set_limits = True
-                            lower_bound = float(raw_input("Lower bound: "))
-                            upper_bound = float(raw_input("Upper bound: "))
+                            lower_bound = float(input("Lower bound: "))
+                            upper_bound = float(input("Upper bound: "))
                             limits = [lower_bound, upper_bound]
                     elif int(changes) == 8:
                         # Change from display to save, or vice versa
                         save = not save
                     else:
-                        print "Invalid option"
+                        print("Invalid option")
             if save:
                 # Get file name for figure
-                fig_name = raw_input("File name for figure: ")
+                fig_name = input("File name for figure: ")
 
             # Make the figure
             if avg:
@@ -324,13 +324,13 @@ def fesom_vis_latdepth ():
 if __name__ == "__main__":
 
     # Choose orientation of plot
-    orientation = int(raw_input("Lon-lat plot (1) or lat-depth plot (2)? "))
+    orientation = int(input("Lon-lat plot (1) or lat-depth plot (2)? "))
     if orientation == 1:
         fesom_vis_lonlat()
     elif orientation == 2:
         fesom_vis_latdepth()
     else:
-        print "Problem with horizontal/vertical choice"
+        print("Problem with horizontal/vertical choice")
         exit()
 
     

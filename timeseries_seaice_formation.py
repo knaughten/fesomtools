@@ -14,10 +14,10 @@ def timeseries_seaice_formation (mesh_path, output_path, start_year, end_year, l
     # Seconds to years conversion
     sec_per_year = 365.25*24*60*60
 
-    print 'Building mesh'
+    print('Building mesh')
     elements = fesom_grid(mesh_path, circumpolar=True, cross_180=True)
 
-    print 'Selecting continental shelf'
+    print('Selecting continental shelf')
     # Set up an array of area of each element, zero if it's not on the
     # continental shelf
     shelf_areas = zeros(len(elements))
@@ -31,7 +31,7 @@ def timeseries_seaice_formation (mesh_path, output_path, start_year, end_year, l
     # Set up array for net sea ice formation on continental shelf
     formation = zeros(num_years)
     for year in range(start_year, end_year+1):
-        print 'Processing year ' + str(year)
+        print('Processing year ' + str(year))
         id = Dataset(file_head + str(year) + file_tail, 'r')
         # Read thdgr, annually average, and convert from m/s to m/y
         thdgr = mean(id.variables['thdgr'][:,:], axis=0)*sec_per_year
@@ -44,7 +44,7 @@ def timeseries_seaice_formation (mesh_path, output_path, start_year, end_year, l
         # Integrate and convert to thousand km^3/y
         formation[year-start_year] = sum(thdgr_elm*shelf_areas)*1e-12
 
-    print 'Saving results to log file'
+    print('Saving results to log file')
     f = open(log_file, 'w')
     f.write('Net sea ice formation on continental shelf (thousand km^3/y):\n')
     for t in range(num_years):
@@ -55,9 +55,9 @@ def timeseries_seaice_formation (mesh_path, output_path, start_year, end_year, l
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    output_path = raw_input("Path to FESOM output directory: ")
-    start_year = int(raw_input("First year to process: "))
-    end_year = int(raw_input("Last year to process: "))
-    log_file = raw_input("Path to logfile: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    output_path = input("Path to FESOM output directory: ")
+    start_year = int(input("First year to process: "))
+    end_year = int(input("Last year to process: "))
+    log_file = input("Path to logfile: ")
     timeseries_seaice_formation(mesh_path, output_path, start_year, end_year, log_file)

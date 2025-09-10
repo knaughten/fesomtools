@@ -32,7 +32,7 @@ def timeseries_dpt (mesh_path, ocn_file, log_file, fig_dir=''):
     dpt = []
     # Check if the log file exists
     if exists(log_file):
-        print 'Reading previously calculated values'
+        print('Reading previously calculated values')
         f = open(log_file, 'r')
         # Skip the first line (header)
         f.readline()
@@ -40,7 +40,7 @@ def timeseries_dpt (mesh_path, ocn_file, log_file, fig_dir=''):
             dpt.append(float(line))
         f.close()
 
-    print 'Building grid'
+    print('Building grid')
     # First get regular 2D elements
     elm2D = fesom_grid(mesh_path, circumpolar, cross_180)
     # Read longitude and latitude of each node in order (needed for rotation)
@@ -62,7 +62,7 @@ def timeseries_dpt (mesh_path, ocn_file, log_file, fig_dir=''):
     lon = array(lon)
     lat = array(lat)
 
-    print 'Reading data'
+    print('Reading data')
     id = Dataset(ocn_file, 'r')
     num_time = id.variables['time'].shape[0]
     # Read both u and v so we can rotate to get the real u
@@ -70,18 +70,18 @@ def timeseries_dpt (mesh_path, ocn_file, log_file, fig_dir=''):
     v_r = id.variables['v'][:,:]
     id.close()
 
-    print 'Unrotating velocity vector'
+    print('Unrotating velocity vector')
     u = zeros(shape(u_r))
     # Rotate one time index at a time
     for t in range(num_time):
         u_tmp, v_tmp = unrotate_vector(lon, lat, u_r[t,:], v_r[t,:])
         u[t,:] = u_tmp
 
-    print 'Extracting zonal slice through Drake Passage'
+    print('Extracting zonal slice through Drake Passage')
     # Get quadrilateral elements in the latitude vs depth slice
     selements = fesom_sidegrid(elm2D, u, lon0, lat_max, lat_min)
 
-    print 'Setting up arrays'
+    print('Setting up arrays')
     # Eastward velocity at each element
     u_selm = zeros([num_time, len(selements)])
     # Area of each element
@@ -99,7 +99,7 @@ def timeseries_dpt (mesh_path, ocn_file, log_file, fig_dir=''):
     # Calculate time values
     time = arange(len(dpt))*days_per_output/365.
 
-    print 'Plotting'
+    print('Plotting')
     clf()
     plot(time, dpt)
     xlabel('Years')
@@ -107,7 +107,7 @@ def timeseries_dpt (mesh_path, ocn_file, log_file, fig_dir=''):
     grid(True)
     savefig(fig_dir + 'drakepsgtrans.png')
 
-    print 'Saving results to log file'
+    print('Saving results to log file')
     f = open(log_file, 'w')
     f.write('Drake Passage Transport (Sv):\n')
     for elm in dpt:
@@ -118,9 +118,9 @@ def timeseries_dpt (mesh_path, ocn_file, log_file, fig_dir=''):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    ocn_file = raw_input("Path to FESOM oce.mean.nc output file: ")
-    log_file = raw_input("Path to logfile to save values and/or read previously calculated values: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    ocn_file = input("Path to FESOM oce.mean.nc output file: ")
+    log_file = input("Path to logfile to save values and/or read previously calculated values: ")
     timeseries_dpt(mesh_path, ocn_file, log_file)
     
         

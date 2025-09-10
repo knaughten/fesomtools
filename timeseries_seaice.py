@@ -29,7 +29,7 @@ def timeseries_seaice (mesh_path, ice_file, log_file, fig_dir=''):
     total_volume = []
     # Check if the log file exists
     if exists(log_file):
-        print 'Reading previously calculated values'
+        print('Reading previously calculated values')
         f = open(log_file, 'r')
         # Skip the first line (header)
         f.readline()
@@ -43,17 +43,17 @@ def timeseries_seaice (mesh_path, ice_file, log_file, fig_dir=''):
             total_volume.append(float(line))
         f.close()
 
-    print 'Building grid'
+    print('Building grid')
     elements = fesom_grid(mesh_path, circumpolar, cross_180)
 
-    print 'Reading data'
+    print('Reading data')
     id = Dataset(ice_file, 'r')
     num_time = id.variables['time'].shape[0]
     aice = id.variables['area'][:,:]
     hice = id.variables['hice'][:,:]
     id.close()
 
-    print 'Setting up arrays'
+    print('Setting up arrays')
     # Sea ice concentration at each element
     aice_elm = zeros([num_time, len(elements)])
     # Sea ice height at each element
@@ -79,7 +79,7 @@ def timeseries_seaice (mesh_path, ice_file, log_file, fig_dir=''):
     # Calculate time values
     time = arange(len(total_area))*days_per_output/365.
 
-    print 'Plotting total sea ice area'
+    print('Plotting total sea ice area')
     clf()
     plot(time, total_area)
     xlabel('Years')
@@ -87,7 +87,7 @@ def timeseries_seaice (mesh_path, ice_file, log_file, fig_dir=''):
     grid(True)
     savefig(fig_dir + 'seaice_area.png')
 
-    print 'Plotting total sea ice volume'
+    print('Plotting total sea ice volume')
     clf()
     plot(time, total_volume)
     xlabel('Years')
@@ -95,7 +95,7 @@ def timeseries_seaice (mesh_path, ice_file, log_file, fig_dir=''):
     grid(True)
     savefig(fig_dir + 'seaice_volume.png')
 
-    print 'Saving results to log file'
+    print('Saving results to log file')
     f = open(log_file, 'w')
     f.write('Total Sea Ice Area (million km^2):\n')
     for elm in total_area:
@@ -109,8 +109,8 @@ def timeseries_seaice (mesh_path, ice_file, log_file, fig_dir=''):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    ice_file = raw_input("Path to FESOM ice.mean.nc output file: ")
-    log_file = raw_input("Path to logfile to save values and/or read previously calculated values: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    ice_file = input("Path to FESOM ice.mean.nc output file: ")
+    log_file = input("Path to logfile to save values and/or read previously calculated values: ")
 
     timeseries_seaice(mesh_path, ice_file, log_file)

@@ -24,7 +24,7 @@ def timeseries_concat (spinup_path, rcp_path):
     year_end = 2005
     # Skip the first 2 repetitions of the control simulation
     skipyears = 28
-    peryear = 365/5
+    peryear = 365//5
     numyears = year_end - year_start + 1
 
     # Drake Passage transport
@@ -193,7 +193,7 @@ def timeseries_concat (spinup_path, rcp_path):
 # Command-line interface
 if __name__ == "__main__":
 
-    spinup_path = raw_input("Path to control simulation directory: ")
-    rcp_path = raw_input("Path to RCP simulation directory: ")
+    spinup_path = input("Path to control simulation directory: ")
+    rcp_path = input("Path to RCP simulation directory: ")
     timeseries_concat(spinup_path, rcp_path)
     

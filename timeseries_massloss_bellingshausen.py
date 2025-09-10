@@ -29,12 +29,12 @@ def timeseries_massloss_bellingshausen (mesh_path, directory, start_year, end_ye
 
     circumpolar = True   # Only consider elements south of 30S
     cross_180 = False    # Don't make second copies of elements that cross 180E
-    peryear = 365/5      # Number of output steps per year (5-day averages)
+    peryear = 365//5      # Number of output steps per year (5-day averages)
 
-    print 'Building grid'
+    print('Building grid')
     elements = fesom_grid(mesh_path, circumpolar, cross_180)
 
-    print 'Setting up arrays'
+    print('Setting up arrays')
     # Area of each ice shelf element
     area_elm = zeros(len(elements))
     # Flag to indicate which ice shelves the element is part of
@@ -63,7 +63,7 @@ def timeseries_massloss_bellingshausen (mesh_path, directory, start_year, end_ye
     t_posn = 0
     for year in range(start_year, end_year+1):
         file = directory + expt_name + '.' + str(year) + '.forcing.diag.nc'
-        print 'Processing ' + file
+        print('Processing ' + file)
         # Read melt rate and convert from m/s to m/y
         id = Dataset(file, 'r')        
         ismr = id.variables['wnet'][:,:]*365.25*24*60*60
@@ -85,7 +85,7 @@ def timeseries_massloss_bellingshausen (mesh_path, directory, start_year, end_ye
                 massloss[shelf, t_posn+t] = 1e-12*rho_ice*volumeloss
         t_posn += peryear
 
-    print 'Saving results to log file'
+    print('Saving results to log file')
     f = open(log_file, 'w')
     for index in range(len(names)):
         f.write(names[index] + ' Basal Mass Loss\n')
@@ -97,11 +97,11 @@ def timeseries_massloss_bellingshausen (mesh_path, directory, start_year, end_ye
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    directory = raw_input("Path to FESOM output directory: ")
-    start_year = int(raw_input("First year to process: "))
-    end_year = int(raw_input("Last year to process: "))
-    log_file = raw_input("Path to desired logfile: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    directory = input("Path to FESOM output directory: ")
+    start_year = int(input("First year to process: "))
+    end_year = int(input("Last year to process: "))
+    log_file = input("Path to desired logfile: ")
     timeseries_massloss_bellingshausen(mesh_path, directory, start_year, end_year, log_file)
 
             

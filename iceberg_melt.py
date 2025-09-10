@@ -65,7 +65,7 @@ def iceberg_melt (out_file):
 
     # Loop over months
     for month in range(12):
-        print 'Processing month ' + str(month+1)
+        print('Processing month ' + str(month+1))
         # Reconstruct the filename of this month's iceberg data
         if month+1 < 10:
             month_str = '0' + str(month+1)
@@ -127,5 +127,5 @@ def interp_iceberg2era (A, lon_iceberg, lat_iceberg, lon_era, lat_era):
 # Command-line interface
 if __name__ == "__main__":
 
-    file = raw_input('Path to desired output file: ')
+    file = input('Path to desired output file: ')
     iceberg_melt(file)

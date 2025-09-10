@@ -31,9 +31,9 @@ def calc_annual_ice_prod (model_dir, start_year, end_year, out_file):
 
 if __name__ == "__main__":
 
-    model_dir = raw_input("Path to FESOM simulation output directory: ")
-    start_year =  int(raw_input("First year to process: "))
-    end_year = int(raw_input("Last year to process: "))
-    out_file = raw_input("Path to desired output file: ")
+    model_dir = input("Path to FESOM simulation output directory: ")
+    start_year =  int(input("First year to process: "))
+    end_year = int(input("Last year to process: "))
+    out_file = input("Path to desired output file: ")
     calc_annual_ice_prod(model_dir, start_year, end_year, out_file)
     

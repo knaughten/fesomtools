@@ -17,7 +17,7 @@ def mld_diff ():
     expt_names = ['RCP 4.5 M', 'RCP 4.5 A', 'RCP 8.5 M', 'RCP 8.5 A', 'CONTROL']
     season_names = ['DJF', 'MAM', 'JJA', 'SON']
     num_expts = len(directories)
-    middle_expt = (num_expts+1)/2 - 1
+    middle_expt = (num_expts+1)//2 - 1
     # Start and end years for each period
     beg_years = [1996, 2005]
     end_years = [2091, 2100]
@@ -35,23 +35,23 @@ def mld_diff ():
     diff_bound_summer = 80
     diff_bound_winter = 1000
 
-    print 'Building mesh'
+    print('Building mesh')
     elements, patches = make_patches(mesh_path, circumpolar, mask_cavities)
-    print 'Processing 1996-2005'
-    print 'Reading data'
+    print('Processing 1996-2005')
+    print('Reading data')
     id = Dataset(directory_beg + seasonal_file_beg, 'r')
     temp_nodes_beg = id.variables['temp'][:,:]
     salt_nodes_beg = id.variables['salt'][:,:]
     id.close()
-    print 'Calculating density'
+    print('Calculating density')
     density_nodes_beg = unesco(temp_nodes_beg, salt_nodes_beg, zeros(shape(temp_nodes_beg)))
-    print 'Calculating mixed layer depth'
+    print('Calculating mixed layer depth')
     # Set up arrays for mixed layer depth at each element, at each season
     mld_summer_beg = zeros(len(elements))
     mld_winter_beg = zeros(len(elements))
     # Loop over seasons and elements to fill these in
     for season in [0,2]:
-        print '...' + season_names[season]
+        print('...' + season_names[season])
         mld_season = []
         for elm in elements:
             # Get mixed layer depth at each node
@@ -84,17 +84,17 @@ def mld_diff ():
     mld_summer_diff = zeros([num_expts, len(elements)])
     mld_winter_diff = zeros([num_expts, len(elements)])
     for expt in range(num_expts):
-        print 'Processing ' + expt_names[expt]
-        print 'Reading data'
+        print('Processing ' + expt_names[expt])
+        print('Reading data')
         id = Dataset(directories[expt] + seasonal_file_end, 'r')
         temp_nodes_end = id.variables['temp'][:,:]
         salt_nodes_end = id.variables['salt'][:,:]
         id.close()
-        print 'Calculating density'
+        print('Calculating density')
         density_nodes_end = unesco(temp_nodes_end, salt_nodes_end, zeros(shape(temp_nodes_end)))
-        print 'Calculating mixed layer depth'
+        print('Calculating mixed layer depth')
         for season in [0,2]:
-            print '...' + season_names[season]
+            print('...' + season_names[season])
             mld_season = []
             for elm in elements:
                 mld_nodes = []
@@ -119,7 +119,7 @@ def mld_diff ():
             elif season == 2:
                 mld_winter_diff[expt,:] = array(mld_season) - mld_winter_beg
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(24,8))
     # Summer, beginning
     ax = fig.add_subplot(2, num_expts+1, 1, aspect='equal')

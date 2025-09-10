@@ -30,11 +30,11 @@ def rcp_amundsen_budget ():
     circumpolar = True
     cross_180 = False
 
-    print 'Building grid'
+    print('Building grid')
     elements = fesom_grid(mesh_path, circumpolar, cross_180)
 
-    print 'Reading data'
-    print '...' + beg_title
+    print('Reading data')
+    print('...' + beg_title)
     id = Dataset(directory_beg + o_file_beg, 'r')
     wnet_nodes_beg = id.variables['wnet'][:,:]
     pminuse_nodes_beg = id.variables['rain'][:,:] + id.variables['snow'][:,:] - id.variables['evap'][:,:]    
@@ -48,7 +48,7 @@ def rcp_amundsen_budget ():
     pminuse_nodes_end = empty([num_expts, num_time, n2d])
     ice2ocn_nodes_end = empty([num_expts, num_time, n2d])
     for expt in range(num_expts):
-        print '...' + rcp_titles[expt]
+        print('...' + rcp_titles[expt])
         id = Dataset(directories[expt] + o_file_end, 'r')
         wnet_nodes_end[expt,:,:] = id.variables['wnet'][:,:]
         pminuse_nodes_end[expt,:,:] = id.variables['rain'][:,:] + id.variables['snow'][:,:] - id.variables['evap'][:,:]
@@ -57,7 +57,7 @@ def rcp_amundsen_budget ():
         ice2ocn_nodes_end[expt,:,:] = -1*id.variables['thdgr'][:,:]
         id.close()
 
-    print 'Averaging over Amundsen Sea'
+    print('Averaging over Amundsen Sea')
     wnet_beg = zeros(num_time)
     pminuse_beg = zeros(num_time)
     ice2ocn_beg = zeros(num_time)
@@ -96,7 +96,7 @@ def rcp_amundsen_budget ():
     # Set up time axis in days
     time = arange(num_time)*days_per_output
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(18,8))
     gs = GridSpec(1,3)
     gs.update(left=0.05, right=0.95, bottom=0.15, top=0.83, wspace=0.07)

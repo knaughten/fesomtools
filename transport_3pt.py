@@ -35,7 +35,7 @@ def transport_3pt ():
     # Spinup years to discard (first 2 repetitions of 1992-2005)
     control_skipyears = 28
     # Output steps per year
-    peryear = 365/5
+    peryear = 365//5
 
     # Build time axis: 1 point per year
     num_years = year_end - year_start + 1

@@ -16,7 +16,7 @@ def ice_ini (mesh_path, out_dir):
     out_file = out_dir + 'MK44005.initial_ice.nc'
 
     # Read rotated latitude and longitude of 2D nodes
-    print "Reading FESOM grid"
+    print("Reading FESOM grid")
     f = open(mesh_path + 'nod2d.out', 'r')
     f.readline()
     rlon = []
@@ -37,9 +37,9 @@ def ice_ini (mesh_path, out_dir):
     fesom_lon, fesom_lat = unrotate_grid(rlon, rlat)
 
     # Southern hemisphere
-    print "Processing southern hemisphere"
+    print("Processing southern hemisphere")
     # Read the NSIDC grid and data
-    print "...reading NSIDC"
+    print("...reading NSIDC")
     id = Dataset(nsidc_sh_file, 'r')
     nsidc_lon = id.variables['longitude'][:,:]
     nsidc_lat = id.variables['latitude'][:,:]
@@ -66,7 +66,7 @@ def ice_ini (mesh_path, out_dir):
     xi[:,0] = fesom_lon
     xi[:,1] = fesom_lat
     # Linear interpolation to the FESOM coordinates
-    print "...interpolating to FESOM points"
+    print("...interpolating to FESOM points")
     area_sh = griddata(points, values, xi, method='linear', fill_value=-999)
     # Also do a nearest-neighbour interpolation
     area_sh2 = griddata(points, values, xi, method='nearest')
@@ -86,9 +86,9 @@ def ice_ini (mesh_path, out_dir):
     hsnow_sh[index] = 0.2
 
     # Northern hemisphere
-    print "Processing northern hemisphere"
+    print("Processing northern hemisphere")
     # Read the NSIDC grid and data
-    print "...reading NSIDC"
+    print("...reading NSIDC")
     id = Dataset(nsidc_nh_file, 'r')
     nsidc_lon = id.variables['longitude'][:,:]
     nsidc_lat = id.variables['latitude'][:,:]
@@ -112,7 +112,7 @@ def ice_ini (mesh_path, out_dir):
     values = ravel(nsidc_aice)
     # We already have the FESOM coordinates saved in xi
     # Linear interpolation to the FESOM coordinates
-    print "...interpolating to FESOM points"
+    print("...interpolating to FESOM points")
     area_nh = griddata(points, values, xi, method='linear', fill_value=-999)
     # Also do a nearest-neighbour interpolation
     area_nh2 = griddata(points, values, xi, method='nearest')
@@ -140,7 +140,7 @@ def ice_ini (mesh_path, out_dir):
     vice = zeros(size(area))
 
     # Write to file
-    print "Writing output"
+    print("Writing output")
     id = Dataset(out_file, 'w')
     id.createDimension('nodes_2d', size(area))
     id.createDimension('T', None)
@@ -169,6 +169,6 @@ def ice_ini (mesh_path, out_dir):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    out_dir = raw_input("Path to FESOM simulation's output directory: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    out_dir = input("Path to FESOM simulation's output directory: ")
     ice_ini(mesh_path, out_dir)

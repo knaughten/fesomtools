@@ -48,11 +48,11 @@ def rcp_seaice_formation_timeseries ():
         f.close()
 
     beg_mean = mean(formation[-1,1996-year_start:rcp_year_start-year_start])
-    print 'Mean over 1996-2005: ' + str(beg_mean) + ' thousand km^3/y'
-    print 'Mean over 2091-2100:'
+    print('Mean over 1996-2005: ' + str(beg_mean) + ' thousand km^3/y')
+    print('Mean over 2091-2100:')
     for expt in range(num_expts):
         end_mean = mean(formation[expt,-10:])
-        print '...' + rcp_titles[expt] + ': ' + str(end_mean) + ', change of ' + str((end_mean-beg_mean)/beg_mean*100)
+        print('...' + rcp_titles[expt] + ': ' + str(end_mean) + ', change of ' + str((end_mean-beg_mean)/beg_mean*100))
 
     # Plot        
     fig, ax = subplots()

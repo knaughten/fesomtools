@@ -76,7 +76,7 @@ def seasonal_climatology (directory, start_year, end_year, out_file_oce, out_fil
     id.variables['v'][:,:] = seasonal_v
     id.close()'''
 
-    print 'Processing ocean'
+    print('Processing ocean')
     # Read number of 3D nodes from first file
     id = Dataset(directory + expt_name + '.' + str(start_year) + '.oce.mean.nc', 'r')
     n3d = id.variables['temp'].shape[1]
@@ -90,7 +90,7 @@ def seasonal_climatology (directory, start_year, end_year, out_file_oce, out_fil
     ndays = zeros(4)
     # Loop over years
     for year in range(start_year, end_year+1):
-        print '...' + str(year)
+        print('...' + str(year))
         id = Dataset(directory + expt_name + '.' + str(year) + '.oce.mean.nc', 'r')
         # Indices 1-11 and 4/5 of index 12 are DJF (59 days)
         seasonal_temp[0,:] += sum(id.variables['temp'][0:11,:]*5, axis=0) + id.variables['temp'][11,:]*4
@@ -118,7 +118,7 @@ def seasonal_climatology (directory, start_year, end_year, out_file_oce, out_fil
         seasonal_temp[season,:] = seasonal_temp[season,:]/ndays[season]
         seasonal_salt[season,:] = seasonal_salt[season,:]/ndays[season]
     # Write to file
-    print 'Writing ' + out_file_oce
+    print('Writing ' + out_file_oce)
     id = Dataset(out_file_oce, 'w')
     id.createDimension('nodes_3d', n3d)
     id.createDimension('T', None)
@@ -192,10 +192,10 @@ def seasonal_climatology (directory, start_year, end_year, out_file_oce, out_fil
 # Command-line interface
 if __name__ == "__main__":
 
-    directory = raw_input("Path to FESOM output directory: ")
-    start_year = int(raw_input("First year to process: "))
-    end_year = int(raw_input("Last year to process: "))
-    out_file_oce = raw_input("Path to desired output climatology file for ocean variables: ")
-    out_file_ice = raw_input("Path to desired output climatology file for sea ice variables: ")
+    directory = input("Path to FESOM output directory: ")
+    start_year = int(input("First year to process: "))
+    end_year = int(input("Last year to process: "))
+    out_file_oce = input("Path to desired output climatology file for ocean variables: ")
+    out_file_ice = input("Path to desired output climatology file for sea ice variables: ")
     seasonal_climatology(directory, start_year, end_year, out_file_oce, out_file_ice)
     

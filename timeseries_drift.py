@@ -44,7 +44,7 @@ def timeseries_drift (mesh_path, output_path, lat_bounds, depth_bounds, start_ye
     salt_avg = []
     # Check if the log file exists
     if exists(log_file):
-        print 'Reading previously calculated values'
+        print('Reading previously calculated values')
         f = open(log_file, 'r')
         # Skip the first line (header)
         f.readline()
@@ -58,12 +58,12 @@ def timeseries_drift (mesh_path, output_path, lat_bounds, depth_bounds, start_ye
             salt_avg.append(float(line))
         f.close()
 
-    print 'Building grid'
+    print('Building grid')
     elements = fesom_grid(mesh_path, circumpolar, cross_180)
 
     # Loop over years
     for year in range(start_year, end_year+1):
-        print 'Processing year ' + str(year)
+        print('Processing year ' + str(year))
         # Initialise integrals
         temp_int = 0.0
         salt_int = 0.0
@@ -117,7 +117,7 @@ def timeseries_drift (mesh_path, output_path, lat_bounds, depth_bounds, start_ye
 
     time = arange(len(temp_avg))
 
-    print 'Plotting'
+    print('Plotting')
     fig, ax1 = subplots()
     # Temperature
     ax1.plot(time, temp_avg, color='b')
@@ -135,7 +135,7 @@ def timeseries_drift (mesh_path, output_path, lat_bounds, depth_bounds, start_ye
     title(lat_min_string+' to '+lat_max_string+', '+str(depth_bounds[0])+'m to '+str(depth_bounds[1])+'m')
     fig.savefig(fig_name)
 
-    print 'Saving results to log file'
+    print('Saving results to log file')
     f = open(log_file, 'w')
     f.write('Average temperature (C):\n')
     for elm in temp_avg:
@@ -149,18 +149,18 @@ def timeseries_drift (mesh_path, output_path, lat_bounds, depth_bounds, start_ye
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    output_path = raw_input("Path to FESOM output directory: ")
-    lat_min = float(raw_input("Southern bound on latitude (-90 to 90): "))
-    lat_max = float(raw_input("Northern bound on latitude (-90 to 90): "))
+    mesh_path = input("Path to FESOM mesh directory: ")
+    output_path = input("Path to FESOM output directory: ")
+    lat_min = float(input("Southern bound on latitude (-90 to 90): "))
+    lat_max = float(input("Northern bound on latitude (-90 to 90): "))
     lat_bounds = [lat_min, lat_max]
-    depth_min = float(raw_input("Shallow bound on depth (positive, in metres): "))
-    depth_max = float(raw_input("Deep bound on depth (positive, in metres): "))
+    depth_min = float(input("Shallow bound on depth (positive, in metres): "))
+    depth_max = float(input("Deep bound on depth (positive, in metres): "))
     depth_bounds = [depth_min, depth_max]
-    start_year = int(raw_input("First year to process: "))
-    end_year = int(raw_input("Last year to process: "))
-    log_file = raw_input("Path to logfile to save values and/or read previously calculated values: ")
-    fig_name = raw_input("Filename for figure: ")
+    start_year = int(input("First year to process: "))
+    end_year = int(input("Last year to process: "))
+    log_file = input("Path to logfile to save values and/or read previously calculated values: ")
+    fig_name = input("Filename for figure: ")
 
     timeseries_drift (mesh_path, output_path, lat_bounds, depth_bounds, start_year, end_year, log_file, fig_name)
 

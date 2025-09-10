@@ -95,11 +95,11 @@ def grid_res_compare (flag, save=False, fig_name=None):
 # Command-line interface
 if __name__ == "__main__":
 
-    flag = int(raw_input("Global (1) or circumpolar Antarctic (2)? "))
-    action = raw_input("Save figure (s) or display on screen (d)? ")
+    flag = int(input("Global (1) or circumpolar Antarctic (2)? "))
+    action = input("Save figure (s) or display on screen (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input("Filename for figure: ")
+        fig_name = input("Filename for figure: ")
     elif action == 'd':
         save = False
         fig_name = None

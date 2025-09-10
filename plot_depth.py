@@ -69,9 +69,9 @@ def plot_depth (mesh_path, fig_name, circumpolar=True):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to mesh directory: ")
-    fig_name = raw_input("Filename for figure: ")
-    domain = raw_input("Global (g) or circumpolar (c)? ")
+    mesh_path = input("Path to mesh directory: ")
+    fig_name = input("Filename for figure: ")
+    domain = input("Global (g) or circumpolar (c)? ")
     if domain == 'c':
         circumpolar = True
     elif domain == 'g':

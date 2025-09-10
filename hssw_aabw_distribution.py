@@ -41,7 +41,7 @@ def hssw_aabw_distribution ():
     aabw_temp_ticks = arange(-1, 2.5+0.5, 0.5)
     aabw_temp_labels = ['', '', '0', '', '1', '', '2', '']
 
-    print 'Setting up bins'
+    print('Setting up bins')
     # Calculate boundaries of temperature bins
     temp_bins = linspace(min_temp, max_temp, num=num_bins)
     # Calculate centres of temperature bins (for plotting)
@@ -56,10 +56,10 @@ def hssw_aabw_distribution ():
     # sea ice model
     freezing_pt = -0.0575*salt_centres + 1.7105e-3*sqrt(salt_centres**3) - 2.155e-4*salt_centres**2
 
-    print 'Building mesh'
+    print('Building mesh')
     elements = fesom_grid(mesh_path, circumpolar, cross_180)
 
-    print 'Reading data'
+    print('Reading data')
     # 1996-2005
     id = Dataset(directory_beg + file_beg)
     n3d = id.variables['temp'].shape[1]
@@ -75,7 +75,7 @@ def hssw_aabw_distribution ():
         salt_nodes[expt+1,:] = id.variables['salt'][0,:]
         id.close()
 
-    print 'Binning elements'
+    print('Binning elements')
     for elm in elements:
         # See if we're in the region of interest
         if all(elm.lat < nbdry):
@@ -123,7 +123,7 @@ def hssw_aabw_distribution ():
     min_val = log(amin(ts_vals))
     max_val = log(amax(ts_vals))
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(20,11))
     # HSSW
     gs_a = GridSpec(1,num_expts+1)

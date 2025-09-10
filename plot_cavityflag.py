@@ -54,6 +54,6 @@ def plot_cavityflag (mesh_path, fig_name):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to mesh directory: ")
-    fig_name = raw_input("Filename for figure: ")
+    mesh_path = input("Path to mesh directory: ")
+    fig_name = input("Filename for figure: ")
     plot_cavityflag(mesh_path, fig_name)

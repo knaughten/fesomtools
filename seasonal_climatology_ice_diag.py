@@ -23,7 +23,7 @@ def seasonal_climatology_ice_diag (directory, start_year, end_year, out_file):
     ndays = zeros(4)
     # Loop over years
     for year in range(start_year, end_year+1):
-        print '...' + str(year)
+        print('...' + str(year))
         id = Dataset(directory + expt_name + '.' + str(year) + '.ice.diag.nc', 'r')
         # Indices 1-11 and 4/5 of index 12 are DJF (59 days)
         seasonal_thdgr[0,:] += sum(id.variables['thdgr'][0:11,:]*5, axis=0) + id.variables['thdgr'][11,:]*4
@@ -63,7 +63,7 @@ def seasonal_climatology_ice_diag (directory, start_year, end_year, out_file):
         seasonal_vhice[season,:] = seasonal_vhice[season,:]/ndays[season]
         seasonal_flice[season,:] = seasonal_flice[season,:]/ndays[season]
     # Write to file
-    print 'Writing ' + out_file
+    print('Writing ' + out_file)
     id = Dataset(out_file, 'w')
     id.createDimension('nodes_2d', n2d)
     id.createDimension('T', None)
@@ -92,8 +92,8 @@ def seasonal_climatology_ice_diag (directory, start_year, end_year, out_file):
 # Command-line interface
 if __name__ == "__main__":
 
-    directory = raw_input("Path to FESOM output directory: ")
-    start_year = int(raw_input("First year to process: "))
-    end_year = int(raw_input("Last year to process: "))
-    out_file = raw_input("Path to desired output climatology file: ")
+    directory = input("Path to FESOM output directory: ")
+    start_year = int(input("First year to process: "))
+    end_year = int(input("Last year to process: "))
+    out_file = input("Path to desired output climatology file: ")
     seasonal_climatology_ice_diag(directory, start_year, end_year, out_file)

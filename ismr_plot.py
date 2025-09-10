@@ -116,12 +116,12 @@ def ismr_plot (mesh_path, file_path, save=False, fig_name=None):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    file_path = raw_input("Path to FESOM forcing.diag.nc containing one year of output: ")
-    action = raw_input("Save figure (s) or display on screen (d)? ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    file_path = input("Path to FESOM forcing.diag.nc containing one year of output: ")
+    action = input("Save figure (s) or display on screen (d)? ")
     if action == 's':
         save=True
-        fig_name = raw_input("File name for figure: ")
+        fig_name = input("File name for figure: ")
     elif action == 'd':
         save = False
         fig_name = None

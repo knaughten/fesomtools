@@ -162,18 +162,18 @@ if __name__ == "__main__":
     circumpolar = True
     mask_cavities = True
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    file_path = raw_input("Path to FESOM forcing.diag file: ")
-    tstep = int(raw_input("Time index to plot (starting at 1): "))
-    lon_min = float(raw_input("Minimum longitude (-180 to 180): "))
-    lon_max = float(raw_input("Maximum longitude (-180 to 180): "))
-    lat_min = float(raw_input("Minimum latitude (-90 to -60): "))
-    lat_max = float(raw_input("Maximum latitude (-90 to -60): "))
+    mesh_path = input("Path to FESOM mesh directory: ")
+    file_path = input("Path to FESOM forcing.diag file: ")
+    tstep = int(input("Time index to plot (starting at 1): "))
+    lon_min = float(input("Minimum longitude (-180 to 180): "))
+    lon_max = float(input("Maximum longitude (-180 to 180): "))
+    lat_min = float(input("Minimum latitude (-90 to -60): "))
+    lat_max = float(input("Maximum latitude (-90 to -60): "))
     bounds = [lon_min, lon_max, lat_min, lat_max]
-    action = raw_input("Save figure (s) or display on screen (d)? ")
+    action = input("Save figure (s) or display on screen (d)? ")
     if action == 's':
         save=True
-        fig_name = raw_input("File name for figure: ")
+        fig_name = input("File name for figure: ")
     elif action == 'd':
         save = False
         fig_name = None
@@ -186,32 +186,32 @@ if __name__ == "__main__":
 
     # Repeat until the user is finished
     while True:
-        repeat = raw_input("Make another plot (y/n)? ")
+        repeat = input("Make another plot (y/n)? ")
         if repeat == 'y':
             update_mesh = False
             while True:
-                changes = raw_input("Enter a parameter to change: (1) mesh path, (2) file path, (3) timestep, (4) lat/lon bounds, (5) save/display; or enter to continue: ")
+                changes = input("Enter a parameter to change: (1) mesh path, (2) file path, (3) timestep, (4) lat/lon bounds, (5) save/display; or enter to continue: ")
                 if len(changes) == 0:
                     break
                 else:
                     if int(changes) == 1:
                         update_mesh = True
-                        mesh_path = raw_input("Path to FESOM mesh directory: ")
-                        file_path = raw_input("Path to FESOM forcing.diag file: ")
+                        mesh_path = input("Path to FESOM mesh directory: ")
+                        file_path = input("Path to FESOM forcing.diag file: ")
                     elif int(changes) == 2:
-                        file_path = raw_input("Path to FESOM forcing.diag file: ")
+                        file_path = input("Path to FESOM forcing.diag file: ")
                     elif int(changes) == 3:
-                        tstep = int(raw_input("Time index to plot (starting at 1): "))
+                        tstep = int(input("Time index to plot (starting at 1): "))
                     elif int(changes) == 4:
-                        lon_min = float(raw_input("Minimum longitude (-180 to 180): "))
-                        lon_max = float(raw_input("Maximum longitude (-180 to 180): "))
-                        lat_min = float(raw_input("Minimum latitude (-90 to -60): "))
-                        lat_max = float(raw_input("Maximum latitude (-90 to -60): "))
+                        lon_min = float(input("Minimum longitude (-180 to 180): "))
+                        lon_max = float(input("Maximum longitude (-180 to 180): "))
+                        lat_min = float(input("Minimum latitude (-90 to -60): "))
+                        lat_max = float(input("Maximum latitude (-90 to -60): "))
                         bounds = [lon_min, lon_max, lat_min, lat_max]
                     elif int(changes) == 5:
                         save = not save
             if save:
-                fig_name = raw_input("File name for figure: ")
+                fig_name = input("File name for figure: ")
             if update_mesh:
                 elements, mask_patches = make_patches(mesh_path, circumpolar, mask_cavities)
                 patches = iceshelf_mask(elements)

@@ -22,7 +22,7 @@ def cavity_warming_depth (rcp, model):
     elif model == 'A':
         model_title = 'ACCESS'
 
-    print 'Building mesh'
+    print('Building mesh')
     # Mask open ocean
     elements, mask_patches = make_patches(mesh_path, circumpolar=True, mask_cavities=True)
     # Unmask ice shelf patches
@@ -59,7 +59,7 @@ def cavity_warming_depth (rcp, model):
         elif tmp == 0:
             node_cavity.append(False)
         else:
-            print 'Problem'
+            print('Problem')
     f.close()
     # Save the number of 2D nodes
     n2d = len(node_cavity)
@@ -82,7 +82,7 @@ def cavity_warming_depth (rcp, model):
     node_columns = node_columns.astype(int)
     f.close()
 
-    print 'Reading data'
+    print('Reading data')
     # Annual average
     id = Dataset(directory_beg + annual_file_beg, 'r')
     temp_beg = id.variables['temp'][0,:]
@@ -98,7 +98,7 @@ def cavity_warming_depth (rcp, model):
     monthly_temp_end = id.variables['temp'][:,:]
     id.close()
 
-    print 'Processing nodes'
+    print('Processing nodes')
     max_warming_nodes = zeros(n2d)
     fractional_depth_nodes = zeros(n2d)
     seasonality_nodes = zeros(n2d)
@@ -135,7 +135,7 @@ def cavity_warming_depth (rcp, model):
             # by annual warming. 0 means no seasonality.
             seasonality_nodes[n] = (amax(monthly_warming) - amin(monthly_warming))/max_warming_nodes[n]
 
-    print 'Calculating element averages'
+    print('Calculating element averages')
     max_warming = []
     fractional_depth = []
     seasonality = []
@@ -166,7 +166,7 @@ def cavity_warming_depth (rcp, model):
     bounds = linspace(0, max_warming_plot**(1.0/2), num=100)**2
     norm = BoundaryNorm(boundaries=bounds, ncolors=256)
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(8,14))
     fig.patch.set_facecolor('white')
     gs = GridSpec(3,1)
@@ -252,12 +252,12 @@ def cavity_warming_depth (rcp, model):
 # Command-line interface
 if __name__ == "__main__":
 
-    key = int(raw_input('RCP 4.5 (4) or 8.5 (8)? '))
+    key = int(input('RCP 4.5 (4) or 8.5 (8)? '))
     if key == 4:
         rcp = '45'
     elif key == 8:
         rcp = '85'
-    key = int(raw_input('Multi-model mean (1) or ACCESS 1.0 (2)? '))
+    key = int(input('Multi-model mean (1) or ACCESS 1.0 (2)? '))
     if key == 1:
         model = 'M'
     elif key == 2:

@@ -37,7 +37,7 @@ def ross_plots ():
     # Seconds per year
     sec_per_year = 365.25*24*3600    
 
-    print 'Building mesh'
+    print('Building mesh')
     elements = fesom_grid(mesh_path, circumpolar)
     # Build one set of plotting patches with all elements, one with
     # ice shelf cavities masked, and one with open ocean masked
@@ -76,7 +76,7 @@ def ross_plots ():
     x_reg, y_reg = meshgrid(linspace(x_min, x_max, num=100), linspace(y_min, y_max, num=100))
     land_square = zeros(shape(x_reg))
 
-    print 'Processing ice shelf melt rate'
+    print('Processing ice shelf melt rate')
     # Read annually averaged data, and convert from m/s to m/y
     id = Dataset(forcing_file_beg, 'r')
     wnet_nodes_beg = id.variables['wnet'][0,:]*sec_per_year
@@ -209,7 +209,7 @@ def ross_plots ():
     fig.show()
     fig.savefig('ross_melt.png')
 
-    print 'Processing bottom water temperature'
+    print('Processing bottom water temperature')
     # Read annually averaged data
     id = Dataset(oce_file_beg, 'r')
     temp_nodes_beg = id.variables['temp'][0,:]
@@ -286,7 +286,7 @@ def ross_plots ():
     fig.show()
     fig.savefig('ross_bwtemp.png')
 
-    print 'Processing seasonal SSTs'
+    print('Processing seasonal SSTs')
     # Read seasonally averaged data
     id = Dataset(oce2_file_beg, 'r')
     sst_nodes_beg = id.variables['temp'][:,:]
@@ -375,7 +375,7 @@ def ross_plots ():
     fig.show()
     fig.savefig('ross_sst.png')
 
-    print 'Processing seasonal sea ice concentration'
+    print('Processing seasonal sea ice concentration')
     # Read seasonally averaged data
     id = Dataset(ice_file_beg, 'r')
     aice_nodes_beg = id.variables['area'][:,:]

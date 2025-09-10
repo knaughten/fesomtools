@@ -39,7 +39,7 @@ def compare_mesh_topo ():
     # Grey colourmap for RTopo land mask
     grey_cmap = ListedColormap([(0.6, 0.6, 0.6)])
 
-    print 'Reading mesh A'
+    print('Reading mesh A')
     # Build mesh
     elements_A = fesom_grid(mesh_path_A, circumpolar=True, cross_180=True)
     # Build patches for ocean, open ocean, and ice shelves
@@ -67,7 +67,7 @@ def compare_mesh_topo ():
             # surface layer
             wct_A.append(mean([elm.nodes[0].find_bottom().depth - elm.nodes[0].depth, elm.nodes[1].find_bottom().depth - elm.nodes[1].depth, elm.nodes[2].find_bottom().depth - elm.nodes[2].depth]))
 
-    print 'Reading mesh B'
+    print('Reading mesh B')
     elements_B = fesom_grid(mesh_path_B, circumpolar=True, cross_180=True)
     patches_B = []
     shelf_patches_B = []
@@ -88,7 +88,7 @@ def compare_mesh_topo ():
             draft_B.append(mean([elm.nodes[0].depth, elm.nodes[1].depth, elm.nodes[2].depth]))
             wct_B.append(mean([elm.nodes[0].find_bottom().depth - elm.nodes[0].depth, elm.nodes[1].find_bottom().depth - elm.nodes[1].depth, elm.nodes[2].find_bottom().depth - elm.nodes[2].depth]))
 
-    print 'Reading mesh C'
+    print('Reading mesh C')
     elements_C = fesom_grid(mesh_path_C, circumpolar=True, cross_180=True)
     patches_C = []
     shelf_patches_C = []
@@ -109,7 +109,7 @@ def compare_mesh_topo ():
             draft_C.append(mean([elm.nodes[0].depth, elm.nodes[1].depth, elm.nodes[2].depth]))
             wct_C.append(mean([elm.nodes[0].find_bottom().depth - elm.nodes[0].depth, elm.nodes[1].find_bottom().depth - elm.nodes[1].depth, elm.nodes[2].find_bottom().depth - elm.nodes[2].depth]))
 
-    print 'Reading mesh D'
+    print('Reading mesh D')
     elements_D = fesom_grid(mesh_path_D, circumpolar=True, cross_180=True)
     patches_D = []
     shelf_patches_D = []
@@ -130,7 +130,7 @@ def compare_mesh_topo ():
             draft_D.append(mean([elm.nodes[0].depth, elm.nodes[1].depth, elm.nodes[2].depth]))
             wct_D.append(mean([elm.nodes[0].find_bottom().depth - elm.nodes[0].depth, elm.nodes[1].find_bottom().depth - elm.nodes[1].depth, elm.nodes[2].find_bottom().depth - elm.nodes[2].depth]))
 
-    print 'Reading mesh E'
+    print('Reading mesh E')
     elements_E = fesom_grid(mesh_path_E, circumpolar=True, cross_180=True)
     patches_E = []
     shelf_patches_E = []
@@ -151,7 +151,7 @@ def compare_mesh_topo ():
             draft_E.append(mean([elm.nodes[0].depth, elm.nodes[1].depth, elm.nodes[2].depth]))
             wct_E.append(mean([elm.nodes[0].find_bottom().depth - elm.nodes[0].depth, elm.nodes[1].find_bottom().depth - elm.nodes[1].depth, elm.nodes[2].find_bottom().depth - elm.nodes[2].depth]))
 
-    print 'Reading mesh F'
+    print('Reading mesh F')
     elements_F = fesom_grid(mesh_path_F, circumpolar=True, cross_180=True)
     patches_F = []
     shelf_patches_F = []
@@ -172,7 +172,7 @@ def compare_mesh_topo ():
             draft_F.append(mean([elm.nodes[0].depth, elm.nodes[1].depth, elm.nodes[2].depth]))
             wct_F.append(mean([elm.nodes[0].find_bottom().depth - elm.nodes[0].depth, elm.nodes[1].find_bottom().depth - elm.nodes[1].depth, elm.nodes[2].find_bottom().depth - elm.nodes[2].depth]))
 
-    print 'Reading RTopo'
+    print('Reading RTopo')
     # Read grid, bathy, draft
     id = Dataset(rtopo_data_file, 'r')
     rtopo_lon = id.variables['lon'][:]
@@ -207,7 +207,7 @@ def compare_mesh_topo ():
 
     # Loop over regions
     for index in range(num_regions):
-        print 'Processing ' + region_names[index]
+        print('Processing ' + region_names[index])
         # Set up a grey square to fill the background with land
         x_reg, y_reg = meshgrid(linspace(x_min[index], x_max[index], num=100), linspace(y_min[index], y_max[index], num=100))
         land_square = zeros(shape(x_reg))

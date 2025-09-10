@@ -111,13 +111,13 @@ def nsidc_aice_monthly (elements, patches, file_path, month, save=False, fig_nam
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    file_path = raw_input("Path to output ice.mean.nc containing one year of 5-day averages: ")
-    month = int(raw_input("Month number (1-12): ")) - 1
-    action = raw_input("Save figure (s) or display on screen (d)? ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    file_path = input("Path to output ice.mean.nc containing one year of 5-day averages: ")
+    month = int(input("Month number (1-12): ")) - 1
+    action = input("Save figure (s) or display on screen (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input("File name for figure: ")
+        fig_name = input("File name for figure: ")
     elif action == 'd':
         save = False
         fig_name = None
@@ -132,27 +132,27 @@ if __name__ == "__main__":
 
     while True:
         # Repeat until the user wants to exit
-        repeat = raw_input("Make another plot (y/n)? ")
+        repeat = input("Make another plot (y/n)? ")
         if repeat == 'y':
             while True:
                 # Ask for changes to parameters until the user is done
-                changes = raw_input("Enter a parameter to change: (1) file path, (2) month number, (3) save/display; or enter to continue: ")
+                changes = input("Enter a parameter to change: (1) file path, (2) month number, (3) save/display; or enter to continue: ")
                 if len(changes) == 0:
                     # No more changes to parameters
                     break
                 else:
                     if int(changes) == 1:
                         # New FESOM file
-                        file_path = raw_input("Path to one year of 5-day averages for sea ice variables: ")
+                        file_path = input("Path to one year of 5-day averages for sea ice variables: ")
                     elif int(changes) == 2:
                         # New month
-                        month = int(raw_input("Month number (1-12): ")) - 1
+                        month = int(input("Month number (1-12): ")) - 1
                     elif int(changes) == 3:
                         # Change from save to display, or vice versa
                         save = not save
             if save:
                 # Get a new figure name
-                fig_name = raw_input("File name for figure: ")
+                fig_name = input("File name for figure: ")
             # Make the plot
             nsidc_aice_monthly(elements, patches, file_path, month, save, fig_name)
         else:

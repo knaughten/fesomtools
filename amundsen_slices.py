@@ -36,10 +36,10 @@ def amundsen_slices (rcp, model, fig_name):
     elif rcp == '85':
         rcp_title = 'RCP 8.5 ' + model
 
-    print 'Building FESOM mesh'
+    print('Building FESOM mesh')
     elements = fesom_grid(mesh_path)
 
-    print 'Reading data'
+    print('Reading data')
     id = Dataset(file_beg, 'r')
     temp_nodes_beg = id.variables['temp'][:,:]
     salt_nodes_beg = id.variables['salt'][:,:]
@@ -54,9 +54,9 @@ def amundsen_slices (rcp, model, fig_name):
     gs_temp.update(left=0.05, right=0.9, bottom=0.54, top=0.91, wspace=0.05, hspace=0.2)
     gs_salt = GridSpec(2,4)
     gs_salt.update(left=0.05, right=0.9, bottom=0.06, top=0.44, wspace=0.05, hspace=0.2)
-    print 'Temperature, 1996-2005'
+    print('Temperature, 1996-2005')
     for season in range(4):
-        print '...' + season_names[season]
+        print('...' + season_names[season])
         # Interpolate to lon0 and get plotting patches
         patches, values, tmp = side_patches(elements, lat_max, lon0, temp_nodes_beg[season,:])
         ax = subplot(gs_temp[0,season])
@@ -82,9 +82,9 @@ def amundsen_slices (rcp, model, fig_name):
             cbaxes = fig.add_axes([0.93, 0.6, 0.015, 0.25])
             cbar = colorbar(img, cax=cbaxes, ticks=arange(temp_min, temp_max+temp_tick, temp_tick), extend='both')
             cbar.ax.tick_params(labelsize=16)
-    print 'Temperature, 2091-2100'
+    print('Temperature, 2091-2100')
     for season in range(4):
-        print '...' + season_names[season]
+        print('...' + season_names[season])
         patches, values, tmp = side_patches(elements, lat_max, lon0, temp_nodes_end[season,:])
         ax = subplot(gs_temp[1,season])
         img = PatchCollection(patches, cmap='jet')
@@ -99,9 +99,9 @@ def amundsen_slices (rcp, model, fig_name):
         if season == 1:
             # Title
             text(-69, 50, rcp_title, ha='center', fontsize=24)
-    print 'Salinity, 1996-2005'
+    print('Salinity, 1996-2005')
     for season in range(4):
-        print '...' + season_names[season]
+        print('...' + season_names[season])
         patches, values, tmp = side_patches(elements, lat_max, lon0, salt_nodes_beg[season,:])
         ax = subplot(gs_salt[0,season])
         img = PatchCollection(patches, cmap='jet')
@@ -126,9 +126,9 @@ def amundsen_slices (rcp, model, fig_name):
             cbaxes = fig.add_axes([0.93, 0.13, 0.015, 0.25])
             cbar = colorbar(img, cax=cbaxes, ticks=arange(salt_min, salt_max+salt_tick, salt_tick), extend='both')
             cbar.ax.tick_params(labelsize=16)
-    print 'Salinity, 2091-2100'
+    print('Salinity, 2091-2100')
     for season in range(4):
-        print '...' + season_names[season]
+        print('...' + season_names[season])
         patches, values, tmp = side_patches(elements, lat_max, lon0, salt_nodes_end[season,:])
         ax = subplot(gs_salt[1,season])
         img = PatchCollection(patches, cmap='jet')
@@ -150,17 +150,17 @@ def amundsen_slices (rcp, model, fig_name):
 # Command-line interface
 if __name__ == "__main__":
 
-    tmp = int(raw_input("RCP 4.5 (1) or 8.5 (2)? "))
+    tmp = int(input("RCP 4.5 (1) or 8.5 (2)? "))
     if tmp == 1:
         rcp = '45'
     elif tmp == 2:
         rcp = '85'
-    tmp = int(raw_input("Multi-model mean (1) or ACCESS 1.0 (2)? "))
+    tmp = int(input("Multi-model mean (1) or ACCESS 1.0 (2)? "))
     if tmp == 1:
         model = 'M'
     elif tmp == 2:
         model = 'A'
-    fig_name = raw_input("Filename for figure: ")
+    fig_name = input("Filename for figure: ")
     amundsen_slices(rcp, model, fig_name)
     
             

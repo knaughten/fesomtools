@@ -24,7 +24,7 @@ def timeseries_massloss_sectors (mesh_path, diag_file, log_file, fig_dir=''):
     tmp_massloss = []
     # Check if the log file exists
     if exists(log_file):
-        print 'Reading previously calculated values'
+        print('Reading previously calculated values')
         f = open(log_file, 'r')
         # Skip the first line (header)
         f.readline()
@@ -54,10 +54,10 @@ def timeseries_massloss_sectors (mesh_path, diag_file, log_file, fig_dir=''):
     else:
         start_t = 0
 
-    print 'Building grid'
+    print('Building grid')
     elements = fesom_grid(mesh_path, circumpolar, cross_180)
 
-    print 'Reading data'
+    print('Reading data')
     id = Dataset(diag_file, 'r')
     num_time = id.variables['time'].shape[0]
     # Set up array of mass loss values
@@ -69,7 +69,7 @@ def timeseries_massloss_sectors (mesh_path, diag_file, log_file, fig_dir=''):
     ismr = id.variables['wnet'][:,:]*sec_per_year
     id.close()
 
-    print 'Setting up arrays'
+    print('Setting up arrays')
     # Melt rate timeseries at each element
     ismr_elm = zeros([num_time, len(elements)])
     # Area of each element
@@ -113,7 +113,7 @@ def timeseries_massloss_sectors (mesh_path, diag_file, log_file, fig_dir=''):
                 # Larsen Ice Shelves
                 location_flag[7,i] = 1
             else:
-                print 'No region found for lon=',str(lon),', lat=',str(lat)
+                print('No region found for lon=',str(lon),', lat=',str(lat))
                 break #return
             # All ice shelf elements are in Total Antarctica
             location_flag[8,i] = 1
@@ -125,7 +125,7 @@ def timeseries_massloss_sectors (mesh_path, diag_file, log_file, fig_dir=''):
         # Calculate area of the ice shelf
         tmp_area = sum(area_elm*location_flag[index,:])
         factors[index] = 1e12/(rho_ice*tmp_area)
-        print 'Area of ' + names[index] + ': ' + str(tmp_area) + ' m^2'
+        print('Area of ' + names[index] + ': ' + str(tmp_area) + ' m^2')
 
     # Build timeseries
     for t in range(num_time):
@@ -139,7 +139,7 @@ def timeseries_massloss_sectors (mesh_path, diag_file, log_file, fig_dir=''):
     # Calculate time values
     time = arange(size(massloss,1))*days_per_output/365.
 
-    print 'Plotting'
+    print('Plotting')
     for index in range(num_sectors):
         # Set up plot: mass loss and melt rate are directly proportional (with
         # a different constant of proportionality for each ice shelf depending
@@ -165,7 +165,7 @@ def timeseries_massloss_sectors (mesh_path, diag_file, log_file, fig_dir=''):
         title(names[index])
         fig.savefig(fig_dir + fig_names[index])    
 
-    print 'Saving results to log file'
+    print('Saving results to log file')
     f = open(log_file, 'w')
     for index in range(num_sectors):
         f.write(names[index] + ' Basal Mass Loss (Gt/y)\n')
@@ -177,9 +177,9 @@ def timeseries_massloss_sectors (mesh_path, diag_file, log_file, fig_dir=''):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    diag_file = raw_input("Path to FESOM forcing.diag.nc output file: ")
-    log_file = raw_input("Path to logfile to save values and/or read previously calculated values: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    diag_file = input("Path to FESOM forcing.diag.nc output file: ")
+    log_file = input("Path to logfile to save values and/or read previously calculated values: ")
 
     timeseries_massloss_sectors(mesh_path, diag_file, log_file)
     

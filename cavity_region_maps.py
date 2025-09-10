@@ -610,7 +610,7 @@ ice_file_end = 'seasonal_climatology_ice_2091_2100.nc'
 # Titles for plotting
 expt_names = ['RCP 4.5 M', 'RCP 4.5 A', 'RCP 8.5 M', 'RCP 8.5 A', 'CONTROL']
 num_expts = len(directories)
-middle_expt = (num_expts+1)/2 - 1
+middle_expt = (num_expts+1)//2 - 1
 # Start and end years for each period
 beg_years = [1996, 2005]
 end_years = [2091, 2100]
@@ -618,7 +618,7 @@ end_years = [2091, 2100]
 deg2rad = pi/180.0
 sec_per_year = 365.25*24*3600
 
-print 'Building mesh'
+print('Building mesh')
 # Mask open ocean
 elements, mask_patches = make_patches(mesh_path, circumpolar=True, mask_cavities=True)
 # Unmask ice shelves
@@ -641,7 +641,7 @@ for line in f:
     elif tmp == 0:
         node_cavity.append(False)
     else:
-        print 'Problem'
+        print('Problem')
 f.close()
 # Save the number of 2D nodes
 n2d = len(node_cavity)
@@ -690,7 +690,7 @@ for elm in elements:
 num_elm = len(elements)
 num_ice_elm = num_elm - num_cavity_elm
 
-print 'Building ice shelf front contours'
+print('Building ice shelf front contours')
 contour_lines = []
 for elm in elements:
     # Select elements where exactly 2 of the 3 nodes are in a cavity
@@ -709,7 +709,7 @@ for elm in elements:
             # Draw a line between the 2 nodes
             contour_lines.append([(x_tmp[0], y_tmp[0]), (x_tmp[1], y_tmp[1])])
 
-print 'Calculating ice shelf melt rate'
+print('Calculating ice shelf melt rate')
 melt_beg = zeros(num_cavity_elm)
 # First read melt rate at beginning
 id = Dataset(directory_beg + forcing_file_beg, 'r')
@@ -738,7 +738,7 @@ for expt in range(num_expts):
 # Save number of 2D nodes for later
 n2d = size(node_melt_diff)
 
-print 'Calculating surface and bottom temperature'
+print('Calculating surface and bottom temperature')
 bwtemp_beg = zeros(num_elm)
 sst_beg = zeros(num_elm)
 # Read full 3D field to start
@@ -764,7 +764,7 @@ for expt in range(num_expts):
         sst_diff[expt,i] = mean([node_temp_diff[elm.nodes[0].id], node_temp_diff[elm.nodes[1].id], node_temp_diff[elm.nodes[2].id]])
         i += 1
 
-print 'Calculating surface and bottom salinity'
+print('Calculating surface and bottom salinity')
 bwsalt_beg = zeros(num_elm)
 sss_beg = zeros(num_elm)
 # Read full 3D field to start
@@ -817,7 +817,7 @@ for expt in range(num_expts):
             aice_diff[expt,i] = mean([node_aice_diff[elm.nodes[0].id], node_aice_diff[elm.nodes[1].id], node_aice_diff[elm.nodes[2].id]])
             i += 1'''
 
-print 'Calculating vertically averaged velocity'
+print('Calculating vertically averaged velocity')
 velavg_beg = zeros([num_elm])
 # Read full 3D fields for both u and v
 id = Dataset(directory_beg + oce_file_beg, 'r')

@@ -119,20 +119,20 @@ def watermass_9pt (control, rcp, model, fig_name):
 # Command-line interface
 if __name__ == "__main__":
 
-    sim = int(raw_input('Control run (1) or RCP run (2)? '))
+    sim = int(input('Control run (1) or RCP run (2)? '))
     if sim == 1:
         control = True
         rcp = None
         model = None
     elif sim == 2:
         control = False
-        key = int(raw_input('RCP 4.5 (4) or 8.5 (8)? '))
+        key = int(input('RCP 4.5 (4) or 8.5 (8)? '))
         if key == 4:
             rcp = '45'
         elif key == 8:
             rcp = '85'
-        model = raw_input('Multi-model mean (M) or ACCESS 1.0 (A)? ')
-    fig_name = raw_input('Filename for figure: ')
+        model = input('Multi-model mean (M) or ACCESS 1.0 (A)? ')
+    fig_name = input('Filename for figure: ')
     watermass_9pt(control, rcp, model, fig_name)
         
     

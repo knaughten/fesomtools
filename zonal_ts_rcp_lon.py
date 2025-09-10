@@ -32,9 +32,9 @@ def zonal_ts_rcp_lon (lon0, lat_min, lat_max, save=False, fig_name=None):
     else:
         lon_string = str(lon0)+r'$^{\circ}$E'
 
-    print 'Building FESOM mesh'
+    print('Building FESOM mesh')
     elm2D = fesom_grid(mesh_path)
-    print 'Reading temperature and salinity data'
+    print('Reading temperature and salinity data')
     id = Dataset(directory_beg + file_beg, 'r')
     temp_nodes_beg = id.variables['temp'][0,:]
     salt_nodes_beg = id.variables['salt'][0,:]
@@ -48,10 +48,10 @@ def zonal_ts_rcp_lon (lon0, lat_min, lat_max, save=False, fig_name=None):
         temp_nodes_diff[expt,:] = id.variables['temp'][0,:] - temp_nodes_beg
         salt_nodes_diff[expt,:] = id.variables['salt'][0,:] - salt_nodes_beg
 
-    print 'Interpolating to ' + lon_string
+    print('Interpolating to ' + lon_string)
     # Build arrays of SideElements making up zonal slices
     # Start with beginning
-    print '...'+str(beg_years[0])+'-'+str(beg_years[1])
+    print('...'+str(beg_years[0])+'-'+str(beg_years[1]))
     selements_temp_beg = fesom_sidegrid(elm2D, temp_nodes_beg, lon0, lat_max)
     selements_salt_beg = fesom_sidegrid(elm2D, salt_nodes_beg, lon0, lat_max)
     # Build array of quadrilateral patches for the plots, and data values
@@ -74,7 +74,7 @@ def zonal_ts_rcp_lon (lon0, lat_min, lat_max, save=False, fig_name=None):
     temp_diff = zeros([num_expts, len(patches)])
     salt_diff = zeros([num_expts, len(patches)])
     for expt in range(num_expts):
-        print '...'+expt_names[expt]
+        print('...'+expt_names[expt])
         selements_temp_diff = fesom_sidegrid(elm2D, temp_nodes_diff[expt,:], lon0, lat_max)
         selements_salt_diff = fesom_sidegrid(elm2D, salt_nodes_diff[expt,:], lon0, lat_max)
         i = 0
@@ -101,7 +101,7 @@ def zonal_ts_rcp_lon (lon0, lat_min, lat_max, save=False, fig_name=None):
     # Round down to nearest 50 metres
     depth_min = floor(depth_min/50)*50
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(20,16))    
     # Temperature
     gs_temp = GridSpec(2,3)
@@ -194,13 +194,13 @@ def zonal_ts_rcp_lon (lon0, lat_min, lat_max, save=False, fig_name=None):
 # Command-line interface
 if __name__ == "__main__":
 
-    lon0 = float(raw_input('Longitude to plot (-180 to 180): '))
-    lat_min = float(raw_input('Minimum latitude to plot (-90 to 90): '))
-    lat_max = float(raw_input('Maximum latitude to plot (-90 to 90): '))
-    action = raw_input("Save figure (s) or display on screen (d)? ")
+    lon0 = float(input('Longitude to plot (-180 to 180): '))
+    lat_min = float(input('Minimum latitude to plot (-90 to 90): '))
+    lat_max = float(input('Maximum latitude to plot (-90 to 90): '))
+    action = input("Save figure (s) or display on screen (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input('Filename for figure: ')
+        fig_name = input('Filename for figure: ')
     elif action == 'd':
         save = False
         fig_name = None

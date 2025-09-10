@@ -118,7 +118,7 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head
         units = 'm'
 
     if nodes is None or elements is None:
-        print 'Building FESOM mesh'
+        print('Building FESOM mesh')
         nodes, elements = fesom_grid(mesh_path, return_nodes=True)
     # Count the number of 2D nodes
     f = open(mesh_path+'nod2d.out', 'r')
@@ -133,7 +133,7 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head
         f.close()
         cavity = np.array(cavity)
     
-    print 'Building regular grid'
+    print('Building regular grid')
     lon_reg = np.arange(xmin, xmax+res, res)
     # Iterative latitude axis scaled by cos of latitude, as in mitgcm_python
     lat_reg = [ymin]
@@ -165,10 +165,10 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head
         return data    
 
     for year in range(start_year, end_year+1):
-        print 'Processing ' + str(year)
+        print('Processing ' + str(year))
         out_file = out_file_head+'_'+str(year)+'.nc'
 
-        print '...setting up '+out_file
+        print('...setting up '+out_file)
         id_out = nc.Dataset(out_file, 'w')
         id_out.createDimension('time', None)
         id_out.createVariable('time', 'f8', ('time'))
@@ -199,7 +199,7 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head
         
         # Read data
         in_file = output_dir+file_head+str(year)+file_tail
-        print '...reading '+in_file
+        print('...reading '+in_file)
         if double_var:
             # Two variables to read
             data1 = read_single_var(in_file, var_in_1)
@@ -210,16 +210,16 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head
         # Process data as needed
         if double_var and var.endswith('speed') or var.endswith('stress'):
             # Get magnitude of vector
-            print '...calculating magnitude'
+            print('...calculating magnitude')
             data = np.sqrt(data1**2 + data2**2)
         if var == 'mixed_layer_depth':
-            print '...calculating density'
+            print('...calculating density')
             # Calculate density of each node
             density = unesco(data1, data2, np.zeros(data1.shape))
             # Set up array for mixed layer depth
             data = np.zeros([num_time, n2d])
             # Loop over timesteps (I know this is gross)
-            print '...calculating mixed layer depth'
+            print('...calculating mixed layer depth')
             for t in range(num_time):
                 # Loop over surface nodes
                 for i in range(n2d):
@@ -241,11 +241,11 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head
                         depth_tmp = curr_node.depth
                         curr_node = curr_node.below
         if depth == 'surface':
-            print '...selecting surface'
+            print('...selecting surface')
             # Select only the surface nodes
             data = data[:,:n2d]
         elif depth == 'bottom':
-            print '...selecting bottom'
+            print('...selecting bottom')
             # Select the bottom of each water column
             data_bottom = np.zeros([num_time, n2d])
             for i in range(n2d):
@@ -257,7 +257,7 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head
             data *= cavity
         data *= factor
 
-        print '...interpolating to regular grid'
+        print('...interpolating to regular grid')
         # Interpolate to regular grid
         data_reg = np.zeros([num_time, num_lat, num_lon])
         valid_mask = np.zeros([num_lat, num_lon])
@@ -321,7 +321,7 @@ def process_var (var, output_dir, mesh_path, start_year, end_year, out_file_head
         valid_mask = np.tile(valid_mask, [num_time,1,1])
         data_reg = np.ma.masked_where(valid_mask==0, data_reg)
         # Write to output file
-        print '...writing result'
+        print('...writing result')
         id_out.variables[var][:] = data_reg
         id_out.close()
 
@@ -335,7 +335,7 @@ def process_all_intercomparison (base_dir='../FESOM/', out_file_dir='../FESOM/da
     end_year = 2016
 
     for var in ['bottom_temp', 'sfc_temp', 'bottom_salt', 'sfc_salt', 'bottom_speed', 'sfc_speed', 'ssh', 'ismr', 'seaice_conc', 'seaice_thick', 'seaice_growth', 'sfc_stress', 'mixed_layer_depth']:
-        print 'Processing variable ' + var
+        print('Processing variable ' + var)
         process_var(var, output_dir, mesh_path, start_year, end_year, out_file_dir+var)
 
 
@@ -352,12 +352,12 @@ def process_all_future (base_dir='/gws/nopw/j04/bas_pog/kaight/PhD/'):
     end_year = 2100
     month = 3  # April, 0-indexed
 
-    print 'Building FESOM mesh'
+    print('Building FESOM mesh')
     nodes, elements = fesom_grid(mesh_path, return_nodes=True)
 
     for n in range(num_expt):
         for var in ['sfc_temp', 'bottom_temp', 'sfc_salt', 'bottom_salt', 'sfc_speed', 'bottom_speed', 'ssh', 'mixed_layer_depth']:
-            print 'Processing variable '+var+' for experiment '+expt_names[n]
+            print('Processing variable '+var+' for experiment '+expt_names[n])
             process_var(var, expt_dirs[n], mesh_path, start_year, end_year, output_file_dir+expt_names[n]+'/'+var, month=month, nodes=nodes, elements=elements)
 
     

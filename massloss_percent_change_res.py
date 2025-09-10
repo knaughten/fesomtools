@@ -18,7 +18,7 @@ def massloss_percent_change_res ():
     skipyears = 28
     num_years = 14
     # 5-day averages
-    peryear = 365/5
+    peryear = 365//5
 
     # Limits on longitude and latitude for each ice shelf
     # These depend on the source geometry, in this case RTopo 1.05

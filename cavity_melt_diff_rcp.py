@@ -40,12 +40,12 @@ def cavity_melt_diff_rcp (mesh_path, output_path, fig_dir=''):
     sec_per_year = 365.25*24*3600
     deg2rad = pi/180.0
 
-    print 'Building FESOM mesh'
+    print('Building FESOM mesh')
     # Mask open ocean
     elements, mask_patches = make_patches(mesh_path, circumpolar=True, mask_cavities=True)
     # Unmask ice shelves
     patches = iceshelf_mask(elements)
-    print 'Reading data'
+    print('Reading data')
     id_beg = Dataset(output_path + file_name_beg, 'r')
     node_data_beg = id_beg.variables['wnet'][0,:]*sec_per_year
     id_beg.close()
@@ -64,7 +64,7 @@ def cavity_melt_diff_rcp (mesh_path, output_path, fig_dir=''):
 
     # Loop over ice shelves
     for index in range(num_shelves):
-        print 'Processing ' + shelf_names[index]
+        print('Processing ' + shelf_names[index])
         # Convert lat/lon bounds to polar coordinates for plotting
         x1 = -(lat_min[index]+90)*cos(lon_min[index]*deg2rad+pi/2)
         y1 = (lat_min[index]+90)*sin(lon_min[index]*deg2rad+pi/2)
@@ -149,9 +149,9 @@ def truncate_colormap(cmap, minval=0.0, maxval=1.0, n=-1):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    file_path = raw_input("Path to output directory for RCP: ")
-    fig_dir = raw_input("Path to directory to save figures into: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    file_path = input("Path to output directory for RCP: ")
+    fig_dir = input("Path to directory to save figures into: ")
     cavity_melt_diff_rcp(mesh_path, file_path, fig_dir)
             
                     

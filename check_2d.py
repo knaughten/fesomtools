@@ -122,5 +122,5 @@ def check_2d (mesh_path):
 
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
     check_2d(mesh_path)

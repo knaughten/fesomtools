@@ -29,14 +29,14 @@ def wind_rcp ():
         uwind_avg[expt,:] = mean(uwind, axis=1)
         id.close()
 
-    print 'Maximum wind: '
+    print('Maximum wind: ')
     for expt in range(num_expts):
-        print expt_names[expt] + ': ' + str(amax(uwind_avg[expt,:]))
+        print(expt_names[expt] + ': ' + str(amax(uwind_avg[expt,:])))
 
-    print 'Latitude of maximum uwind: '
+    print('Latitude of maximum uwind: ')
     for expt in range(num_expts):
         index = argmax(uwind_avg[expt,:])
-        print expt_names[expt] + ': ' + str(latitude[index])
+        print(expt_names[expt] + ': ' + str(latitude[index]))
 
     fig, ax = subplots(figsize=(10,6))
     for expt in range(num_expts):

@@ -80,7 +80,7 @@ def watermass_mp_9pt (rcp, model, fig_name):
     mp_watermass_end = mean(mp_watermass[:,:,-10:], axis=2)
     mp_total_end = sum(mp_watermass_end, axis=0)
     for sector in range(num_sectors):
-        print 'Change in total melt potential for ' + sector_names[sector] + ': ' + str((mp_total_end[sector]-mp_total_beg[sector])/mp_total_beg[sector]*100)
+        print('Change in total melt potential for ' + sector_names[sector] + ': ' + str((mp_total_end[sector]-mp_total_beg[sector])/mp_total_beg[sector]*100))
 
     # Set up plot
     fig = figure(figsize=(12,10))
@@ -113,13 +113,13 @@ def watermass_mp_9pt (rcp, model, fig_name):
 if __name__ == "__main__":
 
     control = False
-    key = int(raw_input('RCP 4.5 (4) or 8.5 (8)? '))
+    key = int(input('RCP 4.5 (4) or 8.5 (8)? '))
     if key == 4:
         rcp = '45'
     elif key == 8:
         rcp = '85'
-    model = raw_input('Multi-model mean (M) or ACCESS 1.0 (A)? ')
-    fig_name = raw_input('Filename for figure: ')
+    model = input('Multi-model mean (M) or ACCESS 1.0 (A)? ')
+    fig_name = input('Filename for figure: ')
     watermass_mp_9pt(rcp, model, fig_name)
         
     

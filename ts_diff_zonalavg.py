@@ -42,7 +42,7 @@ def ts_diff_zonalavg ():
         salt_diff[expt,:] = id.variables['salt'][:,:] - salt_beg
         id.close()
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(20,16))
     # Temperature
     gs_temp = GridSpec(2,3)

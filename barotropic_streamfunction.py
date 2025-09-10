@@ -20,7 +20,7 @@ def barotropic_streamfunction (mesh_path, file_path, tstep, save=False, fig_name
     # Degrees to radians coversion factor
     deg2rad = pi/180.0
 
-    print 'Building mesh'
+    print('Building mesh')
     elements = fesom_grid(mesh_path, circumpolar=False, cross_180=True)
     # Read number of 2D nodes
     f = open(mesh_path + 'nod2d.out', 'r')
@@ -74,7 +74,7 @@ def barotropic_streamfunction (mesh_path, file_path, tstep, save=False, fig_name
     dx = r*cos(lat_reg_2d*deg2rad)*dlon_2d*deg2rad
     dy = r*dlat_2d*deg2rad
 
-    print 'Reading data'
+    print('Reading data')
     # Read 3D rotated u and v
     id = Dataset(file_path, 'r')
     ur = id.variables['u'][tstep-1,:]
@@ -97,7 +97,7 @@ def barotropic_streamfunction (mesh_path, file_path, tstep, save=False, fig_name
             dz = node_depth[bot_id-1] - node_depth[top_id-1]
             int_udz[n] += 0.5*(u[top_id-1] + u[bot_id-1])*dz
 
-    print 'Interpolating to regular grid'
+    print('Interpolating to regular grid')
     int_udz_reg = zeros([num_lat, num_lon])
     # For each element, check if a point on the regular lat-lon grid lies
     # within. If so, do barycentric interpolation to that point.
@@ -161,7 +161,7 @@ def barotropic_streamfunction (mesh_path, file_path, tstep, save=False, fig_name
     # Apply land mask: wherever interpolated field was identically zero
     strf = ma.masked_where(int_udz_reg==0, strf)
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(10,6))
     ax = fig.add_subplot(1,1,1)
     pcolor(lon_reg, lat_reg, strf, cmap='jet')
@@ -181,13 +181,13 @@ def barotropic_streamfunction (mesh_path, file_path, tstep, save=False, fig_name
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    file_path = raw_input("Path to FESOM output file containing u and v: ")
-    tstep = int(raw_input("Time index to plot (starting at 1): "))
-    action = raw_input("Save figure (s) or display on screen (d)? ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    file_path = input("Path to FESOM output file containing u and v: ")
+    tstep = int(input("Time index to plot (starting at 1): "))
+    action = input("Save figure (s) or display on screen (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input("Path to filename for figure: ")
+        fig_name = input("Path to filename for figure: ")
     elif action == 'd':
         save = False
         fig_name = None

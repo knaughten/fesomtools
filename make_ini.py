@@ -25,9 +25,9 @@ def make_ini ():
 
     # Fill land masks with nearest neighbours
     # Loop over z-levels
-    print 'Filling land mask with nearest neighbours'
+    print('Filling land mask with nearest neighbours')
     for k in range(size(depth_ecco)):
-        print '...vertical level ' + str(k+1) + ' of ' + str(size(depth_ecco))
+        print('...vertical level ' + str(k+1) + ' of ' + str(size(depth_ecco)))
         for var in range(2):
             if var == 0:
                 tmp = theta[k,:,:]
@@ -47,7 +47,7 @@ def make_ini ():
     # Header
     sizes = array([size(lon_ecco), size(lat_ecco), size(depth_ecco)])
 
-    print 'Writing grid'
+    print('Writing grid')
     sizes.tofile(f, ' ')
     f.write('\n')
 
@@ -85,7 +85,7 @@ def make_ini ():
         else:
             posn = posn+5
 
-    print 'Setting up temperature'
+    print('Setting up temperature')
     # Flatten the 3D array
     theta_flat = []
     for i in range(size(lon_ecco)):
@@ -93,7 +93,7 @@ def make_ini ():
             for k in range(size(depth_ecco)):
                 theta_flat.append(theta[k,j,i])
 
-    print 'Writing temperature'
+    print('Writing temperature')
     theta_flat = array(theta_flat)
     posn = 0
     while True:
@@ -106,14 +106,14 @@ def make_ini ():
         else:
             posn = posn+5
 
-    print 'Setting up salinity'
+    print('Setting up salinity')
     salt_flat = []
     for i in range(size(lon_ecco)):
         for j in range(size(lat_ecco)):
             for k in range(size(depth_ecco)):
                 salt_flat.append(salt[k,j,i])
 
-    print 'Writing salinity'
+    print('Writing salinity')
     salt_flat = array(salt_flat)
     posn = 0
     while True:

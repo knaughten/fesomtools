@@ -28,16 +28,16 @@ def amundsen_ice2ocn_pig (smoothing_years, fig_name):
     # Spinup years to discard (first 2 repetitions of 1992-2005)
     control_skipyears = 28
     # Output steps per year
-    peryear = 365/5
+    peryear = 365//5
 
     # Figure out window size on smoothing radius; treat even and odd #bins
     # differently
     if smoothing_years % 2 == 0:
         even = True
-        window = smoothing_years/2
+        window = smoothing_years//2
     else:
         even = False
-        window = (smoothing_years-1)/2
+        window = (smoothing_years-1)//2
 
     # Build time axis: 1 point per year
     num_years = year_end - year_start + 1
@@ -186,8 +186,8 @@ def amundsen_ice2ocn_pig (smoothing_years, fig_name):
 # Command-line interface
 if __name__ == "__main__":
 
-    smoothing_years = int(raw_input("Number of years for running mean: "))
-    fig_name = raw_input("Filename for figure: ")
+    smoothing_years = int(input("Number of years for running mean: "))
+    fig_name = input("Filename for figure: ")
     amundsen_ice2ocn_pig(smoothing_years, fig_name)
     
                 

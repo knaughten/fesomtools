@@ -31,7 +31,7 @@ def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_f
     # Name stamped on FESOM output files
     expt_name = 'MK44005'
 
-    print 'Calculating grids'
+    print('Calculating grids')
     # Make the latitude and longitude arrays for the common grid
     lon_common = arange(-180, 180+res, res)
     lat_common = arange(-90, nbdry+res, res)
@@ -70,7 +70,7 @@ def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_f
     # Unrotate grid
     lon_fesom, lat_fesom = unrotate_grid(rlon, rlat)
 
-    print 'Setting up ' + out_file
+    print('Setting up ' + out_file)
     id = Dataset(out_file, 'w')
     id.createDimension('longitude', size(lon_common))
     id.createDimension('latitude', size(lat_common))
@@ -127,9 +127,9 @@ def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_f
     id.variables['curl_str'].units = 'N/m^3'    
 
     for year in range(start_year, end_year+1):
-        print 'Processing year ' + str(year)
+        print('Processing year ' + str(year))
         for month in range(12):
-            print 'Processing month ' + str(month+1)
+            print('Processing month ' + str(month+1))
             curr_month = (year-start_year)*12 + month
             # Write time value for this month            
             id.variables['time'][curr_month] = curr_month+1
@@ -139,7 +139,7 @@ def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_f
             forcing_diag_file = output_dir + expt_name + '.' + str(year) + '.forcing.diag.nc'
             ice_mean_file = output_dir + expt_name + '.' + str(year) + '.ice.mean.nc'
 
-            print '...sea surface temperature'
+            print('...sea surface temperature')
             # Get monthly average of 3D variable
             temp_fesom = monthly_avg(oce_mean_file, 'temp', month)
             # Select surface nodes
@@ -151,7 +151,7 @@ def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_f
             # Write to file
             id.variables['sst'][curr_month,:,:] = sst
 
-            print '...sea surface salinity'
+            print('...sea surface salinity')
             # Get monthly average of 3D variable
             salt_fesom = monthly_avg(oce_mean_file, 'salt', month)
             # Select surface nodes
@@ -163,7 +163,7 @@ def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_f
             # Write to file
             id.variables['sss'][curr_month,:,:] = sss            
 
-            print '...surface heat flux'
+            print('...surface heat flux')
             # Get monthly average
             shflux_fesom = monthly_avg(forcing_diag_file, 'qnet', month)
             # Interpolate to common grid
@@ -173,7 +173,7 @@ def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_f
             # Write to file
             id.variables['shflux'][curr_month,:,:] = shflux
 
-            print '...surface salt flux'
+            print('...surface salt flux')
             # Get monthly average
             ssflux_fesom = monthly_avg(forcing_diag_file, 'virtual_salt', month)
             # Interpolate to common grid
@@ -183,7 +183,7 @@ def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_f
             # Write to file
             id.variables['ssflux'][curr_month,:,:] = ssflux
 
-            print '...sea ice concentration'
+            print('...sea ice concentration')
             # Get monthly average
             aice_fesom = monthly_avg(ice_mean_file, 'area', month)
             # Interpolate to common grid
@@ -193,7 +193,7 @@ def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_f
             # Write to file
             id.variables['aice'][curr_month,:,:] = aice
 
-            print '...sea ice thickness'
+            print('...sea ice thickness')
             # Get monthly average
             hice_fesom = monthly_avg(ice_mean_file, 'hice', month)
             # Interpolate to common grid
@@ -203,7 +203,7 @@ def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_f
             # Write to file
             id.variables['hice'][curr_month,:,:] = hice
 
-            print '...surface ocean velocity vector'
+            print('...surface ocean velocity vector')
             # Get monthly averages of both vector components in 3D
             uocn_3d_tmp = monthly_avg(oce_mean_file, 'u', month)
             vocn_3d_tmp = monthly_avg(oce_mean_file, 'v', month)
@@ -222,7 +222,7 @@ def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_f
             id.variables['uocn'][curr_month,:,:] = uocn
             id.variables['vocn'][curr_month,:,:] = vocn
 
-            print '...sea ice velocity vector'
+            print('...sea ice velocity vector')
             # Get monthly averages of both vector components
             uice_tmp = monthly_avg(ice_mean_file, 'uice', month)
             vice_tmp = monthly_avg(ice_mean_file, 'vice', month)
@@ -238,7 +238,7 @@ def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_f
             id.variables['uice'][curr_month,:,:] = uice
             id.variables['vice'][curr_month,:,:] = vice
 
-            print '...surface stress vector'
+            print('...surface stress vector')
             # Surface stresses
             # Get monthly averages of both vector components
             sustr_tmp = monthly_avg(forcing_diag_file, 'stress_x', month)
@@ -255,7 +255,7 @@ def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_f
             id.variables['sustr'][curr_month,:,:] = sustr
             id.variables['svstr'][curr_month,:,:] = svstr
 
-            print '...curl of surface stress vector'
+            print('...curl of surface stress vector')
             # Curl of surface stress = d/dx (svstr) - d/dy (sustr)
             # First calculate the two derivatives
             dsvstr_dx = ma.empty(shape(svstr_common))
@@ -271,7 +271,7 @@ def common_grid (mesh_path, output_dir, start_year, end_year, common_file, out_f
             # Write to file
             id.variables['curl_str'][curr_month,:,:] = curl_str
 
-    print 'Finished'
+    print('Finished')
     id.close()
 
 
@@ -308,12 +308,12 @@ def interp_fesom2common (lon_1d, lat_1d, lon_fesom, lat_fesom, data_fesom):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    output_dir = raw_input("Path to FESOM output directory: ")
-    start_year = int(raw_input("First year to process: "))
-    end_year = int(raw_input("Last year to process: "))
-    common_file = raw_input("Path to common-grid file containing land mask as interpolated from ROMS: ")
-    out_file = raw_input("Path to desired output file: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    output_dir = input("Path to FESOM output directory: ")
+    start_year = int(input("First year to process: "))
+    end_year = int(input("Last year to process: "))
+    common_file = input("Path to common-grid file containing land mask as interpolated from ROMS: ")
+    out_file = input("Path to desired output file: ")
     common_grid(mesh_path, output_dir, start_year, end_year, common_file, out_file)
     
             

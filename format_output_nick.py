@@ -8,7 +8,7 @@ def format_output_nick (model_dir, start_year, end_year, output_head):
     melt_tail = '.forcing.diag.nc'
     temp_tail = '.oce.mean.nc'
 
-    print 'Preparing mesh'
+    print('Preparing mesh')
     # Read rotated lon and lat
     rlon = []
     rlat = []
@@ -40,12 +40,12 @@ def format_output_nick (model_dir, start_year, end_year, output_head):
         elif tmp == 0:
             cavity.append(False)
         else:
-            print 'Problem'
+            print('Problem')
     f.close()
 
     # Loop over years
     for year in range(start_year, end_year+1):
-        print 'Processing ' + str(year)
+        print('Processing ' + str(year))
         # Read melt rate (annually averaged) and convert to m/y
         id = Dataset(model_dir + expt_name + str(year) + melt_tail, 'r')
         melt = mean(id.variables['wnet'][:,:], axis=0)*24*60*60*365.25
@@ -76,10 +76,10 @@ def format_output_nick (model_dir, start_year, end_year, output_head):
 # Command-line interface
 if __name__ == "__main__":
 
-    model_dir = raw_input("Path to FESOM output directory: ")
-    start_year = int(raw_input("First year to process: "))
-    end_year = int(raw_input("Last year to process: "))
-    output_head = raw_input("Beginning of output text file name: ")
+    model_dir = input("Path to FESOM output directory: ")
+    start_year = int(input("First year to process: "))
+    end_year = int(input("Last year to process: "))
+    output_head = input("Beginning of output text file name: ")
     format_output_nick(model_dir, start_year, end_year, output_head)
         
     

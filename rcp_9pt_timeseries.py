@@ -23,7 +23,7 @@ def rcp_9pt_timeseries ():
     # Spinup years to discard (first 2 repetitions of 1992-2005)
     control_skipyears = 28
     # Output steps per year
-    peryear = 365/5
+    peryear = 365//5
     # Number of ice shelves in timeseries_massloss.py
     num_shelves_all = 24
     # Indices of ice shelves to plot from timeseries_massloss.py

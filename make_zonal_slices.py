@@ -35,9 +35,9 @@ def make_zonal_slices (file_path, figure_dir, res_flag):
 # Command-line interface
 if __name__ == "__main__":
 
-    file_path = raw_input("Path to output avg.oce.mean file: ")
-    figure_dir = raw_input("Directory to store figures: ")
-    res_flag = int(raw_input("Low resolution (1) or high resolution (2)? "))
+    file_path = input("Path to output avg.oce.mean file: ")
+    figure_dir = input("Directory to store figures: ")
+    res_flag = int(input("Low resolution (1) or high resolution (2)? "))
     make_zonal_slices(file_path, figure_dir, res_flag)
 
     

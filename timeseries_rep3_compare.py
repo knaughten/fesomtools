@@ -18,7 +18,7 @@ def timeseries_rep3_compare ():
     # Skip the first 2 repetitions
     skipyears = 28
     # Number of records per year (assumes 5-day averages)
-    peryear = 365/5
+    peryear = 365//5
 
     # Bounds of observations for Drake Passage transport
     dpt_low = 134

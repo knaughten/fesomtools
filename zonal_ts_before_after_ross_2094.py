@@ -16,9 +16,9 @@ def zonal_ts_before_after_ross_2094 ():
     lat_min = -85
     lat_max = -73
 
-    print 'Building FESOM mesh'
+    print('Building FESOM mesh')
     elm2D = fesom_grid(mesh_path)
-    print 'Reading temperature and salinity data'
+    print('Reading temperature and salinity data')
     id = Dataset(file_beg, 'r')
     temp_nodes_beg = id.variables['temp'][0,:]
     salt_nodes_beg = id.variables['salt'][0,:]
@@ -29,7 +29,7 @@ def zonal_ts_before_after_ross_2094 ():
     salt_nodes_end = mean(id.variables['salt'][:,:], axis=0)
     id.close()
 
-    print 'Interpolating to ' + str(lon0)
+    print('Interpolating to ' + str(lon0))
     # Build arrays of SideElements making up zonal slices
     # Start with beginning
     selements_temp_beg = fesom_sidegrid(elm2D, temp_nodes_beg, lon0, lat_max)
@@ -75,7 +75,7 @@ def zonal_ts_before_after_ross_2094 ():
     # Round down to nearest 50 metres
     depth_min = floor(depth_min/50)*50
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(16,10))    
     # Temperature
     gs_temp = GridSpec(1,2)

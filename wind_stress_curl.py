@@ -33,7 +33,7 @@ def wind_stress_curl ():
     # Don't consider values above this threshold (small, negative)
     threshold = -5e-8
 
-    print 'Building mesh'
+    print('Building mesh')
     elements = fesom_grid(mesh_path, circumpolar=True, cross_180=True)
     # Read (rotated) lon and lat at each 2D node
     f = open(mesh_path + 'nod2d.out', 'r')
@@ -54,8 +54,8 @@ def wind_stress_curl ():
     rlon = array(rlon)
     rlat = array(rlat)
 
-    print 'Reading data'
-    print '...1996-2005'
+    print('Reading data')
+    print('...1996-2005')
     # Read rotated wind stress components
     id = Dataset(directory_beg + file_beg, 'r')
     stress_xr = id.variables['stress_x'][0,:]
@@ -67,7 +67,7 @@ def wind_stress_curl ():
     stress_x_end = zeros([num_expts, n2d])
     stress_y_end = zeros([num_expts, n2d])
     for expt in range(num_expts):
-        print '...' + expt_names[expt]
+        print('...' + expt_names[expt])
         id = Dataset(directories[expt] + file_end, 'r')
         stress_xr = id.variables['stress_x'][0,:]
         stress_yr = id.variables['stress_y'][0,:]
@@ -76,7 +76,7 @@ def wind_stress_curl ():
         stress_x_end[expt,:] = stress_x_tmp
         stress_y_end[expt,:] = stress_y_tmp
 
-    print 'Interpolating to regular grid'
+    print('Interpolating to regular grid')
     # Set up regular grid
     # Start with boundaries
     lon_reg_edges = linspace(lon_min, lon_max, num_lon+1)
@@ -168,7 +168,7 @@ def wind_stress_curl ():
                         stress_x_reg_end[expt,j,i] = sum(array(cff)*array(vals_x))
                         stress_y_reg_end[expt,j,i] = sum(array(cff)*array(vals_y))
 
-    print 'Calculating curl'
+    print('Calculating curl')
     # 1996-2005
     # First calculate the two derivatives
     dv_dx = zeros(shape(stress_x_reg_beg))
@@ -191,7 +191,7 @@ def wind_stress_curl ():
         du_dy[-1,:] = (stress_x_reg_end[expt,-1,:] - stress_x_reg_end[expt,-2,:])/dy[-1,:]
         curl_end_tmp[expt,:,:] = dv_dx - du_dy
 
-    print 'Plotting zonal averages'
+    print('Plotting zonal averages')
     # Calculate zonal averages
     curl_beg_avg = mean(curl_beg, axis=1)
     curl_end_avg = mean(curl_end_tmp, axis=2)
@@ -246,7 +246,7 @@ def wind_stress_curl ():
     fig.show()
     fig.savefig('windstress_curl_percent_rcp.png')
 
-    print 'Plotting 2D fields'
+    print('Plotting 2D fields')
     # First mask out regions above threshold at beginning
     curl_beg = ma.masked_where(curl_beg > threshold, curl_beg)
     curl_end = ma.empty(shape(curl_end_tmp))

@@ -43,7 +43,7 @@ def triangle_area_latdepth (lat, depth):
     # Make sure nothing went wrong here.
     error1 = abs((l23-b2-b3)/l23)
     if error1 > 0.01:
-        print 'Greater than 1% error in two values of base'
+        print('Greater than 1% error in two values of base')
     # Similarly, find h2 and h3, which both measure the length of L1.
     h2 = l12*sin(theta2)
     h3 = l13*sin(theta3)
@@ -51,7 +51,7 @@ def triangle_area_latdepth (lat, depth):
     # Make sure nothing went wrong here.
     error2 = abs((h2-h3)/h2)    
     if error2 > 0.01:
-        print 'Greater than 1% error in two values of height'
+        print('Greater than 1% error in two values of height')
         exit
 
     # The area of each right triangle is now 0.5*base*height.

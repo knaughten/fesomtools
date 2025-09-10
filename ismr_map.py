@@ -186,13 +186,13 @@ def ismr_map (mesh_path, log_path, res_flag, save=False, fig_name=None):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    log_path = raw_input("Path to mass loss logfile: ")
-    res_flag = int(raw_input("Low resolution (1) or high (2)? "))
-    action = raw_input("Save figure (s) or display in window (d)? ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    log_path = input("Path to mass loss logfile: ")
+    res_flag = int(input("Low resolution (1) or high (2)? "))
+    action = input("Save figure (s) or display in window (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input("File name for figure: ")
+        fig_name = input("File name for figure: ")
     elif action == 'd':
         save = False
         fig_name = None

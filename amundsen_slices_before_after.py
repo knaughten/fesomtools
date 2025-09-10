@@ -46,9 +46,9 @@ def amundsen_slices_before_after (rcp, model, save=False, fig_name=None):
     num_lat = 500
     num_depth = 250
 
-    print 'Building FESOM mesh'
+    print('Building FESOM mesh')
     elm2D = fesom_grid(mesh_path)
-    print 'Reading temperature and salinity data'
+    print('Reading temperature and salinity data')
     id = Dataset(file_beg, 'r')
     temp_nodes_beg = id.variables['temp'][0,:]
     salt_nodes_beg = id.variables['salt'][0,:]
@@ -57,11 +57,11 @@ def amundsen_slices_before_after (rcp, model, save=False, fig_name=None):
     temp_nodes_end = id.variables['temp'][0,:]
     salt_nodes_end = id.variables['salt'][0,:]
 
-    print 'Calculating density'
+    print('Calculating density')
     density_nodes_beg = unesco(temp_nodes_beg, salt_nodes_beg, zeros(shape(temp_nodes_beg))) - 1000
     density_nodes_end = unesco(temp_nodes_end, salt_nodes_end, zeros(shape(temp_nodes_end))) - 1000
 
-    print 'Interpolating to ' + str(lon0)
+    print('Interpolating to ' + str(lon0))
     # Build arrays of SideElements making up zonal slices
     # Start with beginning
     selements_temp_beg = fesom_sidegrid(elm2D, temp_nodes_beg, lon0, lat_max)
@@ -77,13 +77,13 @@ def amundsen_slices_before_after (rcp, model, save=False, fig_name=None):
         # Save data value
         temp_beg.append(selm.var)
     temp_beg = array(temp_beg)
-    print 'Temp bounds, beginning: ' + str(amin(temp_beg)) + ' ' + str(amax(temp_beg))
+    print('Temp bounds, beginning: ' + str(amin(temp_beg)) + ' ' + str(amax(temp_beg)))
     # Salinity has same patches but different values
     salt_beg = []
     for selm in selements_salt_beg:
         salt_beg.append(selm.var)
     salt_beg = array(salt_beg)
-    print 'Salt bounds, beginning: ' + str(amin(salt_beg)) + ' ' + str(amax(salt_beg))
+    print('Salt bounds, beginning: ' + str(amin(salt_beg)) + ' ' + str(amax(salt_beg)))
     # Repeat for end
     selements_temp_end = fesom_sidegrid(elm2D, temp_nodes_end, lon0, lat_max)
     selements_salt_end = fesom_sidegrid(elm2D, salt_nodes_end, lon0, lat_max)
@@ -91,14 +91,14 @@ def amundsen_slices_before_after (rcp, model, save=False, fig_name=None):
     for selm in selements_temp_end:
         temp_end.append(selm.var)
     temp_end = array(temp_end)
-    print 'Temp bounds, end: ' + str(amin(temp_end)) + ' ' + str(amax(temp_end))
+    print('Temp bounds, end: ' + str(amin(temp_end)) + ' ' + str(amax(temp_end)))
     salt_end = []
     for selm in selements_salt_end:
         salt_end.append(selm.var)
     salt_end = array(salt_end)
-    print 'Salt bounds, end: ' + str(amin(salt_end)) + ' ' + str(amax(salt_end))
+    print('Salt bounds, end: ' + str(amin(salt_end)) + ' ' + str(amax(salt_end)))
 
-    print 'Interpolating density to regular grid'
+    print('Interpolating density to regular grid')
     lat_reg = linspace(lat_min, lat_max, num_lat)
     depth_reg = linspace(-depth_max, -depth_min, num_depth)
     density_reg_beg = zeros([num_depth, num_lat])
@@ -167,7 +167,7 @@ def amundsen_slices_before_after (rcp, model, save=False, fig_name=None):
     density_reg_end = ma.masked_where(isnan(density_reg_end), density_reg_end)
     depth_reg = -1*depth_reg
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(16,10))    
     # Temperature
     gs_temp = GridSpec(1,2)
@@ -260,20 +260,20 @@ def amundsen_slices_before_after (rcp, model, save=False, fig_name=None):
 # Command-line interface
 if __name__ == "__main__":
 
-    key = int(raw_input('RCP 4.5 (4) or 8.5 (8)? '))
+    key = int(input('RCP 4.5 (4) or 8.5 (8)? '))
     if key == 4:
         rcp = '45'
     elif key == 8:
         rcp = '85'
-    key = int(raw_input('Multi-model mean (1) or ACCESS 1.0 (2)? '))
+    key = int(input('Multi-model mean (1) or ACCESS 1.0 (2)? '))
     if key == 1:
         model = 'M'
     elif key == 2:
         model = 'A'
-    action = raw_input("Save figure (s) or display on screen (d)? ")
+    action = input("Save figure (s) or display on screen (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input('Filename for figure: ')
+        fig_name = input('Filename for figure: ')
     elif action == 'd':
         save = False
         fig_name = None

@@ -8,7 +8,7 @@ def calc_massloss_intercomparison_control (intercomparison_logfile, control_logf
     calc_start = 1992
     calc_end = 2005
     # Number of output steps per year in FESOM
-    peryear = 365/5
+    peryear = 365//5
     # Name of each ice shelf
     names = ['Total Mass Loss', 'Larsen D Ice Shelf', 'Larsen C Ice Shelf', 'Wilkins & George VI & Stange & Bach Ice Shelves', 'Ronne-Filchner Ice Shelf', 'Abbot Ice Shelf', 'Pine Island Glacier Ice Shelf', 'Thwaites Ice Shelf', 'Dotson Ice Shelf', 'Getz Ice Shelf', 'Nickerson Ice Shelf', 'Sulzberger Ice Shelf', 'Mertz Ice Shelf', 'Totten & Moscow University Ice Shelves', 'Shackleton Ice Shelf', 'West Ice Shelf', 'Amery Ice Shelf', 'Prince Harald Ice Shelf', 'Baudouin & Borchgrevink Ice Shelves', 'Lazarev Ice Shelf', 'Nivl Ice Shelf', 'Fimbul & Jelbart & Ekstrom Ice Shelves', 'Brunt & Riiser-Larsen Ice Shelves', 'Ross Ice Shelf']
     num_shelves = len(names)
@@ -75,16 +75,16 @@ def calc_massloss_intercomparison_control (intercomparison_logfile, control_logf
 
     # Print results
     for index in range(num_shelves):
-        print names[index]
-        print 'Intercomparison: ' + str(massloss_intercomparison[index])
-        print 'Control: ' + str(massloss_control[index])
-        print str((massloss_control[index]-massloss_intercomparison[index])/massloss_intercomparison[index]*100) + '% change'
-        print '\n'
+        print(names[index])
+        print('Intercomparison: ' + str(massloss_intercomparison[index]))
+        print('Control: ' + str(massloss_control[index]))
+        print(str((massloss_control[index]-massloss_intercomparison[index])/massloss_intercomparison[index]*100) + '% change')
+        print('\n')
 
 
 # Command-line interface
 if __name__ == "__main__":
 
-    intercomparison_logfile = raw_input("Path to massloss logfile for high-res intercomparison experiment: ")
-    control_logfile = raw_input("Path to massloss logfile for RCP control experiment: ")
+    intercomparison_logfile = input("Path to massloss logfile for high-res intercomparison experiment: ")
+    control_logfile = input("Path to massloss logfile for RCP control experiment: ")
     calc_massloss_intercomparison_control(intercomparison_logfile, control_logfile)

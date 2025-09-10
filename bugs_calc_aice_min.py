@@ -19,7 +19,7 @@ def bugs_calc_aice_min (extent_log_old, extent_log_new):
         # Feburary: 4/5 of index 7, indices 8-11, and 4/5 of index 12
         feb_extent_old[year-start_year] = (extent_5day_old[t0+6]*4 + sum(extent_5day_old[t0+7:t0+11]*5) + extent_5day_old[t0+11]*4)/28.0
     mean_old = mean(feb_extent_old)
-    print 'Mean February sea ice extent in old simulation: ' + str(mean_old)
+    print('Mean February sea ice extent in old simulation: ' + str(mean_old))
 
     extent_5day_new = []
     f = open(extent_log_new, 'r')
@@ -32,15 +32,15 @@ def bugs_calc_aice_min (extent_log_old, extent_log_new):
         t0 = (year-start_year)*73
         feb_extent_new[year-start_year] = (extent_5day_new[t0+6]*4 + sum(extent_5day_new[t0+7:t0+11]*5) + extent_5day_new[t0+11]*4)/28.0
     mean_new = mean(feb_extent_new)
-    print 'Mean February sea ice extent in new simulation: ' + str(mean_new)
-    print 'Increase of ' + str((mean_new-mean_old)/mean_old*100) + '%'
+    print('Mean February sea ice extent in new simulation: ' + str(mean_new))
+    print('Increase of ' + str((mean_new-mean_old)/mean_old*100) + '%')
 
 
 # Command-line interface
 if __name__ == "__main__":
 
-    extent_log_old = raw_input("Path to sea ice extent timeseries from old simulation: ")
-    extent_log_new = raw_input("Path to sea ice extent timeseries from new simulation: ")
+    extent_log_old = input("Path to sea ice extent timeseries from old simulation: ")
+    extent_log_new = input("Path to sea ice extent timeseries from new simulation: ")
     bugs_calc_aice_min(extent_log_old, extent_log_new)
     
 

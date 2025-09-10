@@ -25,10 +25,10 @@ def timeseries_watermass_ohc (mesh_path, output_path, start_year, end_year, log_
     # Celsius to Kelvin conversion
     C2K = 273.15         
 
-    print 'Building mesh'
+    print('Building mesh')
     elements = fesom_grid(mesh_path, circumpolar, cross_180)
 
-    print 'Categorising elements into sectors'
+    print('Categorising elements into sectors')
     location_flag = zeros([num_sectors, len(elements)])
     for i in range(len(elements)):
         elm = elements[i]
@@ -62,15 +62,15 @@ def timeseries_watermass_ohc (mesh_path, output_path, start_year, end_year, log_
                 # Larsen Ice Shelves
                 location_flag[7,i] = 1
             else:
-                print 'No region found for lon=',str(lon),', lat=',str(lat)
+                print('No region found for lon=',str(lon),', lat=',str(lat))
                 break #return
             # All ice shelf elements are in Total Antarctica
             location_flag[8,i] = 1        
 
-    print 'Calculating ocean heat content'
+    print('Calculating ocean heat content')
     ohc = zeros([num_watermasses, num_sectors, num_years])
     for year in range(start_year, end_year+1):
-        print 'Processing ' + str(year)
+        print('Processing ' + str(year))
         # Read temperature and salinity
         id = Dataset(file_head + str(year) + file_tail, 'r')
         temp = mean(id.variables['temp'][:,:], axis=0)
@@ -134,9 +134,9 @@ def timeseries_watermass_ohc (mesh_path, output_path, start_year, end_year, log_
                             ohc[wm_key, sector, year-start_year] += (curr_temp+C2K)*rhoCp*curr_volume
                     # Should be in exactly 2 sectors (1 + total Antarctica)
                     if curr_sectors != 2:
-                        print 'Wrong number of sectors for element ' + str(i)
+                        print('Wrong number of sectors for element ' + str(i))
 
-    print 'Saving results to log file'
+    print('Saving results to log file')
     f = open(log_file, 'w')
     for wm_key in range(num_watermasses):
         for sector in range(num_sectors):
@@ -149,11 +149,11 @@ def timeseries_watermass_ohc (mesh_path, output_path, start_year, end_year, log_
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    output_path = raw_input("Path to FESOM output directory: ")
-    start_year = int(raw_input("First year to process: "))
-    end_year = int(raw_input("Last year to process: "))
-    log_file = raw_input("Path to logfile: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    output_path = input("Path to FESOM output directory: ")
+    start_year = int(input("First year to process: "))
+    end_year = int(input("Last year to process: "))
+    log_file = input("Path to logfile: ")
     timeseries_watermass_ohc(mesh_path, output_path, start_year, end_year, log_file)
     
     

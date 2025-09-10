@@ -156,13 +156,13 @@ def nsidc_aice_seasonal (mesh_path, file_path1, file_path2, save=False, fig_name
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    file_path1 = raw_input("Path to output ice.mean.nc containing one year of 5-day averages (December will be used): ")
-    file_path2 = raw_input("Path to the following ice.mean.nc containing 5-day averages for the next year (January through November will be used): ")
-    action = raw_input("Save figure (s) or display on screen (d)? ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    file_path1 = input("Path to output ice.mean.nc containing one year of 5-day averages (December will be used): ")
+    file_path2 = input("Path to the following ice.mean.nc containing 5-day averages for the next year (January through November will be used): ")
+    action = input("Save figure (s) or display on screen (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input("File name for figure: ")
+        fig_name = input("File name for figure: ")
     elif action == 'd':
         save = False
         fig_name = None

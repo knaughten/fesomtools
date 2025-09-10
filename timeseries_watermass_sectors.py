@@ -26,7 +26,7 @@ def timeseries_watermass_sectors (mesh_path, output_path, start_year, end_year, 
     prev_years = 0
     # Check if the log file exists
     if exists(log_file):
-        print 'Reading previously calculated values'
+        print('Reading previously calculated values')
         # First just figure out how many years are in the log file
         f = open(log_file, 'r')
         f.readline()
@@ -60,10 +60,10 @@ def timeseries_watermass_sectors (mesh_path, output_path, start_year, end_year, 
         # Set up empty array for water mass proportions
         percent_watermass = empty([num_watermasses, num_sectors, num_years])
 
-    print 'Building grid'
+    print('Building grid')
     elements = fesom_grid(mesh_path, circumpolar, cross_180)
 
-    print 'Categorising elements into sectors'
+    print('Categorising elements into sectors')
     location_flag = zeros([num_sectors, len(elements)])
     for i in range(len(elements)):
         elm = elements[i]
@@ -97,15 +97,15 @@ def timeseries_watermass_sectors (mesh_path, output_path, start_year, end_year, 
                 # Larsen Ice Shelves
                 location_flag[7,i] = 1
             else:
-                print 'No region found for lon=',str(lon),', lat=',str(lat)
+                print('No region found for lon=',str(lon),', lat=',str(lat))
                 break #return
             # All ice shelf elements are in Total Antarctica
             location_flag[8,i] = 1
 
-    print 'Calculating water mass breakdown'    
+    print('Calculating water mass breakdown')    
     # Loop over years
     for year in range(start_year, end_year+1):
-        print 'Processing year ' + str(year)
+        print('Processing year ' + str(year))
         # Initialise volume of each water mass in each sector
         vol_watermass = zeros([num_watermasses, num_sectors])
         # Read temperature and salinity for this year, annually average
@@ -171,7 +171,7 @@ def timeseries_watermass_sectors (mesh_path, output_path, start_year, end_year, 
                             vol_watermass[wm_key, sector] += curr_volume
                     # Should be in exactly 2 sectors (1 + total Antarctica)
                     if curr_sectors != 2:
-                        print 'Wrong number of sectors for element ' + str(i)
+                        print('Wrong number of sectors for element ' + str(i))
         if year==start_year:
             # Find the total volume of each sector by adding up the volume
             # of each water mass. Only need to do this once because shouldn't
@@ -183,9 +183,9 @@ def timeseries_watermass_sectors (mesh_path, output_path, start_year, end_year, 
                 percent_watermass[wm_key, sector, year-start_year+prev_years] = vol_watermass[wm_key, sector]/vol_sectors[sector]*100
 
     # Make time axis
-    time = range(start_year-prev_years, end_year+1)
+    time = list(range(start_year-prev_years, end_year+1))
 
-    print 'Plotting'
+    print('Plotting')
     # One plot for each sector
     for sector in range(num_sectors):
         fig = figure()
@@ -205,7 +205,7 @@ def timeseries_watermass_sectors (mesh_path, output_path, start_year, end_year, 
         ax.legend(loc='center left', bbox_to_anchor=(1,0.5))
         fig.savefig(fig_dir + fig_names[sector])
 
-    print 'Saving results to log file'
+    print('Saving results to log file')
     f = open(log_file, 'w')
     for wm_key in range(num_watermasses):
         for sector in range(num_sectors):
@@ -218,12 +218,12 @@ def timeseries_watermass_sectors (mesh_path, output_path, start_year, end_year, 
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    output_path = raw_input("Path to FESOM output directory: ")
-    start_year = int(raw_input("First year to process: "))
-    end_year = int(raw_input("Last year to process: "))
-    log_file = raw_input("Path to logfile: ")
-    fig_dir = raw_input("Path to directories to save figures: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    output_path = input("Path to FESOM output directory: ")
+    start_year = int(input("First year to process: "))
+    end_year = int(input("Last year to process: "))
+    log_file = input("Path to logfile: ")
+    fig_dir = input("Path to directories to save figures: ")
     timeseries_watermass_sectors(mesh_path, output_path, start_year, end_year, log_file, fig_dir)
     
     

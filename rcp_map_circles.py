@@ -40,7 +40,7 @@ def rcp_map_circles (key=1):
     # Scaling factor for radius of circles
     k = 0.4
 
-    print 'Building mesh'
+    print('Building mesh')
     # One set of elements for calculating: doesn't cross 180
     elements_calc = fesom_grid(mesh_path, circumpolar=True, cross_180=False)
     # Count the number of ice shelf elements
@@ -72,7 +72,7 @@ def rcp_map_circles (key=1):
                 # Draw a line between the 2 nodes
                 contour_lines.append([(x_tmp[0], y_tmp[0]), (x_tmp[1], y_tmp[1])])
 
-    print 'Reading data'
+    print('Reading data')
     ismr_elm = zeros([num_expts+1, num_cavity_elm])
     # Loop over experiments
     for expt in range(num_expts+1):
@@ -93,7 +93,7 @@ def rcp_map_circles (key=1):
                 ismr_elm[expt,i] = mean([ismr_nodes[elm.nodes[0].id], ismr_nodes[elm.nodes[1].id], ismr_nodes[elm.nodes[2].id]])
                 i += 1
 
-    print 'Integrating mass loss'
+    print('Integrating mass loss')
     total_massloss = zeros([num_expts+1, num_sectors])
     # Loop over elements
     i = 0
@@ -128,7 +128,7 @@ def rcp_map_circles (key=1):
                 # Larsen Ice Shelves
                 index = 7
             else:
-                print 'No region found for lon=',str(lon),', lat=',str(lat)
+                print('No region found for lon=',str(lon),', lat=',str(lat))
                 break #return
             # Integrate total mass loss in this sector
             for expt in range(num_expts+1):
@@ -140,7 +140,7 @@ def rcp_map_circles (key=1):
     abs_change = zeros([num_expts, num_sectors])
     percent_change = zeros([num_expts, num_sectors])
     for index in range(num_sectors):
-        print sector_names[index]
+        print(sector_names[index])
         # Get mass loss for 1996-2005
         massloss_beg = total_massloss[0,index]
         for expt in range(num_expts):
@@ -148,19 +148,19 @@ def rcp_map_circles (key=1):
             massloss_end = total_massloss[expt+1,index]
             abs_change[expt,index] = massloss_end-massloss_beg
             percent_change[expt,index] = (massloss_end-massloss_beg)/massloss_beg*1e2
-            print expt_names[expt] + ': ' + str(abs_change[expt,index]) + ' (' + str(percent_change[expt,index]) + ')'
+            print(expt_names[expt] + ': ' + str(abs_change[expt,index]) + ' (' + str(percent_change[expt,index]) + ')')
     # Also calculate total Antarctica
     abs_change_all = zeros(num_expts)
     percent_change_all = zeros(num_expts)
-    print 'Total Antarctica'
+    print('Total Antarctica')
     massloss_beg = sum(total_massloss[0,:])
     for expt in range(num_expts):
         massloss_end = sum(total_massloss[expt+1,:])
         abs_change_all[expt] = massloss_end-massloss_beg
         percent_change_all[expt] = (massloss_end-massloss_beg)/massloss_beg*1e2
-        print expt_names[expt] + ': ' + str(abs_change_all[expt]) + ' (' + str(percent_change_all[expt]) + ')'
+        print(expt_names[expt] + ': ' + str(abs_change_all[expt]) + ' (' + str(percent_change_all[expt]) + ')')
 
-    print 'Setting up sectors for plotting'
+    print('Setting up sectors for plotting')
     patch_sector = zeros(len(patches))
     # Loop over elements (plotting elements this time, which may cross 180)
     i = 0
@@ -195,7 +195,7 @@ def rcp_map_circles (key=1):
                 # Larsen Ice Shelves
                 index = 7
             else:
-                print 'No region found for lon=',str(lon),', lat=',str(lat)
+                print('No region found for lon=',str(lon),', lat=',str(lat))
                 break #return
             # Save this value
             patch_sector[i] = index
@@ -209,13 +209,13 @@ def rcp_map_circles (key=1):
     x_reg, y_reg = meshgrid(linspace(-nbdry, nbdry, num=100), linspace(-nbdry, nbdry, num=100))
     land_square = zeros(shape(x_reg))
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(12,12))
     fig.patch.set_facecolor('white')
     gs = GridSpec(2,2)
     gs.update(left=0.05, right=0.95, bottom=0, top=0.88, wspace=0.05, hspace=0.05)
     for expt in range(num_expts):
-        ax = subplot(gs[expt/2, expt%2], aspect='equal')
+        ax = subplot(gs[expt//2, expt%2], aspect='equal')
         # Start with grey square background for land
         contourf(x_reg, y_reg, land_square, 1, colors=(('0.7', '0.7', '0.7')))
         img = PatchCollection(patches, cmap=sector_cmap)
@@ -271,7 +271,7 @@ def rcp_map_circles (key=1):
 # Command-line interface
 if __name__ == "__main__":
 
-    key = int(raw_input('Plot absolute change (1) or percent change (2)? '))
+    key = int(input('Plot absolute change (1) or percent change (2)? '))
     rcp_map_circles(key)
         
 

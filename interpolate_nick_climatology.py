@@ -97,7 +97,7 @@ def interpolate_nick_climatology (melt_file, temp_file, out_file):
 # Command-line interface
 if __name__ == "__main__":
 
-    melt_file = raw_input("Path to FESOM melt rate file: ")
-    temp_file = raw_input("Path to FESOM temperature file: ")
-    out_file = raw_input("Path to desired output file: ")
+    melt_file = input("Path to FESOM melt rate file: ")
+    temp_file = input("Path to FESOM temperature file: ")
+    out_file = input("Path to desired output file: ")
     interpolate_nick_climatology(melt_file, temp_file, out_file)

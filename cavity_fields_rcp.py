@@ -50,12 +50,12 @@ def cavity_fields_rcp (var_name, mesh_path, output_path, fig_dir=''):
     # Number of bins in each direction for vector overlay
     num_bins = 50
 
-    print 'Building FESOM mesh'
+    print('Building FESOM mesh')
     # Mask open ocean
     elements, mask_patches = make_patches(mesh_path, circumpolar=True, mask_cavities=True)
     # Unmask ice shelves
     patches = iceshelf_mask(elements)
-    print 'Reading data'
+    print('Reading data')
     id_beg = Dataset(output_path + file_name_beg, 'r')
     id_end = Dataset(output_path + file_name_end, 'r')
     if var_name == 'melt':
@@ -84,7 +84,7 @@ def cavity_fields_rcp (var_name, mesh_path, output_path, fig_dir=''):
             elif tmp == 0:
                 cavity.append(False)
             else:
-                print 'Problem'
+                print('Problem')
                 #return
         f.close()
         # Save the number of 2D nodes
@@ -198,7 +198,7 @@ def cavity_fields_rcp (var_name, mesh_path, output_path, fig_dir=''):
 
     # Loop over ice shelves
     for index in range(num_shelves):
-        print 'Processing ' + shelf_names[index]
+        print('Processing ' + shelf_names[index])
         # Convert lat/lon bounds to polar coordinates for plotting
         x1 = -(lat_min[index]+90)*cos(lon_min[index]*deg2rad+pi/2)
         y1 = (lat_min[index]+90)*sin(lon_min[index]*deg2rad+pi/2)
@@ -385,7 +385,7 @@ def cavity_fields_rcp (var_name, mesh_path, output_path, fig_dir=''):
 # Command-line interface
 if __name__ == "__main__":
 
-    var_key = int(raw_input("Ice shelf melt rate (1), bottom water temperature (2), bottom water salinity (3), surface velocity (4), or vertically averaged velocity (5)? "))
+    var_key = int(input("Ice shelf melt rate (1), bottom water temperature (2), bottom water salinity (3), surface velocity (4), or vertically averaged velocity (5)? "))
     if var_key == 1:
         var_name = 'melt'
     elif var_key == 2:
@@ -396,9 +396,9 @@ if __name__ == "__main__":
         var_name = 'vsfc'
     elif var_key == 5:
         var_name = 'vavg'
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    file_path = raw_input("Path to output directory for RCP: ")
-    fig_dir = raw_input("Path to directory to save figures into: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    file_path = input("Path to output directory for RCP: ")
+    fig_dir = input("Path to directory to save figures into: ")
     cavity_fields_rcp(var_name, mesh_path, output_path, fig_dir)
             
                     

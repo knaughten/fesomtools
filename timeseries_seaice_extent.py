@@ -20,7 +20,7 @@ def timeseries_seaice_extent (mesh_path, ice_file, log_file, fig_dir=''):
     extent = []
     # Check if the log file exists
     if exists(log_file):
-        print 'Reading previously calculated values'
+        print('Reading previously calculated values')
         f = open(log_file, 'r')
         # Skip the first line (header)
         f.readline()
@@ -28,16 +28,16 @@ def timeseries_seaice_extent (mesh_path, ice_file, log_file, fig_dir=''):
             extent.append(float(line))
         f.close()
 
-    print 'Building grid'
+    print('Building grid')
     elements = fesom_grid(mesh_path, circumpolar, cross_180)
 
-    print 'Reading data'
+    print('Reading data')
     id = Dataset(ice_file, 'r')
     num_time = id.variables['time'].shape[0]
     aice = id.variables['area'][:,:]
     id.close()
 
-    print 'Setting up arrays'
+    print('Setting up arrays')
     # Sea ice concentration at each element
     aice_elm = zeros([num_time, len(elements)])
     # Area of each element
@@ -52,7 +52,7 @@ def timeseries_seaice_extent (mesh_path, ice_file, log_file, fig_dir=''):
     # Select elements with concentration >= 15%
     flag = aice_elm >= 0.15
 
-    print 'Building timeseries'
+    print('Building timeseries')
     for t in range(num_time):
         # Integrate extent and convert to million km^2
         extent.append(sum(flag[t,:]*area_elm)*1e-12)
@@ -60,7 +60,7 @@ def timeseries_seaice_extent (mesh_path, ice_file, log_file, fig_dir=''):
     # Calculate time values
     time = arange(len(extent))*days_per_output/365.
 
-    print 'Plotting'
+    print('Plotting')
     clf()
     plot(time, extent)
     xlabel('Years')
@@ -68,7 +68,7 @@ def timeseries_seaice_extent (mesh_path, ice_file, log_file, fig_dir=''):
     grid(True)
     savefig(fig_dir+'seaice_extent.png')
 
-    print 'Saving results to log file'
+    print('Saving results to log file')
     f = open(log_file, 'w')
     f.write('Sea Ice Extent (million km^2):\n')
     for elm in extent:
@@ -79,9 +79,9 @@ def timeseries_seaice_extent (mesh_path, ice_file, log_file, fig_dir=''):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    ice_file = raw_input("Path to FESOM ice.mean.nc output file: ")
-    log_file = raw_input("Path to logfile to save values and/or read previously calculated values: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    ice_file = input("Path to FESOM ice.mean.nc output file: ")
+    log_file = input("Path to logfile to save values and/or read previously calculated values: ")
 
     timeseries_seaice_extent(mesh_path, ice_file, log_file)
     

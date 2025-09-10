@@ -24,7 +24,7 @@ def amundsen_correlation ():
     # Spinup years to discard (first 2 repetitions of 1992-2005)
     control_skipyears = 28
     # Output steps per year
-    peryear = 365/5
+    peryear = 365//5
 
     num_years = year_end - year_start + 1
 
@@ -97,9 +97,9 @@ def amundsen_correlation ():
 
     for expt in range(num_rcps):
         slope, intercept, r_value, p_value, std_err = linregress(ice2ocn[expt,:], pig_massloss[expt,:])
-        print rcp_titles[expt] + ': r^2 = ' + str(r_value**2)
+        print(rcp_titles[expt] + ': r^2 = ' + str(r_value**2))
     slope, intercept, r_value, p_value, std_err = linregress(ice2ocn[-1,:], pig_massloss[-1,:])
-    print control_title + ': r^2 = ' + str(r_value**2)
+    print(control_title + ': r^2 = ' + str(r_value**2))
 
 
 # Command-line interface

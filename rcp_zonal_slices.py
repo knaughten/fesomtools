@@ -9,13 +9,13 @@ def rcp_zonal_slices ():
 
     for rcp in ['45', '85']:
         for model in ['M', 'A']:
-            print 'Processing RCP ' + rcp[0] + '.' + rcp[1] + ' ' + model
+            print('Processing RCP ' + rcp[0] + '.' + rcp[1] + ' ' + model)
             for i in range(num_slices):
                 if lon0[i] < 0:
                     lon_string = str(-lon0[i]) + 'W'
                 else:
                     lon_string = str(lon0[i]) + 'E'
-                print '...' + lon_string
+                print('...' + lon_string)
                 zonal_ts_before_after(lon0[i], lat_min[i], lat_max[i], rcp, model, True, lon_string + '_rcp' + rcp + '_' + model + '.png')
 
 

@@ -26,7 +26,7 @@ def trends ():
     # Spinup years to discard (first 2 repetitions of 1992-2005)
     control_skipyears = 28
     # Output steps per year
-    peryear = 365/5
+    peryear = 365//5
     # Names of sectors
     sector_names = ['Filchner-Ronne Ice Shelf', 'Eastern Weddell Region', 'Amery Ice Shelf', 'Australian Sector', 'Ross Sea', 'Amundsen Sea', 'Bellingshausen Sea', 'Larsen Ice Shelves', 'Total Antarctica']
     num_sectors = len(sector_names)
@@ -180,13 +180,13 @@ def trends ():
     slope, intercept, r_value, p_value, std_err = linregress(time, rs_trans[-1,:])
     print '    ' + control_title + ': ' + str(slope*10) + ' %/decade, p=' + str(p_value)'''
 
-    print 'r-squared values for mass loss: '
+    print('r-squared values for mass loss: ')
     r2_min = 1
     r2_max = 0
     r2_sum = 0
     r2_num = 0
     for sector in range(num_sectors-1):
-        print '  ' + sector_names[sector] + ':'
+        print('  ' + sector_names[sector] + ':')
         for expt in range(num_rcps):
             slope, intercept, r_value, p_value, std_err = linregress(time, massloss[expt,sector,:])
             r2_linear = r_value**2
@@ -204,7 +204,7 @@ def trends ():
             ssreg = sum((yhat-ybar)**2)
             sstot = sum((y-ybar)**2)
             r2_quadratic = ssreg/sstot'''
-    print 'r-squared values from ' + str(r2_min) + ' to ' + str(r2_max) + ', mean of ' + str(r2_sum/r2_num)
+    print('r-squared values from ' + str(r2_min) + ' to ' + str(r2_max) + ', mean of ' + str(r2_sum/r2_num))
     
 
 

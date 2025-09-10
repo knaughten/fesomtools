@@ -69,10 +69,10 @@ def plot_shelf_ascii (mesh_path, shelf_file, fig_name, circumpolar=True):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to mesh directory: ")
-    shelf_file = raw_input("Path to shelf.out file: ")
-    fig_name = raw_input("Filename for figure: ")
-    domain = raw_input("Global (g) or circumpolar (c)? ")
+    mesh_path = input("Path to mesh directory: ")
+    shelf_file = input("Path to shelf.out file: ")
+    fig_name = input("Filename for figure: ")
+    domain = input("Global (g) or circumpolar (c)? ")
     if domain == 'c':
         circumpolar = True
     elif domain == 'g':

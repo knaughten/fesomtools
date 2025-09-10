@@ -59,7 +59,7 @@ def restoring_mask (mesh_path):
 
     # Make sure all the arrays are the same size
     if size(glat) != size(cavity) or size(glon) != size(depth):
-        print "Problem with array sizes"
+        print("Problem with array sizes")
         return
 
     # Start with restoring everywhere
@@ -84,7 +84,7 @@ def restoring_mask (mesh_path):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
     restoring_mask(mesh_path)
 
     

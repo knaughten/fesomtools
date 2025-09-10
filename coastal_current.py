@@ -36,7 +36,7 @@ def coastal_current ():
     current_beg = zeros(num_bins)
     current_end = zeros([num_expts, num_bins])
 
-    print 'Building mesh'
+    print('Building mesh')
     # We only care about nodes, not elements, so don't need to use the
     # fesom_grid function.
     # Read cavity flag for each 2D surface node
@@ -49,7 +49,7 @@ def coastal_current ():
         elif tmp == 0:
             node_cavity.append(False)
         else:
-            print 'Problem with cavity flags'
+            print('Problem with cavity flags')
     f.close()
     # Save the number of 2D nodes
     n2d = len(node_cavity)
@@ -101,10 +101,10 @@ def coastal_current ():
     # Delete this check later
     if amin(bottom_depth) < 0:
         # Probably accidentally kept a -999
-        print 'Problem with bottom depths: minimum ' + amin(bottom_depth)      
+        print('Problem with bottom depths: minimum ' + amin(bottom_depth))      
 
-    print 'Reading data'
-    print '...1996-2005'
+    print('Reading data')
+    print('...1996-2005')
     id = Dataset(directory_beg + file_beg)
     # Only save surface nodes
     u_tmp = id.variables['u'][0,:n2d]
@@ -115,14 +115,14 @@ def coastal_current ():
     # Set up array for speed in following experiments
     speed_end = zeros([num_expts, n2d])
     for expt in range(num_expts):
-        print '...' + expt_names[expt]
+        print('...' + expt_names[expt])
         id = Dataset(directories[expt] + file_end)
         u_tmp = id.variables['u'][0,:n2d]
         v_tmp = id.variables['v'][0,:n2d]
         id.close()
         speed_end[expt,:] = sqrt(u_tmp**2 + v_tmp**2)
 
-    print 'Selecting coastal current'
+    print('Selecting coastal current')
     for n in range(n2d):
         # Check if we care about this node
         if lat[n] <= lat0 and bottom_depth[n] <= h0 and not node_cavity[n]:
@@ -140,7 +140,7 @@ def coastal_current ():
     for expt in range(num_expts):
         percent_change[expt,:] = (current_end[expt,:] - current_beg)/current_beg*100
 
-    print 'Plotting'
+    print('Plotting')
     # Coastal current
     fig = figure(figsize=(12,8))
     plot(lon_centres, current_beg, color=beg_colour, label='1996-2005')
@@ -165,9 +165,9 @@ def coastal_current ():
     legend()
     fig.show()
 
-    print 'Mean coastal current, 1996-2005: ' + str(mean(current_beg)) + ' m/s'
+    print('Mean coastal current, 1996-2005: ' + str(mean(current_beg)) + ' m/s')
     for expt in range(num_expts):
-        print 'Mean coastal current, ' + expt_names[expt] + ': ' + str(mean(current_end[expt,:])) + ' m/s, mean percent change of ' + str(mean(percent_change[expt,:]))
+        print('Mean coastal current, ' + expt_names[expt] + ': ' + str(mean(current_end[expt,:])) + ' m/s, mean percent change of ' + str(mean(percent_change[expt,:])))
 
 
 # Command-line interface

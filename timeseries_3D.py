@@ -28,7 +28,7 @@ def timeseries_3D (mesh_path, ocn_file, log_file):
     tke = []
     # Check if the log file exists
     if exists(log_file):
-        print 'Reading previously calculated values'
+        print('Reading previously calculated values')
         f = open(log_file, 'r')
         # Skip the first line (header)
         f.readline()
@@ -47,7 +47,7 @@ def timeseries_3D (mesh_path, ocn_file, log_file):
             tke.append(float(line))
         f.close()
 
-    print 'Building grid'
+    print('Building grid')
     elements = fesom_grid(mesh_path, circumpolar, cross_180)
     # Also read the depth of each node
     f = open(mesh_path + 'nod3d.out', 'r')
@@ -60,7 +60,7 @@ def timeseries_3D (mesh_path, ocn_file, log_file):
     # Convert to pressure in bar
     press = abs(array(depth))/10.0
 
-    print 'Reading data'
+    print('Reading data')
     id = Dataset(ocn_file, 'r')
     num_time = id.variables['time'].shape[0]
     temp = id.variables['temp'][:,:]
@@ -69,10 +69,10 @@ def timeseries_3D (mesh_path, ocn_file, log_file):
     v = id.variables['v'][:,:]
     id.close()
 
-    print 'Calculating density'
+    print('Calculating density')
     rho = unesco(temp, salt, tile(press, (num_time,1)))
 
-    print 'Setting up arrays'
+    print('Setting up arrays')
     # First calculate volume of each element
     dV_e3d = []
     # Loop over 2D elements
@@ -121,7 +121,7 @@ def timeseries_3D (mesh_path, ocn_file, log_file):
                 nodes[i] = nodes[i].below
             j += 1
     
-    print 'Building timeseries'
+    print('Building timeseries')
     for t in range(num_time):
         # Integrate temp*rhoCp*dV to get OHC
         ohc.append(sum((temp_e3d[t,:]+C2K)*rhoCp*dV_e3d))
@@ -133,7 +133,7 @@ def timeseries_3D (mesh_path, ocn_file, log_file):
     # Calculate time values
     time = arange(len(ohc))*days_per_output/365.
 
-    print 'Plotting ocean heat content'
+    print('Plotting ocean heat content')
     clf()
     plot(time, ohc)
     xlabel('Years')
@@ -141,7 +141,7 @@ def timeseries_3D (mesh_path, ocn_file, log_file):
     grid(True)
     savefig('ohc.png')
 
-    print 'Plotting average salinity'
+    print('Plotting average salinity')
     clf()
     plot(time, avgsalt)
     xlabel('Years')
@@ -149,7 +149,7 @@ def timeseries_3D (mesh_path, ocn_file, log_file):
     grid(True)
     savefig('avgsalt.png')
 
-    print 'Plotting total kinetic energy'
+    print('Plotting total kinetic energy')
     clf()
     plot(time, tke)
     xlabel('Years')
@@ -157,7 +157,7 @@ def timeseries_3D (mesh_path, ocn_file, log_file):
     grid(True)
     savefig('tke.png')
 
-    print 'Saving results to log file'
+    print('Saving results to log file')
     f = open(log_file, 'w')
     f.write('Southern Ocean Heat Content (J):\n')
     for elm in ohc:
@@ -174,9 +174,9 @@ def timeseries_3D (mesh_path, ocn_file, log_file):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    ocn_file = raw_input("Path to FESOM oce.mean.nc output file: ")
-    log_file = raw_input("Path to logfile to save values and/or read previously calculated values: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    ocn_file = input("Path to FESOM oce.mean.nc output file: ")
+    log_file = input("Path to logfile to save values and/or read previously calculated values: ")
     timeseries_3D(mesh_path, ocn_file, log_file)
 
     

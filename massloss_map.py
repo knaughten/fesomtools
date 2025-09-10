@@ -37,7 +37,7 @@ def massloss_map (mesh_path, log_path, save=False, fig_name=None):
     output_per_year = 365.0/days_per_output
     skipyears=28
     num_years=14
-    peryear=365/5
+    peryear=365//5
 
     # Build FESOM mesh
     # Get separate patches for the open ocean and minor ice shelf elements
@@ -178,12 +178,12 @@ def massloss_map (mesh_path, log_path, save=False, fig_name=None):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    log_path = raw_input("Path to mass loss logfile: ")
-    action = raw_input("Save figure (s) or display in window (d)? ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    log_path = input("Path to mass loss logfile: ")
+    action = input("Save figure (s) or display in window (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input("File name for figure: ")
+        fig_name = input("File name for figure: ")
     elif action == 'd':
         save = False
         fig_name = None

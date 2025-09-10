@@ -49,7 +49,7 @@ def temp_salt_seasonal (elements, file_path1, file_path2, lon0, depth_min, save=
     fig = figure(figsize=(20,9))
     # Loop over seasons
     for season in range(4):
-        print 'Calculating zonal slices for ' + season_names[season]
+        print('Calculating zonal slices for ' + season_names[season])
         # Interpolate temperature to lon0 and get plotting patches
         patches, values, lat_min = side_patches(elements, lat_max, lon0, temp_data[season,:])
         ax = fig.add_subplot(2, 4, season+1)
@@ -99,15 +99,15 @@ def temp_salt_seasonal (elements, file_path1, file_path2, lon0, depth_min, save=
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    file_path1 = raw_input("Path to output oce.mean.nc containing one year of 5-day averages (December will be used): ")
-    file_path2 = raw_input("Path to the following oce.mean.nc containing 5-day averages for the next year (January through November will be used): ")
-    lon0 = float(raw_input("Enter longitude (-180 to 180): "))
-    depth_min = -1*float(raw_input("Deepest depth to plot (positive, metres): "))
-    action = raw_input("Save figure (s) or display on screen (d)? ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    file_path1 = input("Path to output oce.mean.nc containing one year of 5-day averages (December will be used): ")
+    file_path2 = input("Path to the following oce.mean.nc containing 5-day averages for the next year (January through November will be used): ")
+    lon0 = float(input("Enter longitude (-180 to 180): "))
+    depth_min = -1*float(input("Deepest depth to plot (positive, metres): "))
+    action = input("Save figure (s) or display on screen (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input("File name for figure: ")
+        fig_name = input("File name for figure: ")
     elif action == 'd':
         save = False
         fig_name = None
@@ -118,31 +118,31 @@ if __name__ == "__main__":
 
     # Repeat until the user wants to exit
     while True:
-        repeat = raw_input("Make another plot (y/n)? ")
+        repeat = input("Make another plot (y/n)? ")
         if repeat == 'y':
             while True:
                 # Ask for changes to the input parameters; repeat until the user is finished
-                changes = raw_input("Enter a parameter to change: (1) file paths, (2) longitude, (3) deepest depth, (4) save/display; or enter to continue: ")
+                changes = input("Enter a parameter to change: (1) file paths, (2) longitude, (3) deepest depth, (4) save/display; or enter to continue: ")
                 if len(changes) == 0:
                     # No more changes to parameters
                     break
                 else:
                     if int(changes) == 1:
                         # New file paths
-                        file_path1 = raw_input("Path to one year of 5-day averages for sea ice variables (December will be used): ")
-                        file_path2 = raw_input("Path to the following year of 5-day averages for sea ice variables (January through November will be used): ")
+                        file_path1 = input("Path to one year of 5-day averages for sea ice variables (December will be used): ")
+                        file_path2 = input("Path to the following year of 5-day averages for sea ice variables (January through November will be used): ")
                     elif int(changes) == 2:
                         # New longitude
-                        lon0 = float(raw_input("Enter longitude (-180 to 180): "))
+                        lon0 = float(input("Enter longitude (-180 to 180): "))
                     elif int(changes) == 3:
                         # New depth bound
-                        depth_min = -1*float(raw_input("Deepest depth to plot (positive, metres): "))
+                        depth_min = -1*float(input("Deepest depth to plot (positive, metres): "))
                     elif int(changes) == 4:
                         # Change from save to display, or vice versa
                         save = not save
             if save:
                 # Get file name for figure
-                fig_name = raw_input("File name for figure: ")
+                fig_name = input("File name for figure: ")
             # Make the plot
             temp_salt_seasonal(elements, file_path1, file_path2, lon0, depth_min, save, fig_name)
         else:

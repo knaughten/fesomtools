@@ -187,7 +187,7 @@ def plot_bwtemp (x_min, x_max, y_min, y_max, gs, cbaxes1, ticks1, cbaxes2, ticks
     land_square = zeros(shape(x_reg))
     # Find bounds on temperature in this region
     var_min, var_max, diff_min, diff_max = get_min_max(bwtemp_beg, bwtemp_diff, x_min, x_max, y_min, y_max, cavity=False)
-    print 'Bounds on bottom water temp: ' + str(var_min) + ' ' + str(var_max) + ' ' + str(diff_min) + ' ' + str(diff_max)
+    print('Bounds on bottom water temp: ' + str(var_min) + ' ' + str(var_max) + ' ' + str(diff_min) + ' ' + str(diff_max))
     # Truncate difference colourmap; make sure we plot 0 though
     diff_bound = max(abs(diff_min), abs(diff_max))
     diff_min = min(diff_min, 0)
@@ -282,7 +282,7 @@ def plot_melt (x_min, x_max, y_min, y_max, gs, cbaxes1, ticks1, cbaxes2, ticks2,
 
     # Find bounds on melt in this region
     var_min, var_max, diff_min, diff_max = get_min_max(melt_beg, melt_diff, x_min, x_max, y_min, y_max)
-    print 'Bounds on melt rate: ' + str(var_min) + ' ' + str(var_max) + ' ' + str(diff_min) + ' ' + str(diff_max)
+    print('Bounds on melt rate: ' + str(var_min) + ' ' + str(var_max) + ' ' + str(diff_min) + ' ' + str(diff_max))
     if set_diff_max is not None:
         diff_max = set_diff_max
     # Special colour map for absolute melt
@@ -386,7 +386,7 @@ def plot_bwsalt (x_min, x_max, y_min, y_max, gs, cbaxes1, ticks1, cbaxes2, ticks
     land_square = zeros(shape(x_reg))
     # Find bounds on salinity in this region
     var_min, var_max, diff_min, diff_max = get_min_max(bwsalt_beg, bwsalt_diff, x_min, x_max, y_min, y_max, cavity=False)
-    print 'Bounds on bottom water salt: ' + str(var_min) + ' ' + str(var_max) + ' ' + str(diff_min) + ' ' + str(diff_max)
+    print('Bounds on bottom water salt: ' + str(var_min) + ' ' + str(var_max) + ' ' + str(diff_min) + ' ' + str(diff_max))
     # Truncate difference colourmap; make sure we plot 0 though
     diff_bound = max(abs(diff_min), abs(diff_max))
     diff_min = min(diff_min, 0)
@@ -461,7 +461,7 @@ end_years = [2091, 2100]
 deg2rad = pi/180.0
 sec_per_year = 365.25*24*3600
 
-print 'Building mesh'
+print('Building mesh')
 # Mask open ocean
 elements, mask_patches = make_patches(mesh_path, circumpolar=True, mask_cavities=True)
 # Unmask ice shelves
@@ -478,7 +478,7 @@ for elm in elements:
         num_cavity_elm += 1
 num_elm = len(elements)
 
-print 'Building ice shelf front contours'
+print('Building ice shelf front contours')
 contour_lines = []
 for elm in elements:
     # Select elements where exactly 2 of the 3 nodes are in a cavity
@@ -497,7 +497,7 @@ for elm in elements:
             # Draw a line between the 2 nodes
             contour_lines.append([(x_tmp[0], y_tmp[0]), (x_tmp[1], y_tmp[1])])
 
-print 'Calculating ice shelf melt rate'
+print('Calculating ice shelf melt rate')
 melt_beg = zeros(num_cavity_elm)
 # First read melt rate at beginning
 id = Dataset(directory_beg + forcing_file_beg, 'r')
@@ -524,7 +524,7 @@ for expt in range(num_expts):
             melt_diff[expt,i] = mean([node_melt_diff[elm.nodes[0].id], node_melt_diff[elm.nodes[1].id], node_melt_diff[elm.nodes[2].id]])
             i += 1
 
-print 'Calculating bottom water temperature'
+print('Calculating bottom water temperature')
 bwtemp_beg = zeros(num_elm)
 # Read full 3D field to start
 id = Dataset(directory_beg + oce_file_beg, 'r')
@@ -546,7 +546,7 @@ for expt in range(num_expts):
         bwtemp_diff[expt,i] = mean([node_temp_diff[elm.nodes[0].find_bottom().id], node_temp_diff[elm.nodes[1].find_bottom().id], node_temp_diff[elm.nodes[2].find_bottom().id]])
         i += 1
 
-print 'Calculating bottom water salinity'
+print('Calculating bottom water salinity')
 bwsalt_beg = zeros(num_elm)
 # Read full 3D field to start
 id = Dataset(directory_beg + oce_file_beg, 'r')
@@ -568,7 +568,7 @@ for expt in range(num_expts):
         bwsalt_diff[expt,i] = mean([node_salt_diff[elm.nodes[0].find_bottom().id], node_salt_diff[elm.nodes[1].find_bottom().id], node_salt_diff[elm.nodes[2].find_bottom().id]])
         i += 1
 
-print 'Plotting'
+print('Plotting')
 x_min_tmp = -17.5
 x_max_tmp = -10.5
 y_min_tmp = -11.25

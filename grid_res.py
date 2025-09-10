@@ -77,23 +77,23 @@ def grid_res (mesh_path, circumpolar=True, set_bound=False, bound=None, save=Fal
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to mesh directory: ")
-    domain = raw_input("Global (g) or circumpolar (c)? ")
+    mesh_path = input("Path to mesh directory: ")
+    domain = input("Global (g) or circumpolar (c)? ")
     if domain == 'c':
         circumpolar = True
     elif domain == 'g':
         circumpolar = False
-    get_bound = raw_input("Set maximum bound for colour scale? (y/n) ")
+    get_bound = input("Set maximum bound for colour scale? (y/n) ")
     if get_bound == 'y':
         set_bound = True
-        bound = float(raw_input("Maximum bound (km): "))
+        bound = float(input("Maximum bound (km): "))
     else:
         set_bound = False
         bound = None
-    action = raw_input("Save figure (s) or display on screen (d)? ")
+    action = input("Save figure (s) or display on screen (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input("Filename for figure: ")
+        fig_name = input("Filename for figure: ")
     else:
         save = False
         fig_name = None

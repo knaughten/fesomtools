@@ -58,7 +58,7 @@ def ts_animation (mesh_path, directory, start_year, end_year, fig_dir):
 
     # Loop over years
     for year in range(start_year, end_year+1):
-        print 'Processing ' + str(year)
+        print('Processing ' + str(year))
         # Read temperature and salinity at each 3D node, annually averaged
         id = Dataset(directory + file_head + str(year) + file_tail, 'r')
         temp = mean(id.variables['temp'][:,:], axis=0)
@@ -133,11 +133,11 @@ def ts_animation (mesh_path, directory, start_year, end_year, fig_dir):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    directory = raw_input("Path to FESOM output directory: ")
-    start_year = int(raw_input("First year: "))
-    end_year = int(raw_input("Last year: "))
-    fig_dir = raw_input("Directory to store figures: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    directory = input("Path to FESOM output directory: ")
+    start_year = int(input("First year: "))
+    end_year = int(input("Last year: "))
+    fig_dir = input("Directory to store figures: ")
 
     ts_animation(mesh_path, directory, start_year, end_year, fig_dir)
     

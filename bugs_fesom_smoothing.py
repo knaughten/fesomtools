@@ -70,7 +70,7 @@ def plot_bathy (x_min, x_max, y_min, y_max, gs, cbaxes, cbar_ticks, letter, y0):
     land_square = zeros(shape(x_reg))
     # Find bounds on variable in this region
     var_min, var_max = get_min_max(bathy_old, bathy_new, x_min, x_max, y_min, y_max, cavity=False)
-    print 'Bounds on bathymetry: ' + str(var_min) + ' ' + str(var_max)
+    print('Bounds on bathymetry: ' + str(var_min) + ' ' + str(var_max))
 
     # Old simulation
     ax = subplot(gs[0,0], aspect='equal')
@@ -132,7 +132,7 @@ def plot_wct (x_min, x_max, y_min, y_max, gs, cbaxes, cbar_ticks, letter, y0):
     land_square = zeros(shape(x_reg))
     # Find bounds on variable in this region
     var_min, var_max = get_min_max(wct_old, wct_new, x_min, x_max, y_min, y_max, cavity=True)
-    print 'Bounds on wct: ' + str(var_min) + ' ' + str(var_max)
+    print('Bounds on wct: ' + str(var_min) + ' ' + str(var_max))
 
     # Old simulation
     ax = subplot(gs[0,0], aspect='equal')
@@ -194,7 +194,7 @@ def plot_bwtemp (x_min, x_max, y_min, y_max, gs, cbaxes, cbar_ticks, letter):
     land_square = zeros(shape(x_reg))
     # Find bounds on variable in this region
     var_min, var_max = get_min_max(bwtemp_old, bwtemp_new, x_min, x_max, y_min, y_max, cavity=False)
-    print 'Bounds on bottom temperature: ' + str(var_min) + ' ' + str(var_max)
+    print('Bounds on bottom temperature: ' + str(var_min) + ' ' + str(var_max))
 
     # Old simulation
     ax = subplot(gs[0,0], aspect='equal')
@@ -257,7 +257,7 @@ def plot_melt (x_min, x_max, y_min, y_max, gs, cbaxes, cbar_ticks, change_points
     land_square = zeros(shape(x_reg))
     # Find bounds on variable in this region
     var_min, var_max = get_min_max(melt_old, melt_new, x_min, x_max, y_min, y_max, cavity=True)
-    print 'Bounds on melt: ' + str(var_min) + ' ' + str(var_max)
+    print('Bounds on melt: ' + str(var_min) + ' ' + str(var_max))
     # Special colour map
     if var_min < 0:
         # There is refreezing here; include blue for elements < 0
@@ -330,7 +330,7 @@ ice_file_new = '/short/y99/kaa561/FESOM/intercomparison_highres/output/wnet_2002
 # Constants
 sec_per_year = 365.25*24*3600
 
-print 'Building old mesh'
+print('Building old mesh')
 # Mask open ocean
 elements_old, mask_patches_old = make_patches(mesh_path_old, circumpolar=True, mask_cavities=True)
 # Unmask ice shelves
@@ -340,7 +340,7 @@ patches_all_old = []
 for elm in elements_old:
     coord = transpose(vstack((elm.x, elm.y)))
     patches_all_old.append(Polygon(coord, True, linewidth=0.))
-print 'Building new mesh'
+print('Building new mesh')
 elements_new, mask_patches_new = make_patches(mesh_path_new, circumpolar=True, mask_cavities=True)
 patches_new = iceshelf_mask(elements_new)
 patches_all_new = []
@@ -348,7 +348,7 @@ for elm in elements_new:
     coord = transpose(vstack((elm.x, elm.y)))
     patches_all_new.append(Polygon(coord, True, linewidth=0.))
 
-print 'Building ice shelf front contours'
+print('Building ice shelf front contours')
 contour_lines_old = []
 for elm in elements_old:
     # Select elements where exactly 2 of the 3 nodes are in a cavity
@@ -380,7 +380,7 @@ for elm in elements_new:
         if count_nonzero(coast_tmp) < 2:
             contour_lines_new.append([(x_tmp[0], y_tmp[0]), (x_tmp[1], y_tmp[1])])
 
-print 'Calculating bathymetry'
+print('Calculating bathymetry')
 # Depth of bottom layer, averaged over 3 corners
 bathy_old = []
 for elm in elements_old:
@@ -389,7 +389,7 @@ bathy_new = []
 for elm in elements_new:
     bathy_new.append(mean([elm.nodes[0].find_bottom().depth, elm.nodes[1].find_bottom().depth, elm.nodes[2].find_bottom().depth]))
 
-print 'Calculating water column thickness'
+print('Calculating water column thickness')
 # Depth of bottom layer minus depth of surface layer in ice shelf cavities,
 # averaged over 3 corners
 wct_old = []
@@ -401,7 +401,7 @@ for elm in elements_new:
     if elm.cavity:
         wct_new.append(mean([elm.nodes[0].find_bottom().depth - elm.nodes[0].depth, elm.nodes[1].find_bottom().depth - elm.nodes[1].depth, elm.nodes[2].find_bottom().depth - elm.nodes[2].depth]))
 
-print 'Calculating bottom water temperature'
+print('Calculating bottom water temperature')
 # Read full 3D field to start
 id = Dataset(ocn_file_old, 'r')
 node_temp_old = id.variables['temp'][0,:]
@@ -417,7 +417,7 @@ bwtemp_new = []
 for elm in elements_new:
     bwtemp_new.append(mean([node_temp_new[elm.nodes[0].find_bottom().id], node_temp_new[elm.nodes[1].find_bottom().id], node_temp_new[elm.nodes[2].find_bottom().id]]))
 
-print 'Calculating ice shelf melt rate'
+print('Calculating ice shelf melt rate')
 # Read melt rate at 2D nodes and convert from m/s to m/y
 id = Dataset(ice_file_old, 'r')
 node_melt_old = id.variables['wnet'][0,:]*sec_per_year
@@ -435,7 +435,7 @@ for elm in elements_new:
     if elm.cavity:
         melt_new.append(mean([node_melt_new[elm.nodes[0].id], node_melt_new[elm.nodes[1].id], node_melt_new[elm.nodes[2].id]]))
 
-print 'Plotting Pine Island Ice Shelf'
+print('Plotting Pine Island Ice Shelf')
 x_min_tmp = -15.9
 x_max_tmp = -14.2
 y_min_tmp = -3.8
@@ -464,7 +464,7 @@ suptitle('Pine Island Ice Shelf', fontsize=24)
 fig.show()
 fig.savefig('bugs_fesom_pig.png')
 
-print 'Plotting Amery Ice Shelf'
+print('Plotting Amery Ice Shelf')
 x_min_tmp = 15.25
 x_max_tmp = 20.5
 y_min_tmp = 4.75

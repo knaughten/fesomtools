@@ -23,7 +23,7 @@ def september_avg_oce (directory, start_year, end_year, out_file):
     ndays = 0
     # Loop over years
     for year in range(start_year, end_year+1):
-        print '...' + str(year)
+        print('...' + str(year))
         id = Dataset(directory + expt_name + '.' + str(year) + '.oce.mean.nc', 'r')
         # September: 2/5 of index 49, indices 50-54, 3/5 of index 55
         sept_temp += id.variables['temp'][48,:]*2 + sum(id.variables['temp'][49:54,:]*5, axis=0) + id.variables['temp'][54,:]*3
@@ -34,7 +34,7 @@ def september_avg_oce (directory, start_year, end_year, out_file):
     sept_temp /= ndays
     sept_salt /= ndays
     # Write to file
-    print 'Writing ' + out_file
+    print('Writing ' + out_file)
     id = Dataset(out_file, 'w')
     id.createDimension('nodes_3d', n3d)
     id.createDimension('T', None)
@@ -52,8 +52,8 @@ def september_avg_oce (directory, start_year, end_year, out_file):
 # Command-line interface
 if __name__ == "__main__":
 
-    directory = raw_input("Path to model output directory: ")
-    start_year = int(raw_input("Starting year for averages: "))
-    end_year = int(raw_input("Ending year for averages: "))
-    out_file = raw_input("Path to desired output file: ")
+    directory = input("Path to model output directory: ")
+    start_year = int(input("Starting year for averages: "))
+    end_year = int(input("Ending year for averages: "))
+    out_file = input("Path to desired output file: ")
     september_avg_oce(directory, start_year, end_year, out_file)

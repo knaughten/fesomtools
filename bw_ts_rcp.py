@@ -16,7 +16,7 @@ def bw_ts_rcp ():
     # Titles for plotting
     expt_names = ['RCP 4.5 M', 'RCP 4.5 A', 'RCP 8.5 M', 'RCP 8.5 A', 'CONTROL']
     num_expts = len(directories)
-    middle_expt = (num_expts+1)/2 - 1
+    middle_expt = (num_expts+1)//2 - 1
     # Start and end years for each period
     beg_years = [1996, 2005]
     end_years = [2091, 2100]
@@ -33,9 +33,9 @@ def bw_ts_rcp ():
     temp_max_diff = 2
     salt_max_diff = 0.5
 
-    print 'Building mesh'
+    print('Building mesh')
     elements, patches = make_patches(mesh_path, circumpolar, mask_cavities)
-    print 'Processing 1996-2005'
+    print('Processing 1996-2005')
     id = Dataset(directory_beg + file_beg, 'r')
     temp_nodes_beg = id.variables['temp'][0,:]
     salt_nodes_beg = id.variables['salt'][0,:]
@@ -53,7 +53,7 @@ def bw_ts_rcp ():
     temp_diff = zeros([num_expts, len(elements)])
     salt_diff = zeros([num_expts, len(elements)])
     for expt in range(num_expts):
-        print 'Processing ' + expt_names[expt]
+        print('Processing ' + expt_names[expt])
         id = Dataset(directories[expt] + file_end, 'r')
         temp_nodes_diff = id.variables['temp'][0,:] - temp_nodes_beg
         salt_nodes_diff = id.variables['salt'][0,:] - salt_nodes_beg
@@ -64,7 +64,7 @@ def bw_ts_rcp ():
             salt_diff[expt,i] = mean([salt_nodes_diff[elm.nodes[0].find_bottom().id], salt_nodes_diff[elm.nodes[1].find_bottom().id], salt_nodes_diff[elm.nodes[2].find_bottom().id]])
             i += 1
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(24,8))
     # Temperature, beginning
     ax = fig.add_subplot(2, num_expts+1, 1, aspect='equal')

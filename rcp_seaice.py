@@ -30,21 +30,21 @@ def rcp_seaice ():
     j_plot = [0,0,1,1,1]
     i_plot = [1,2,1,2,0]
 
-    print 'Building mesh'
+    print('Building mesh')
     elements, patches = make_patches(mesh_path, circumpolar, mask_cavities)
     num_ocn_elm = len(patches)
 
-    print 'Reading data'
-    print '...1996-2005'
+    print('Reading data')
+    print('...1996-2005')
     aice_nodes_beg = monthly_avg(directory_beg + file_beg, 'area', 8)
     n2d = size(aice_nodes_beg)
     # Anomalies for the rest of the experiments
     aice_nodes_diff = empty([num_expts, n2d])
     for expt in range(num_expts):
-        print '...' + expt_names[expt]
+        print('...' + expt_names[expt])
         aice_nodes_diff[expt,:] = monthly_avg(directories[expt] + file_end, 'area', 8) - aice_nodes_beg
 
-    print 'Calculating element-averages'
+    print('Calculating element-averages')
     aice_beg = empty(num_ocn_elm)
     aice_diff = empty([num_expts, num_ocn_elm])
     i = 0
@@ -60,7 +60,7 @@ def rcp_seaice ():
     max_colour = (amax(aice_diff)+1)/2.0
     diff_cmap = truncate_colormap(get_cmap('RdBu_r'), min_colour, max_colour)
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(10,8))
     gs = GridSpec(2,3)
     gs.update(left=0.1, right=0.9, bottom=0.1, top=0.85, wspace=0.01, hspace=0.15)

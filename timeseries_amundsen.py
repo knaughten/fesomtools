@@ -18,7 +18,7 @@ def timeseries_amundsen (mesh_path, ice_diag_file, log_file):
     avg_ice2ocn = []
     # Check if the log file exists
     if exists(log_file):
-        print 'Reading previously calculated values'
+        print('Reading previously calculated values')
         f = open(log_file, 'r')
         # Skip the first line (header)
         f.readline()
@@ -26,18 +26,18 @@ def timeseries_amundsen (mesh_path, ice_diag_file, log_file):
             avg_ice2ocn.append(float(line))
         f.close()    
 
-    print 'Building grid'
+    print('Building grid')
     elements = fesom_grid(mesh_path, circumpolar, cross_180)
     num_elm2D = len(elements)
 
-    print 'Reading data'
+    print('Reading data')
     # Change sign on ice growth rate in m/s, multiply by 1e8 for visibility
     id = Dataset(ice_diag_file, 'r')
     ice2ocn = -1e8*id.variables['thdgr'][:,:]
     id.close()
     num_time = size(ice2ocn,0)
 
-    print 'Setting up arrays'
+    print('Setting up arrays')
     # Location flag for non-cavity elements in Amundsen Sea
     location_flag = zeros(num_elm2D)
     # Area of each element in Amundsen Sea
@@ -58,12 +58,12 @@ def timeseries_amundsen (mesh_path, ice_diag_file, log_file):
                 # Average ice-ocean freshwater flux timeseries over 3 components
                 ice2ocn_elm[:,i] = (ice2ocn[:,elm.nodes[0].id] + ice2ocn[:,elm.nodes[1].id] + ice2ocn[:,elm.nodes[2].id])/3.0
 
-    print 'Building timeseries'
+    print('Building timeseries')
     for t in range(num_time):
         # Average over area of the correct elements
         avg_ice2ocn.append(sum(ice2ocn_elm[t,:]*area_elm*location_flag)/sum(area_elm*location_flag))
 
-    print 'Saving results to log file'
+    print('Saving results to log file')
     f = open(log_file, 'w')
     f.write('Average ice-to-ocean freshwater flux (1e-8 m/s): \n')
     for val in avg_ice2ocn:
@@ -73,9 +73,9 @@ def timeseries_amundsen (mesh_path, ice_diag_file, log_file):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    forcing_file = raw_input("Path to FESOM ice.diag.nc file: ")
-    log_file = raw_input("Path to logfile to save values and/or read previously calculated values: ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    forcing_file = input("Path to FESOM ice.diag.nc file: ")
+    log_file = input("Path to logfile to save values and/or read previously calculated values: ")
     timeseries_amundsen(mesh_path, ice_diag_file, log_file)
         
     

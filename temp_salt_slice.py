@@ -107,15 +107,15 @@ def temp_salt_slice (elm2D, file_path, tstep, lon0, depth_min, save=False, fig_n
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    file_path = raw_input("Path to FESOM oce.mean.nc file: ")
-    tstep = int(raw_input("Time index to plot (starting at 1): "))
-    lon0 = float(raw_input("Longitude in degrees (-180 to 180): "))
-    depth_min = -1*float(raw_input("Deepest depth to plot (positive, metres): "))
-    action = raw_input("Save figure (s) or display in window (d)? ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    file_path = input("Path to FESOM oce.mean.nc file: ")
+    tstep = int(input("Time index to plot (starting at 1): "))
+    lon0 = float(input("Longitude in degrees (-180 to 180): "))
+    depth_min = -1*float(input("Deepest depth to plot (positive, metres): "))
+    action = input("Save figure (s) or display in window (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input("File name for figure: ")
+        fig_name = input("File name for figure: ")
     elif action == 'd':
         save = False
         fig_name = None    
@@ -124,30 +124,30 @@ if __name__ == "__main__":
 
     # Repeat until the user is finished
     while True:
-        repeat = raw_input("Make another plot (y/n)? ")
+        repeat = input("Make another plot (y/n)? ")
         if repeat == 'y':
             update_mesh = False
             while True:                
-                changes = raw_input("Enter a parameter to change: (1) mesh path, (2) file path, (3) timestep, (4) longitude, (5) deepest depth, (6) save/display; or enter to continue: ")
+                changes = input("Enter a parameter to change: (1) mesh path, (2) file path, (3) timestep, (4) longitude, (5) deepest depth, (6) save/display; or enter to continue: ")
                 if len(changes) == 0:
                     break
                 else:
                     if int(changes) == 1:
                         update_mesh = True
-                        mesh_path = raw_input("Path to FESOM mesh directory: ")
-                        file_path = raw_input("Path to FESOM oce.mean.nc file: ")
+                        mesh_path = input("Path to FESOM mesh directory: ")
+                        file_path = input("Path to FESOM oce.mean.nc file: ")
                     elif int(changes) == 2:
-                        file_path = raw_input("Path to FESOM oce.mean.nc file: ")
+                        file_path = input("Path to FESOM oce.mean.nc file: ")
                     elif int(changes) == 3:
-                        tstep = int(raw_input("Time index to plot (starting at 1): "))
+                        tstep = int(input("Time index to plot (starting at 1): "))
                     elif int(changes) == 4:
-                        lon0 = float(raw_input("Longitude in degrees (-180 to 180): "))
+                        lon0 = float(input("Longitude in degrees (-180 to 180): "))
                     elif int(changes) == 5:
-                        depth_min = -1*float(raw_input("Deepest depth to plot (positive, metres): "))
+                        depth_min = -1*float(input("Deepest depth to plot (positive, metres): "))
                     elif int(changes) == 6:
                         save = not save
             if save:
-                fig_name = raw_input("File name for figure: ")
+                fig_name = input("File name for figure: ")
             if update_mesh:
                 elm2D = fesom_grid(mesh_path)
             temp_salt_slice(elm2D, file_path, tstep, lon0, depth_min, save, fig_name)

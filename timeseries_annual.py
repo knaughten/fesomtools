@@ -15,7 +15,7 @@ from matplotlib.pyplot import *
 def timeseries_annual (dpt_log, seaice_log, massloss_log, massloss_depth_log, res_flag):
 
     # Number of records per year (assumes 5-day averages)
-    peryear = 365/5
+    peryear = 365//5
     # Titles for each ice shelf
     names = ['All Ice Shelves', 'Larsen D Ice Shelf', 'Larsen C Ice Shelf', 'Wilkins & George VI & Stange Ice Shelves', 'Ronne-Filchner Ice Shelf', 'Abbot Ice Shelf', 'Pine Island Glacier Ice Shelf', 'Thwaites Ice Shelf', 'Dotson Ice Shelf', 'Getz Ice Shelf', 'Nickerson Ice Shelf', 'Sulzberger Ice Shelf', 'Mertz Ice Shelf', 'Totten & Moscow University Ice Shelves', 'Shackleton Ice Shelf', 'West Ice Shelf', 'Amery Ice Shelf', 'Prince Harald Ice Shelf', 'Baudouin & Borchgrevink Ice Shelves', 'Lazarev Ice Shelf', 'Nivl Ice Shelf', 'Fimbul & Jelbart & Ekstrom Ice Shelves', 'Brunt & Riiser-Larsen Ice Shelves', 'Ross Ice Shelf']
     # Beginning of figure names for each ice shelf
@@ -63,8 +63,8 @@ def timeseries_annual (dpt_log, seaice_log, massloss_log, massloss_depth_log, re
     f.close()
     # Calculate how many years of output there are
     num_output = len(dpt)
-    num_years = num_output/peryear
-    print str(num_years) + ' years of output'
+    num_years = num_output//peryear
+    print(str(num_years) + ' years of output')
     # Calculate annual averages
     dpt_avg = []
     for year in range(num_years):
@@ -271,11 +271,11 @@ def timeseries_annual (dpt_log, seaice_log, massloss_log, massloss_depth_log, re
 # Command-line interface
 if __name__ == '__main__':
 
-    dpt_log = raw_input("Path to logfile for timeseries_dpt.py: ")
-    seaice_log = raw_input("Path to logfile for timeseries_seaice.py: ")
-    massloss_log = raw_input("Path to logfile for timeseries_massloss.py: ")
-    massloss_depth_log = raw_input("Path to logfile for timeseries_massloss_depth.py: ")
-    res_flag = int(raw_input("Low resolution (1) or high (2)? "))
+    dpt_log = input("Path to logfile for timeseries_dpt.py: ")
+    seaice_log = input("Path to logfile for timeseries_seaice.py: ")
+    massloss_log = input("Path to logfile for timeseries_massloss.py: ")
+    massloss_depth_log = input("Path to logfile for timeseries_massloss_depth.py: ")
+    res_flag = int(input("Low resolution (1) or high (2)? "))
     timeseries_annual(dpt_log, seaice_log, massloss_log, massloss_depth_log, res_flag)
 
     

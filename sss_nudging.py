@@ -32,7 +32,7 @@ def sss_nudging ():
     lon_era[index] -= 360
 
     # Read WOA grid
-    print 'Reading WOA grid'
+    print('Reading WOA grid')
     id = Dataset(woa_head + '01' + woa_tail, 'r')
     lon_woa_raw = id.variables['lon'][:]
     lat_woa_raw = id.variables['lat'][:]
@@ -58,7 +58,7 @@ def sss_nudging ():
     lat_woa[-1] = lat_woa[-2]+1
 
     # Set up output file
-    print "Setting up " + out_file
+    print("Setting up " + out_file)
     out_id = Dataset(out_file, 'w')
     # Define dimensions
     out_id.createDimension('longitude', num_lon)
@@ -81,7 +81,7 @@ def sss_nudging ():
 
     # Loop over months
     for month in range(12):
-        print 'Processing month ' + str(month+1) + ' of 12'
+        print('Processing month ' + str(month+1) + ' of 12')
         # Construct file path
         if month+1 < 10:
             filename = woa_head + '0' + str(month+1) + woa_tail

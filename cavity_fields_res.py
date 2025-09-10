@@ -47,7 +47,7 @@ def cavity_fields_res (var_name):
     # Number of bins in each direction for vector overlay
     num_bins = 50
 
-    print 'Building FESOM mesh'
+    print('Building FESOM mesh')
     # Mask open ocean
     elements_low, mask_patches_low = make_patches(mesh_path_low, circumpolar=True, mask_cavities=True)
     elements_high, mask_patches_high = make_patches(mesh_path_high, circumpolar=True, mask_cavities=True)
@@ -58,7 +58,7 @@ def cavity_fields_res (var_name):
         # Nothing more to read
         pass
     else:
-        print 'Reading data'
+        print('Reading data')
         id_low = Dataset(output_path_low + file_name, 'r')
         id_high = Dataset(output_path_high + file_name, 'r')
         if var_name == 'melt':
@@ -87,7 +87,7 @@ def cavity_fields_res (var_name):
                 elif tmp == 0:
                     cavity_low.append(False)
                 else:
-                    print 'Problem'
+                    print('Problem')
                     #return
             f.close()
             cavity_high = []
@@ -99,7 +99,7 @@ def cavity_fields_res (var_name):
                 elif tmp == 0:
                     cavity_high.append(False)
                 else:
-                    print 'Problem'
+                    print('Problem')
                     #return
             f.close()
             # Save the number of 2D nodes
@@ -268,7 +268,7 @@ def cavity_fields_res (var_name):
 
     # Loop over ice shelves
     for index in range(num_shelves):
-        print 'Processing ' + shelf_names[index]
+        print('Processing ' + shelf_names[index])
         # Convert lat/lon bounds to polar coordinates for plotting
         x1 = -(lat_min[index]+90)*cos(lon_min[index]*deg2rad+pi/2)
         y1 = (lat_min[index]+90)*sin(lon_min[index]*deg2rad+pi/2)
@@ -473,7 +473,7 @@ def cavity_fields_res (var_name):
 # Command-line interface
 if __name__ == "__main__":
 
-    var_key = int(raw_input("Ice shelf draft (1), melt rate (2), bottom water temperature (3), bottom water salinity (4), surface velocity (5), or vertically averaged velocity (6)? "))
+    var_key = int(input("Ice shelf draft (1), melt rate (2), bottom water temperature (3), bottom water salinity (4), surface velocity (5), or vertically averaged velocity (6)? "))
     if var_key == 1:
         var_name = 'draft'
     elif var_key == 2:

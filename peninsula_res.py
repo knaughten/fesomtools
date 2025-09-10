@@ -112,7 +112,7 @@ def peninsula_res (var_name):
         x_centres = 0.5*(x_bins[:-1] + x_bins[1:])
         y_centres = 0.5*(y_bins[:-1] + y_bins[1:])
 
-    print 'Processing low-res FESOM'
+    print('Processing low-res FESOM')
     # Build mesh
     elements_lr, patches_lr = make_patches(mesh_path_lr, circumpolar, mask_cavities)
     if var_name in ['div', 'vel']:
@@ -150,7 +150,7 @@ def peninsula_res (var_name):
                 elif tmp == 0:
                     cavity_lr.append(False)
                 else:
-                    print 'Problem'
+                    print('Problem')
             f.close()
     # Read data
     if var_name != 'f/h':
@@ -323,7 +323,7 @@ def peninsula_res (var_name):
         div_lr *= 1e7
 
 
-    print 'Processing high-res FESOM'
+    print('Processing high-res FESOM')
     elements_hr, patches_hr = make_patches(mesh_path_hr, circumpolar, mask_cavities)
     if var_name in ['div', 'vel']:
         file = open(mesh_path_hr + 'nod2d.out', 'r')
@@ -356,7 +356,7 @@ def peninsula_res (var_name):
                 elif tmp == 0:
                     cavity_hr.append(False)
                 else:
-                    print 'Problem'
+                    print('Problem')
             f.close()
     if var_name != 'f/h':
         id = Dataset(directory_hr + seasonal_file, 'r')
@@ -474,7 +474,7 @@ def peninsula_res (var_name):
             div_hr[season,:,:] = ma.masked_where(mask_hr==0, div_hr_tmp)
         div_hr *= 1e7
 
-    print 'Plotting'
+    print('Plotting')
     if var_name == 'f/h':
         fig = figure(figsize=(6,9))
         num_t = 1
@@ -557,5 +557,5 @@ def peninsula_res (var_name):
 # Command-line interface
 if __name__ == "__main__":
 
-    var_name = raw_input("Enter variable to plot (hi, thdgr, sst, f/h, vel, or div): ")
+    var_name = input("Enter variable to plot (hi, thdgr, sst, f/h, vel, or div): ")
     peninsula_res(var_name)

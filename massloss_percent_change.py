@@ -32,7 +32,7 @@ def massloss_percent_change (mesh_path, log_path, save=False, fig_name=None):
     mask_cavities = True
     circumpolar = True
     # Assume timeseries are 5-day averages
-    peryear = 365/5
+    peryear = 365//5
     # First 14 years don't count as RCP
     skipyears=14
 
@@ -164,12 +164,12 @@ def massloss_percent_change (mesh_path, log_path, save=False, fig_name=None):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    log_path = raw_input("Path to mass loss logfile for RCP: ")
-    action = raw_input("Save figure (s) or display in window (d)? ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    log_path = input("Path to mass loss logfile for RCP: ")
+    action = input("Save figure (s) or display in window (d)? ")
     if action == 's':
         save = True
-        fig_name = raw_input("File name for figure: ")
+        fig_name = input("File name for figure: ")
     elif action == 'd':
         save = False
         fig_name = None

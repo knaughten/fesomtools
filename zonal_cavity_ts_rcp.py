@@ -35,9 +35,9 @@ def zonal_cavity_ts_rcp (mesh_path, spinup_path, rcp_path, fig_dir=''):
     lat_max = [-72, -66.13, -70, -75.5, -72.3, -74.4, -74.67, -74, -73.5, -75.3, -76.41, -67, -66.5, -64.83, -66.25, -68.5, -68.7, -69.9, -69.33, -69.83, -69.33, -72.9, -77]
     num_shelves = len(shelf_names)
 
-    print 'Building FESOM mesh'
+    print('Building FESOM mesh')
     elm2D = fesom_grid(mesh_path)
-    print 'Reading temperature and salinity data'
+    print('Reading temperature and salinity data')
     id = Dataset(file_name_beg, 'r')
     temp_nodes_beg = id.variables['temp'][0,:]
     salt_nodes_beg = id.variables['salt'][0,:]
@@ -51,7 +51,7 @@ def zonal_cavity_ts_rcp (mesh_path, spinup_path, rcp_path, fig_dir=''):
 
     # Loop over ice shelves
     for index in range(num_shelves):
-        print 'Processing ' + shelf_names[index]
+        print('Processing ' + shelf_names[index])
         # Figure out what to write on the title about longitude
         if lon0[index] < 0:
             lon_string = ' ('+str(-lon0[index])+r'$^{\circ}$W)'
@@ -202,8 +202,8 @@ def zonal_cavity_ts_rcp (mesh_path, spinup_path, rcp_path, fig_dir=''):
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    spinup_path = raw_input("Path to control simulation directory: ")
-    rcp_path = raw_input("Path to output directory for RCP: ")
-    fig_dir = raw_input("Directory to store figures (blank for current directory, otherwise ending in /): ")
+    mesh_path = input("Path to FESOM mesh directory: ")
+    spinup_path = input("Path to control simulation directory: ")
+    rcp_path = input("Path to output directory for RCP: ")
+    fig_dir = input("Directory to store figures (blank for current directory, otherwise ending in /): ")
     zonal_cavity_ts_rcp(mesh_path, spinup_path, rcp_path, fig_dir)

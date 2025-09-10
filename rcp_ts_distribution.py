@@ -43,7 +43,7 @@ def rcp_ts_distribution (key=1):
     circumpolar = False
     cross_180 = False
 
-    print 'Setting up bins'
+    print('Setting up bins')
     # Calculate boundaries of temperature bins
     temp_bins = linspace(min_temp, max_temp, num=num_bins)
     # Calculate centres of temperature bins (for plotting)
@@ -70,10 +70,10 @@ def rcp_ts_distribution (key=1):
     elif key == 2:
         density_lev = arange(27.2, 28.4, 0.2)
 
-    print 'Building grid'
+    print('Building grid')
     elements = fesom_grid(mesh_path, circumpolar, cross_180)
 
-    print 'Reading data'
+    print('Reading data')
     # 1996-2005
     id = Dataset(directory_beg + file_beg)
     n3d = id.variables['temp'].shape[1]
@@ -89,7 +89,7 @@ def rcp_ts_distribution (key=1):
         salt_nodes[expt+1,:] = id.variables['salt'][0,:]
         id.close()
 
-    print 'Binning elements'
+    print('Binning elements')
     for elm in elements:
         # See if we're in the region of interest
         if all(elm.lat < nbdry):
@@ -155,7 +155,7 @@ def rcp_ts_distribution (key=1):
     bounds = linspace(0, max_depth**(1.0/2.5), num=100)**2.5
     norm = BoundaryNorm(boundaries=bounds, ncolors=256)
 
-    print 'Plotting'
+    print('Plotting')
     fig = figure(figsize=(24,6))
     gs = GridSpec(1,num_expts+1)
     gs.update(left=0.04, right=0.99, bottom=0.12, top=0.86)
@@ -200,7 +200,7 @@ def rcp_ts_distribution (key=1):
 # Command-line interface
 if __name__ == "__main__":
 
-    key = int(raw_input('Plot everything south of 65S (1) or just HSSW (2)? '))
+    key = int(input('Plot everything south of 65S (1) or just HSSW (2)? '))
     rcp_ts_distribution(key)
     
                     

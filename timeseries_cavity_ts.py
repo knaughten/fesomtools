@@ -35,10 +35,10 @@ def timeseries_cavity_ts (mesh_path, output_path, start_year, end_year, fig_dir=
     file_tail = '.oce.mean.nc'
     num_years = end_year - start_year + 1
 
-    print 'Building grid'
+    print('Building grid')
     elements = fesom_grid(mesh_path, circumpolar, cross_180)
 
-    print 'Setting up arrays'
+    print('Setting up arrays')
     # Timeseries of temperature and salinity to plot
     cavity_temp_ts = empty([len(names), num_years])
     cavity_salt_ts = empty([len(names), num_years])
@@ -50,7 +50,7 @@ def timeseries_cavity_ts (mesh_path, output_path, start_year, end_year, fig_dir=
 
     # Loop over years
     for year in range(start_year, end_year+1):
-        print 'Processing year ' + str(year)
+        print('Processing year ' + str(year))
         # Initialise integrals
         cavity_temp_int[:] = 0.0
         cavity_salt_int[:] = 0.0
@@ -109,9 +109,9 @@ def timeseries_cavity_ts (mesh_path, output_path, start_year, end_year, fig_dir=
         cavity_salt_ts[:,year-start_year] = cavity_salt_int/cavity_volume_int
 
     # Make time axis
-    time = range(start_year, end_year+1)
+    time = list(range(start_year, end_year+1))
 
-    print 'Plotting'
+    print('Plotting')
     # One plot for each cavity
     for index in range(len(names)):
         fig, ax1 = subplots()
@@ -135,10 +135,10 @@ def timeseries_cavity_ts (mesh_path, output_path, start_year, end_year, fig_dir=
 # Command-line interface
 if __name__ == "__main__":
 
-    mesh_path = raw_input("Path to FESOM mesh directory: ")
-    output_path = raw_input("Path to FESOM output directory: ")
-    start_year = int(raw_input("First year to process: "))
-    end_year = int(raw_input("Last year to process: "))
+    mesh_path = input("Path to FESOM mesh directory: ")
+    output_path = input("Path to FESOM output directory: ")
+    start_year = int(input("First year to process: "))
+    end_year = int(input("Last year to process: "))
     timeseries_cavity_ts(mesh_path, output_path, start_year, end_year)
     
     
