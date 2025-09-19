@@ -1,6 +1,6 @@
 from numpy import *
-from triangle_area import *
-from unrotate_grid import *
+from .triangle_area import *
+from .unrotate_grid import *
 
 # Classes and routines to build an object-oriented FESOM grid data structure
 
