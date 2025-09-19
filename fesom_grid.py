@@ -46,8 +46,8 @@ class Node:
 
     node_above = self
     node_below = node_above.below
-    id1 = id2 = NaN
-    coeff1 = coeff2 = NaN
+    id1 = id2 = nan
+    coeff1 = coeff2 = nan
 
     while True:
       if node_above.depth > z:
